@@ -1,0 +1,132 @@
+<template>
+    <div class="container">
+    <h2>Login</h2>
+    <form @submit.prevent="handleLogin" ref="loginForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required v-model="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required v-model="password">
+      </div>
+      <div class="form-group">
+        <button type="submit">Login</button>
+      </div>
+    </form>
+    <div class="signup-link">
+      Don't have an account? <router-link to="/signup">Sign up</router-link>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from "../libs/axios";
+// import SignupView from './SignupView'
+  export default {
+    name : 'LoginView',
+    components :{
+      // SignupView
+    },
+  data (){
+    return {
+      email: '',
+      password:''
+    };
+  },
+  methods: {
+    handleLogin() {
+      
+     const user = {
+        email: this.email,
+        password: this.password
+      }
+    
+    // Send a POST request to the login endpoint   
+       axios.post("auth/login", user)
+          
+        .then((response) => {            
+          if (response.status === 200) {
+             // Login successful, redirect to the home page
+             // After successful login, retrieve the user data from the response
+            // const userData = response.data;
+
+             // Save user data to Vue instance or Vuex store
+                this.$store.commit('setUserData', response.data.user);
+             // Redirect to home page   
+                 this.$router.push('/');     
+              
+          }else {
+          // Handle login error (e.g., invalid credentials)
+          console.log('Invalid credentials. Please try again.');          
+          }        
+        })
+        //console.log(user); 
+        .catch((error) => {
+         // Handle any error that occurred during login
+            console.error(error);
+        });
+    }
+  }
+} 
+
+</script>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+}
+
+.container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-group button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.signup-link {
+  text-align: center;
+}
+
+.signup-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+</style>
