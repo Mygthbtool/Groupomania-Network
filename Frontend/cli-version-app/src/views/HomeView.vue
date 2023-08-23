@@ -19,12 +19,16 @@
         <h2>Latest Posts</h2>
         <postItem v-for="post in posts" 
         :key="post.id"
-        :userFullName='post.userFullName'
+        :userFirstName='post.userFirstName'
+        :userLastName='post.userLastName'
         :userAvatar="post.userAvatar"
         :postingDate="post.postingDate"
         :textContent="post.textContent"
         :mltMediaContent="post.mltMediaContent"
-        :alt="post.alt" 
+        :likes="post.likes"
+        :dislikes="post.dislikes"
+        :comments="post.comments"
+        
         />
         
       </section>
@@ -41,7 +45,8 @@
         <div class="user-actions">
           <button class="edit-profile-button">Edit Profile</button>
           <button class="delete-account-button">Delete Account</button>
-          <button class="add-post-button">Add post</button>
+          <!-- <button class="add-post-button">Add post</button> -->
+          <router-link to="/addpost">Add Post</router-link>
         </div>
       </section>
     </main>
@@ -63,19 +68,21 @@ export default {
     postItem, UserItem
   },
   data() {
-    console.log(this.$store.state);
-
-    
+    console.log(this.$store.state);   
     return {
       posts: [
-        {
-          id: '',
-          userFullName: 'John Doe',
-          userAvatar: '/images/User-avatar.png',
-          postingDate: 'July 6, 2023',
-          textContent: 'This is a sample post. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-          image: '/images/download-image.png',
-          alt: 'post image'
+          {
+          userFirstName: '',
+          userLastName: '',
+          userAvatar: {},
+          postingDate: '',
+          textContent: this.textcontent,
+          mltMediaContent: this.mltMediaContent,
+          likes: 0,
+          dislikes: 0,
+          comments: [],
+          userId:''
+          
         },
         // Add more posts...
       ],
@@ -87,7 +94,9 @@ export default {
       //   email: ''
       // },
     };
+    
   },
+
  
   computed: {
     ...mapState(['userData']), // Map the userData from the Vuex store

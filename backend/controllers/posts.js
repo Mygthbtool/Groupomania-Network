@@ -2,6 +2,7 @@ const Post = require('../models/post');
 const fs = require('fs');
 
 exports.createPost = (req, res, next) => {
+  console.log(req);
   req.body.post = JSON.parse(req.body.post);
   const url = req.protocol + '://' + req.get('host');
   const post = new Post({
@@ -14,9 +15,9 @@ exports.createPost = (req, res, next) => {
     userId: req.body.post.userId,
     likes: 0,
     dislikes: 0,
-    comments:'',
-    usersLiked: [],
-    usersDisliked: []
+    comments:[],
+   // usersLiked: [],
+    //usersDisliked: []
   });
   post.save().then(
     () => {

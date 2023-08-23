@@ -6,12 +6,12 @@ const postSchema = mongoose.Schema ({
     userAvatar: { type: String, required: true  },
     postingDate: { type: String, required: true  },
     textContent: { type: String},
-    multiMediaContent: { type: String},
+    mltMediaContent: { type: String},
     likes: { type: Number },
     dislikes: { type: Number },
-    comments: { type: String },
-    usersLiked: { type: [ "String <userId>" ]  },
-    usersDisliked: { type: [ "String <userId>" ]  },
+    comments: { type: Array },
+   // usersLiked: { type: [ "String <userId>" ]  },
+   // usersDisliked: { type: [ "String <userId>" ]  },
     userId: { type: String, required: true  }
   });
 

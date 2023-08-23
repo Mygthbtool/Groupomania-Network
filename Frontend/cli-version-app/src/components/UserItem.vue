@@ -28,13 +28,12 @@ export default {
       },
       avatar: {
         type : String,
-        default: '', // Set a default value for the avatar prop if needed
+        default: '/images/User-avatar.png', // Set a default value for the avatar prop if needed
       },
              
   },  
 
 }
-
 </script>
 
 <style lang="scss">

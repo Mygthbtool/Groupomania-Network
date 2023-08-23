@@ -48,36 +48,36 @@ export default {
     };
   },
 
-  methods: {
+ methods: {
 
     handleFileChange(event) {
     this.avatar = event.target.files[0];
-  },
-  signUp() {
-      const data = {
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
-        password: this.password,
-        avatar: this.avatar
-      };
-      console.log({data});
-      axios
-        .post("auth/signup", data, {headers: { 'Content-Type': 'application/json' },})
-        .then((response) => {
-          if (response.status === 201) {
-            // User created successfully
-            this.$router.push("/login");
-          } else {
+    },
+    signUp() {
+        const data = {
+          firstName: this.firstName,
+          lastName: this.lastName,
+          email: this.email,
+          password: this.password,
+          avatar: this.avatar
+        };
+        console.log({data});
+        axios
+          .post("auth/signup", data, {headers: { 'Content-Type': 'application/json' },})
+          .then((response) => {
+            if (response.status === 201) {
+              // User created successfully
+              this.$router.push("/login");
+            } else {
+              // Error creating user
+              console.log(response);
+            }
+          })
+          .catch((error) => {
             // Error creating user
-            console.log(response);
-          }
-        })
-        .catch((error) => {
-          // Error creating user
-          console.log(error);
-        });
-    }
+            console.log(error);
+          });
+      }
   }
 
 

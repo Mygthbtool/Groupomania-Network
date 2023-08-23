@@ -3,18 +3,18 @@
           <div class="post-header">
             <img :src="userAvatar" />
             <div class="post-info">
-              <h3>{{ userFullName }}</h3>
+              <h3>{{ userFirstName }} {{ userLastName }}</h3>
               <span class="post-date">{{ postingDate }}</span>
             </div>
           </div>
           <div class="post-content">
             <p>{{ textContent }}</p>
-            <img v-if="post.mltMediaContent" :src="post.mltMediaContent" :alt='post.alt'/>
+            <img v-if="post.mltMediaContent" :src="post.mltMediaContent" alt='multiMediaContent'/>
           </div>
           <div class="post-actions">
-            <button class="like-button">Like</button>
-            <button class="dislike-button">Dislike</button>
-            <button class="comment-button">Comment</button>
+            <button class="like-button">Like {{ likes }} </button>
+            <button class="dislike-button">Dislike {{ dislikes }}</button>
+            <button class="comment-button">Comment {{ comments }}</button>
             <button class="delete-post-button">Delete post</button>
           </div>  
         </div>
@@ -24,48 +24,43 @@
 export default {
     name: 'postItem',
 
-    props: {  
+   props :{
+      userFirstName: String,
+      userLastName: String,
+      userAvatar: String,
+      postingDate: String,
+      textContent: String,
+      mltMediaContent: null,
+      likes: Number,
+      dislikes: Number,
+      comments: Array,
+      userId: String
+   }, 
+    // data() {
+    //   return {
+    //     posts: [
+    //        {
+            
+    //         userFirstName: '',
+    //         userLastName: '',
+    //         userAvatar: '',
+    //         postingDate: '',
+    //         textContent: this.textcontent,
+    //         mltMediaContent: this.mltMediaContent,
+    //         likes: 0,
+    //         dislikes: 0,
+    //         comments: '',
+    //         userId:''
 
-    userFullName : {
-      type: String,
-      required: true
-    },
-    userAvatar : {
-      type : String,
-      required : true
-    },
-    postingDate : {
-      type : String,
-      required: true
-    },
-    textContent :{
-      type: String,
-    },
-    mltMediaContent :{
-      type: Object,
-    },
-    alt : {
-      type : String,
-
-    }
-
-  },
-    data() {
-      return {
-        posts: [
-          {
-            id: '',
-            userFullName: 'John Doe',
-            userAvatar: '/images/User-avatar.png',
-            postingDate: 'July 6, 2023',
-            textContent: 'This is a sample post. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            mltMediaContent: '/images/download-image.png',
-            alt: 'media content'
-          },
-          // Add more posts...
-        ]
-        }
-    }
+          
+    //       },
+    //       // Add more posts...
+    //     ]
+        
+    //     }
+      
+    // }
+   
 }       
         
 </script>        
