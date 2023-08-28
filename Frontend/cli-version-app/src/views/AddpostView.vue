@@ -19,6 +19,8 @@
 
 <script>
 import axios from "../libs/axios";
+// import VueJwtDecode from '../../node_modules/vue-jwt-decode'
+
 
 export default {
   name: 'AddpostView',
@@ -43,39 +45,51 @@ export default {
     this.mltMediaContent = event.target.files[0];
     },
     publishContent(){
-      const formData = new FormData();
-      formData.append('userFirstName', this.userFirstName);
-      formData.append('userLastName', this.userLastName);
-      formData.append('userAvatar', this.userAvatar);
-      formData.append('postingDate', this.postingDate);
-      formData.append('textContent', this.textContent);
-      formData.append('likes', this.likes);
-      formData.append('dislikes', this.dislikes);
-      formData.append('comments', this.comments);
-      formData.append('userId', this.userId);
-      // ... (append other form fields)
+      // const postData = new FormData();
+      // postData.append('userFirstName', this.userFirstName);
+      // postData.append('userLastName', this.userLastName);
+      // postData.append('userAvatar', this.userAvatar);
+      // postData.append('postingDate', this.postingDate);
+      // postData.append('textContent', this.textContent);
+      // postData.append('likes', 0);
+      // postData.append('dislikes', 0);
+      // postData.append('comments', []);
+      // postData.append('userId', this.userId);
+      // // ... (append other form fields)
 
-      if (this.mltMediaContent) {
-        formData.append('mltMediaContent', this.mltMediaContent);
-      }
-
-      // const data = {
-      //   userFirstName: this.userFirstName,
-      //   userLastName: this.userLastName,
-      //   userAvatar: this.userAvatar,
-      //   postingDate: this.postingDate,
-      //   textContent: this.textContent,
-      //   mltMediaContent: this.mltMediaContent,
-      //   likes: 0,
-      //   dislikes: 0,
-      //   comments: [],
-      //   userId: this.userId
-
+      // if (this.mltMediaContent) {
+      //   postData.append('mltMediaContent', this.mltMediaContent);
       // }
-       console.log({formData})
+  
+
+      const postData = {
+        userFirstName: this.$store.state.userData.firstName,
+        userLastName: this.$store.state.userData.lastName,
+        userAvatar: this.$store.state.userData.avatar,
+        postingDate: this.postingDate,
+        textContent: this.textContent,
+         mltMediaContent: this.mltMediaContent,
+        likes: 0,
+        dislikes: 0,
+        comments: [],
+        userId: this.$store.state.userData.userId,
+          
+       }
+       
+       console.log({postData})
     
-    axios.post("posts/", formData)
+      
+       const headers = {          
+          'Content-Type': 'application/json',
+          //'Authorization': 'Bearer ' + this.$store.state.userData.token
+        
+          };
+          console.log();
+          console.log(postData.userFirstName);
+    axios.post("posts/", postData, {headers: headers})
+    
       .then((response) => {
+        
         if (response.status === 201) {
           // Post created successfully
           this.$router.push("/");

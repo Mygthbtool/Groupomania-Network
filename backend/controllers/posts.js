@@ -16,8 +16,7 @@ exports.createPost = (req, res, next) => {
     likes: 0,
     dislikes: 0,
     comments:[],
-   // usersLiked: [],
-    //usersDisliked: []
+  
   });
   post.save().then(
     () => {

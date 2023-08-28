@@ -10,8 +10,6 @@ const postSchema = mongoose.Schema ({
     likes: { type: Number },
     dislikes: { type: Number },
     comments: { type: Array },
-   // usersLiked: { type: [ "String <userId>" ]  },
-   // usersDisliked: { type: [ "String <userId>" ]  },
     userId: { type: String, required: true  }
   });
 
