@@ -24,7 +24,7 @@
         :userAvatar="post.userAvatar"
         :postingDate="post.postingDate"
         :textContent="post.textContent"
-        :mltMediaContent="post.mltMediaContent"
+        
         :likes="post.likes"
         :dislikes="post.dislikes"
         :comments="post.comments"
@@ -74,10 +74,10 @@ export default {
           {
           userFirstName: '',
           userLastName: '',
-          userAvatar: {},
+          userAvatar: '',
           postingDate: '',
-          textContent: this.textcontent,
-          mltMediaContent: this.mltMediaContent,
+          textContent: '',
+          mltMediaContent: '',
           likes: 0,
           dislikes: 0,
           comments: [],
@@ -100,6 +100,7 @@ export default {
  
   computed: {
     ...mapState(['userData']), // Map the userData from the Vuex store
+    ...mapState(['posts'])
   },
 }
 </script>

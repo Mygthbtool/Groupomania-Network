@@ -2,22 +2,23 @@ const Post = require('../models/post');
 const fs = require('fs');
 
 exports.createPost = (req, res, next) => {
-  console.log(req);
-  req.body.post = JSON.parse(req.body.post);
+  const postObj = JSON.parse(req.body.post);
+  console.log(postObj);
+
   const url = req.protocol + '://' + req.get('host');
   const post = new Post({
-    userFirstName: req.body.post.userFirstName,
-    userLastName: req.body.post.userLastName,
-    userAvatar: req.body.post.userAvatar,
-    postingDate: req.body.post.postingDate,
-    textContent: req.body.post.textContent,
-    multiMediaContent: url + '/images/' + req.file.filename,
-    userId: req.body.post.userId,
+    userFirstName: postObj.userFirstName,
+    userLastName: postObj.userLastName,
+    userAvatar: postObj.userAvatar,
+    postingDate: postObj.postingDate,
+    textContent: postObj.textContent,
+    //multiMediaContent: url + '/images/' + req.file.filename,
+    userId: postObj.userId,
     likes: 0,
     dislikes: 0,
-    comments:[],
-  
+    comments:[],  
   });
+
   post.save().then(
     () => {
       res.status(201).json({
@@ -193,7 +194,4 @@ exports.likeAndDislikePost = (req, res, next) => {
         })
     } 
 }
-
-
-
 

@@ -9,7 +9,7 @@
           </div>
           <div class="post-content">
             <p>{{ textContent }}</p>
-            <img v-if="post.mltMediaContent" :src="post.mltMediaContent" alt='multiMediaContent'/>
+           
           </div>
           <div class="post-actions">
             <button class="like-button">Like {{ likes }} </button>
@@ -30,7 +30,7 @@ export default {
       userAvatar: String,
       postingDate: String,
       textContent: String,
-      mltMediaContent: null,
+      //mltMediaContent: String,
       likes: Number,
       dislikes: Number,
       comments: Array,
@@ -60,7 +60,7 @@ export default {
     //     }
       
     // }
-   
+   // <img v-if="post.mltMediaContent" :src="post.mltMediaContent" alt='multiMediaContent'/>
 }       
         
 </script>        

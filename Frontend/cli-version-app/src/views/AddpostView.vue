@@ -4,7 +4,7 @@
     <form @submit.prevent="publishContent">
       <div class="form-group">
         <label for="content">Content</label>
-        <textarea id="content" name="content" required></textarea>
+        <textarea id="content" name="content" type="text" v-model="textContent"></textarea>
       </div>
       <div class="form-group">
         <label for="media">Media (optional)</label>
@@ -32,7 +32,7 @@ export default {
         userAvatar: '',
         postingDate: '',
         textContent: '',
-        mltMediaContent: null,
+        mltMediaContent: '',
         likes: 0,
         dislikes: 0,
         comments: [],
@@ -62,11 +62,11 @@ export default {
       // }
   
 
-      const postData = {
+      const post = {
         userFirstName: this.$store.state.userData.firstName,
         userLastName: this.$store.state.userData.lastName,
-        userAvatar: this.$store.state.userData.avatar,
-        postingDate: this.postingDate,
+        userAvatar: '',
+        postingDate: '',
         textContent: this.textContent,
          mltMediaContent: this.mltMediaContent,
         likes: 0,
@@ -76,21 +76,22 @@ export default {
           
        }
        
-       console.log({postData})
+       console.log({post})
+       
     
-      
-       const headers = {          
-          'Content-Type': 'application/json',
-          //'Authorization': 'Bearer ' + this.$store.state.userData.token
+      this.post = JSON.stringify(post);
+        const headers = {          
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + this.$store.state.userData.token
         
-          };
-          console.log();
-          console.log(postData.userFirstName);
-    axios.post("posts/", postData, {headers: headers})
+         };
+          
+    axios.post("posts/", {post: JSON.stringify(post)}, {headers: headers})
     
       .then((response) => {
         
         if (response.status === 201) {
+          this.$store.commit('setPostData', response.postData);
           // Post created successfully
           this.$router.push("/");
         } else {
