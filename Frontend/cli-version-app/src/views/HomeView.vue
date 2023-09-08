@@ -18,7 +18,7 @@
       <section id="post-list">
         <h2>Latest Posts</h2>
         <postItem v-for="post in posts" 
-        :key="post.id"
+        :key="post._id"
         :userFirstName='post.userFirstName'
         :userLastName='post.userLastName'
         :userAvatar="post.userAvatar"
@@ -35,9 +35,9 @@
 
       <section id="user-profile">
         <h2>My Profile</h2>
-        <user-item 
-        :first-name="userData.firstName" 
-        :last-name="userData.lastName" 
+        <userItem 
+        :firstName="userData.firstName" 
+        :lastName="userData.lastName" 
         :email="userData.email" 
         :avatar="userData.avatar"
         />
@@ -61,31 +61,32 @@
 import postItem from '@/components/postItem'
 import UserItem from '@/components/UserItem'
 import { mapState } from 'vuex';
+import axios from "../libs/axios";
 
 export default {
   name: 'HomeView',
   components :{
     postItem, UserItem
   },
-  data() {
-    console.log(this.$store.state);   
-    return {
-      posts: [
-          {
-          userFirstName: '',
-          userLastName: '',
-          userAvatar: '',
-          postingDate: '',
-          textContent: '',
-          mltMediaContent: '',
-          likes: 0,
-          dislikes: 0,
-          comments: [],
-          userId:''
+  // data() {
+  //   console.log(this.$store.state);   
+  //   return {
+  //     posts: [
+  //         {
+  //         userFirstName: '',
+  //         userLastName: '',
+  //         userAvatar: '',
+  //         postingDate: '',
+  //         textContent: '',
+  //         //mltMediaContent: '',
+  //         likes: 0,
+  //         dislikes: 0,
+  //         comments: [],
+  //         userId:''
           
-        },
-        // Add more posts...
-      ],
+  //       },
+  //       // Add more posts...
+  //     ],
       // user: null // Initialize user data to null
       // user: {
       //   firstName: '',
@@ -93,14 +94,31 @@ export default {
       //   avatar: '',
       //   email: ''
       // },
-    };
+   // };
     
+ // },
+
+ methods: {
+    async fetchPosts() {
+      try {
+        const headers = {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + this.$store.state.userData.token,
+        } 
+        const response = await axios.get('posts/', { headers: headers }); // Replace with your API endpoint
+        this.$store.commit('setPosts', response.data); // Store posts in Vuex
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    },
+  },
+  mounted() {
+    this.fetchPosts(); // Fetch posts when the component is mounted
   },
 
- 
   computed: {
-    ...mapState(['userData']), // Map the userData from the Vuex store
-    ...mapState(['posts'])
+    ...mapState(['userData', 'posts']), // Map the userData and posts from the Vuex store
+    
   },
 }
 </script>

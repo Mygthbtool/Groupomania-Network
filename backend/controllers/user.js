@@ -12,7 +12,7 @@ exports.signup = (req, res, next) => {
           lastName: req.body.lastName,
           email: req.body.email,
           password: hash,
-          avatar: req.body.avatar
+          avatar: req.file
         });
         user.save().then(
           () => {

@@ -65,10 +65,10 @@ export default {
       const post = {
         userFirstName: this.$store.state.userData.firstName,
         userLastName: this.$store.state.userData.lastName,
-        userAvatar: '',
+        userAvatar: this.$store.state.userData.avatar,
         postingDate: '',
         textContent: this.textContent,
-         mltMediaContent: this.mltMediaContent,
+       //  mltMediaContent: this.mltMediaContent,
         likes: 0,
         dislikes: 0,
         comments: [],
@@ -90,9 +90,9 @@ export default {
     
       .then((response) => {
         
-        if (response.status === 201) {
-          this.$store.commit('setPostData', response.postData);
-          // Post created successfully
+        if (response.status === 201) {// Post created successfully
+          this.$store.commit('setPosts', response.data.posts);
+           //redirect client to home page
           this.$router.push("/");
         } else {
           // Error creating post

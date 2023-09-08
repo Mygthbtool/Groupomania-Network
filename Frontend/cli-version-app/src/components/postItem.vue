@@ -1,5 +1,5 @@
 <template>
-        <div id="post" class="post" v-for="post in posts" :key="post.id">
+        <div id="post" class="post">
           <div class="post-header">
             <img :src="userAvatar" />
             <div class="post-info">
@@ -20,21 +20,39 @@
         </div>
 
 </template>
+
 <script>
 export default {
     name: 'postItem',
 
    props :{
-      userFirstName: String,
-      userLastName: String,
-      userAvatar: String,
-      postingDate: String,
-      textContent: String,
+      userFirstName:{
+        type: String
+      },
+      userLastName: {
+        type: String
+      },
+      userAvatar: {
+        type: Object,
+      
+      },
+      postingDate: {
+        type: String
+      },
+      textContent: {
+        type: String
+      },
       //mltMediaContent: String,
-      likes: Number,
-      dislikes: Number,
-      comments: Array,
-      userId: String
+      likes: {
+        type: Number
+      },
+      dislikes: {
+        type: Number
+      },
+      comments: {
+        type: Array
+      },
+    
    }, 
     // data() {
     //   return {
@@ -46,7 +64,7 @@ export default {
     //         userAvatar: '',
     //         postingDate: '',
     //         textContent: this.textcontent,
-    //         mltMediaContent: this.mltMediaContent,
+    //         //mltMediaContent: this.mltMediaContent,
     //         likes: 0,
     //         dislikes: 0,
     //         comments: '',

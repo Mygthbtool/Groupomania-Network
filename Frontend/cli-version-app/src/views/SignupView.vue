@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h2>Sign up</h2>
-    <form @submit.prevent="signUp">
+    <form @submit.prevent="signUp" enctype="multipart/form-data">
       <div class="form-group">
         <label for="firstName">First Name</label>
         <input type="text" id="firstName" name="firstName" required v-model="firstName">

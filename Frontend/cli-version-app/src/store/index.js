@@ -3,7 +3,7 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     userData: {}, // Initialize userData as null
-    posts:[]
+    posts:[]   // Initialize posts as null
   },
   getters: {
     // Optional: You can define getters to access the user data if needed
@@ -13,8 +13,8 @@ export default createStore({
       setUserData(state, userData) {
       state.userData = userData;
     },
-    setPostData(state, postData){
-      state.posts = postData;
+    setPosts(state, posts){
+      state.posts = posts;
     }
   },
   actions: {
