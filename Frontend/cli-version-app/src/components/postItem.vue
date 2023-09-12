@@ -9,13 +9,16 @@
           </div>
           <div class="post-content">
             <p>{{ textContent }}</p>
-           
+            <img v-if="mltMediaContent" :src="mltMediaContent" alt='multiMediaContent'/>
+
           </div>
           <div class="post-actions">
             <button class="like-button">Like {{ likes }} </button>
             <button class="dislike-button">Dislike {{ dislikes }}</button>
             <button class="comment-button">Comment {{ comments }}</button>
-            <button class="delete-post-button">Delete post</button>
+            <button class="delete-post-button">Delete</button>
+            <button class="edit-post-button">Edit</button>
+
           </div>  
         </div>
 
@@ -33,7 +36,8 @@ export default {
         type: String
       },
       userAvatar: {
-        type: Object,
+        type: String,
+        default: '/images/User-avatar.png', // Set a default value for the avatar prop if needed
       
       },
       postingDate: {
@@ -42,7 +46,9 @@ export default {
       textContent: {
         type: String
       },
-      //mltMediaContent: String,
+      mltMediaContent:{
+        type: String
+      },
       likes: {
         type: Number
       },
@@ -78,7 +84,6 @@ export default {
     //     }
       
     // }
-   // <img v-if="post.mltMediaContent" :src="post.mltMediaContent" alt='multiMediaContent'/>
 }       
         
 </script>        
@@ -166,7 +171,8 @@ export default {
     }
     
     .post-content img {
-      max-width: 100%;
+      width: 60%;
+      height: 50%;
       margin-top: 10px;
     }
     

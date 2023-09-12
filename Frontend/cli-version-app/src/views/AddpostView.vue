@@ -1,7 +1,7 @@
 <template>
    <div class="container">
     <h2>Create Post</h2>
-    <form @submit.prevent="publishContent">
+    <form @submit.prevent="publishContent" enctype="multipart/form-data">
       <div class="form-group">
         <label for="content">Content</label>
         <textarea id="content" name="content" type="text" v-model="textContent"></textarea>
@@ -20,6 +20,7 @@
 <script>
 import axios from "../libs/axios";
 // import VueJwtDecode from '../../node_modules/vue-jwt-decode'
+import FormData from 'form-data'
 
 
 export default {
@@ -45,48 +46,48 @@ export default {
     this.mltMediaContent = event.target.files[0];
     },
     publishContent(){
-      // const postData = new FormData();
-      // postData.append('userFirstName', this.userFirstName);
-      // postData.append('userLastName', this.userLastName);
-      // postData.append('userAvatar', this.userAvatar);
-      // postData.append('postingDate', this.postingDate);
-      // postData.append('textContent', this.textContent);
-      // postData.append('likes', 0);
-      // postData.append('dislikes', 0);
-      // postData.append('comments', []);
-      // postData.append('userId', this.userId);
-      // // ... (append other form fields)
+      const postData = new FormData();
+      postData.append('userFirstName', this.$store.state.userData.firstName);
+      postData.append('userLastName', this.$store.state.userData.lastName);
+      postData.append('userAvatar', this.$store.state.userData.avatar);
+      postData.append('postingDate', this.postingDate);
+      postData.append('textContent', this.textContent);
+      postData.append('likes', 0);
+      postData.append('dislikes', 0);
+      postData.append('comments', []);
+      postData.append('userId', this.$store.state.userData.userId);
+      // ... (append other form fields)
 
-      // if (this.mltMediaContent) {
-      //   postData.append('mltMediaContent', this.mltMediaContent);
-      // }
+      if (this.mltMediaContent) {
+        postData.append('image', this.mltMediaContent, this.mltMediaContent.name);
+      }
   
 
-      const post = {
-        userFirstName: this.$store.state.userData.firstName,
-        userLastName: this.$store.state.userData.lastName,
-        userAvatar: this.$store.state.userData.avatar,
-        postingDate: '',
-        textContent: this.textContent,
-       //  mltMediaContent: this.mltMediaContent,
-        likes: 0,
-        dislikes: 0,
-        comments: [],
-        userId: this.$store.state.userData.userId,
+      // const post = {
+      //   userFirstName: this.$store.state.userData.firstName,
+      //   userLastName: this.$store.state.userData.lastName,
+      //   userAvatar: this.$store.state.userData.avatar,
+      //   postingDate: '',
+      //   textContent: this.textContent,
+      //   mltMediaContent: this.mltMediaContent,
+      //   likes: 0,
+      //   dislikes: 0,
+      //   comments: [],
+      //   userId: this.$store.state.userData.userId,
           
-       }
+      //  }
        
-       console.log({post})
+       console.log({postData})
        
     
-      this.post = JSON.stringify(post);
+      //this.post = JSON.stringify(post);
         const headers = {          
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.userData.token
         
          };
           
-    axios.post("posts/", {post: JSON.stringify(post)}, {headers: headers})
+    axios.post("posts/", postData, {headers: headers})
     
       .then((response) => {
         

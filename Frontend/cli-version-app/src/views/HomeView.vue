@@ -24,7 +24,7 @@
         :userAvatar="post.userAvatar"
         :postingDate="post.postingDate"
         :textContent="post.textContent"
-        
+        :mltMediaContent="post.mltMediaContent"
         :likes="post.likes"
         :dislikes="post.dislikes"
         :comments="post.comments"

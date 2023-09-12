@@ -1,18 +1,20 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const fs = require('fs');
 
 exports.signup = (req, res, next) => {
-  console.log(req.body);
-
-    bcrypt.hash(req.body.password, 10).then(
+  const userObj = req.body;
+  console.log(userObj);
+  const url = req.protocol + '://' + req.get('host');
+    bcrypt.hash(userObj.password, 10).then(
       (hash) => {
         const user = new User({
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          email: req.body.email,
+          firstName: userObj.firstName,
+          lastName: userObj.lastName,
+          email: userObj.email,
           password: hash,
-          avatar: req.file
+          avatar: url + '/images/' + req.file.filename
         });
         user.save().then(
           () => {

@@ -2,8 +2,8 @@ const Post = require('../models/post');
 const fs = require('fs');
 
 exports.createPost = (req, res, next) => {
-  const postObj = JSON.parse(req.body.post);
-  console.log(postObj);
+  const postObj = req.body;
+  console.log({postObj});
 
   const url = req.protocol + '://' + req.get('host');
   const post = new Post({
@@ -12,12 +12,14 @@ exports.createPost = (req, res, next) => {
     userAvatar: postObj.userAvatar,
     postingDate: postObj.postingDate,
     textContent: postObj.textContent,
-    //multiMediaContent: url + '/images/' + req.file.filename,
+    mltMediaContent: url + '/images/' + req.file.filename,
     userId: postObj.userId,
     likes: 0,
     dislikes: 0,
     comments:[],  
+       
   });
+  
 
   post.save().then(
     () => {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
+const multer = require('../middlware/multer-config');
 const userCtrl = require('../controllers/user');
 
 router.post('/signup', multer, userCtrl.signup);

@@ -34,6 +34,8 @@
 
 <script>
 import axios from "../libs/axios";
+import FormData from 'form-data'
+
 
 export default {
   name: 'SignupView',
@@ -54,16 +56,24 @@ export default {
     this.avatar = event.target.files[0];
     },
     signUp() {
-        const data = {
-          firstName: this.firstName,
-          lastName: this.lastName,
-          email: this.email,
-          password: this.password,
-          avatar: this.avatar
-        };
-        console.log({data});
+      const data = new FormData();
+        data.append('firstName', this.firstName);
+        data.append('lastName', this.lastName);
+        data.append('email', this.email);
+        data.append('password', this.password);
+        if (this.avatar) {
+          data.append('image', this.avatar, this.avatar.name);
+        }
+        // const data = {
+        //   firstName: this.firstName,
+        //   lastName: this.lastName,
+        //   email: this.email,
+        //   password: this.password,
+        //   avatar: this.avatar
+        // };
+        console.log({data}); 
         axios
-          .post("auth/signup", data, {headers: { 'Content-Type': 'application/json' },})
+          .post("auth/signup", data, {headers: { 'Content-Type': 'multipart/form-data' },})
           .then((response) => {
             if (response.status === 201) {
               // User created successfully
@@ -77,7 +87,7 @@ export default {
             // Error creating user
             console.log(error);
           });
-      }
+    }
   }
 
 

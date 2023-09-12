@@ -27,8 +27,8 @@ export default {
         required: true
       },
       avatar: {
-        type : String
-        //default: '/images/User-avatar.png', // Set a default value for the avatar prop if needed
+        type : String,
+        default: '/images/User-avatar.png', // Set a default value for the avatar prop if needed
       },
              
   },  
