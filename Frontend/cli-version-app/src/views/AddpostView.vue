@@ -31,7 +31,7 @@ export default {
         userFirstName: '',
         userLastName: '',
         userAvatar: '',
-        postingDate: '',
+        postingDate: new Date(),
         textContent: '',
         mltMediaContent: '',
         likes: 0,
@@ -45,6 +45,7 @@ export default {
     handleFileChange(event) {
     this.mltMediaContent = event.target.files[0];
     },
+
     publishContent(){
       const postData = new FormData();
       postData.append('userFirstName', this.$store.state.userData.firstName);

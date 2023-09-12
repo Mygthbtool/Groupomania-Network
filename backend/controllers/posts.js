@@ -6,13 +6,19 @@ exports.createPost = (req, res, next) => {
   console.log({postObj});
 
   const url = req.protocol + '://' + req.get('host');
+  let mltMediaContent = ''; // Initialize mltMediaContent
+
+  // Check if a file has been uploaded
+  if (req.file) {
+    mltMediaContent = url + '/images/' + req.file.filename;
+  }
   const post = new Post({
     userFirstName: postObj.userFirstName,
     userLastName: postObj.userLastName,
     userAvatar: postObj.userAvatar,
     postingDate: postObj.postingDate,
     textContent: postObj.textContent,
-    mltMediaContent: url + '/images/' + req.file.filename,
+    mltMediaContent: mltMediaContent, // Assign the URL or an empty string
     userId: postObj.userId,
     likes: 0,
     dislikes: 0,
@@ -20,7 +26,6 @@ exports.createPost = (req, res, next) => {
        
   });
   
-
   post.save().then(
     () => {
       res.status(201).json({

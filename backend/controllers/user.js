@@ -5,8 +5,14 @@ const fs = require('fs');
 
 exports.signup = (req, res, next) => {
   const userObj = req.body;
-  console.log(userObj);
+  console.log({userObj});
   const url = req.protocol + '://' + req.get('host');
+  let avatar = './images/User-avatar.png'; // Initialize avatar
+
+  // Check if a file has been uploaded
+  if (req.file) {
+    avatar = url + '/images/' + req.file.filename;
+  }
     bcrypt.hash(userObj.password, 10).then(
       (hash) => {
         const user = new User({
@@ -14,7 +20,7 @@ exports.signup = (req, res, next) => {
           lastName: userObj.lastName,
           email: userObj.email,
           password: hash,
-          avatar: url + '/images/' + req.file.filename
+          avatar: avatar
         });
         user.save().then(
           () => {
