@@ -18,7 +18,9 @@
       <section id="post-list">
         <h2>Latest Posts</h2>
         <postItem v-for="post in posts" 
-        :key="post._id"
+        :key="post.id"
+        :postId="post._id" 
+        :post="post"
         :userFirstName='post.userFirstName'
         :userLastName='post.userLastName'
         :userAvatar="post.userAvatar"
@@ -28,6 +30,9 @@
         :likes="post.likes"
         :dislikes="post.dislikes"
         :comments="post.comments"
+        :userId="post.userId"
+        :currentUser= "userData.userId"
+        @post-deleted="handlePostDeleted"
         
         />
         
@@ -40,6 +45,7 @@
         :lastName="userData.lastName" 
         :email="userData.email" 
         :avatar="userData.avatar"
+        :userId="userData.userId"
         />
 
         <div class="user-actions">
@@ -69,34 +75,21 @@ export default {
     postItem, UserItem
   },
   // data() {
-  //   console.log(this.$store.state);   
   //   return {
-  //     posts: [
-  //         {
-  //         userFirstName: '',
-  //         userLastName: '',
-  //         userAvatar: '',
-  //         postingDate: '',
-  //         textContent: '',
-  //         //mltMediaContent: '',
-  //         likes: 0,
-  //         dislikes: 0,
-  //         comments: [],
-  //         userId:''
-          
-  //       },
-  //       // Add more posts...
-  //     ],
-      // user: null // Initialize user data to null
-      // user: {
-      //   firstName: '',
-      //   lastName: '',
-      //   avatar: '',
-      //   email: ''
-      // },
-   // };
+  //     posts: [], // Your array of posts
+  //   };
+  // },
+  
+  // user: null // Initialize user data to null
+  // user: {
+  //   firstName: '',
+  //   lastName: '',
+  //   avatar: '',
+  //   email: ''
+  // },
+// };
     
- // },
+
 
  methods: {
     async fetchPosts() {
@@ -110,6 +103,12 @@ export default {
       } catch (error) {
         console.error('Error fetching posts:', error);
       }
+    },
+
+    handlePostDeleted(deletedPostId) {
+      // Remove the deleted post from the posts array
+      this.posts = this.posts.filter((post) => post.id !== deletedPostId);
+      this.$router.push("/");
     },
   },
   mounted() {

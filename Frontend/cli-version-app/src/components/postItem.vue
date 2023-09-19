@@ -1,5 +1,5 @@
 <template>
-        <div id="post" class="post">
+        <div id="post" class="post" v-bind="posts">
           <div class="post-header">
             <img :src="userAvatar" />
             <div class="post-info">
@@ -9,15 +9,17 @@
           </div>
           <div class="post-content">
             <p>{{ textContent }}</p>
+            
             <img v-if="mltMediaContent" :src="mltMediaContent" alt='multiMediaContent'/>
 
           </div>
           <div class="post-actions">
-            <button class="like-button">Like {{ likes }} </button>
-            <button class="dislike-button">Dislike {{ dislikes }}</button>
-            <button class="comment-button">Comment {{ comments }}</button>
-            <button class="delete-post-button">Delete</button>
-            <button class="edit-post-button">Edit</button>
+            <button class="like-button" @click="onLike">Like {{ likes }} </button>
+            <button class="dislike-button" @click="onDislike">Dislike {{ dislikes }}</button>
+            <button class="comment-button" @click="onComment">Comment {{ comments }}</button>
+          
+            <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
+            <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
 
           </div>  
         </div>
@@ -25,9 +27,11 @@
 </template>
 
 <script>
+//import router from "@/router";
+import axios from "../libs/axios";
 export default {
     name: 'postItem',
-
+  
    props :{
       userFirstName:{
         type: String
@@ -58,33 +62,78 @@ export default {
       comments: {
         type: Array
       },
-    
-   }, 
-    // data() {
-    //   return {
-    //     posts: [
-    //        {
-            
-    //         userFirstName: '',
-    //         userLastName: '',
-    //         userAvatar: '',
-    //         postingDate: '',
-    //         textContent: this.textcontent,
-    //         //mltMediaContent: this.mltMediaContent,
-    //         likes: 0,
-    //         dislikes: 0,
-    //         comments: '',
-    //         userId:''
-
-          
-    //       },
-    //       // Add more posts...
-    //     ]
-        
-    //     }
+      userId:{
+        type: String
+      },
+      currentUser: {
+        type: String
+      },
+      postId:{
+        type: String,     
+      }
       
-    // }
-}       
+   }, 
+  
+   computed: {
+
+    isCurrentUserOwner() {
+      // Check if the current user's ID matches the post owner's ID
+      return this.currentUser === this.userId;
+    },
+    
+   },
+   methods: {
+    onLike() {
+      // Implement your like functionality here
+    },
+    onDislike() {
+      // Implement your dislike functionality here
+    },
+    onComment() {
+      // Implement your comment functionality here
+    },
+   // onDelete() {
+      // Implement your delete functionality here
+
+    //  deletePost(){
+        // this.post._id = postId
+        // //({_id: this.post._id})
+        //     axios.delete("posts/:id" + this.post._id, {headers: {Authorization: 'Bearer ' + this.$store.state.userData.token}})
+        //         .then(response => {
+        //             let resp = JSON.parse(response.data);
+        //             console.log(resp.message);
+        //            this.$router.push('/');
+        //         })
+        //         .catch(error => {
+        //             console.log(error);    
+        //         })
+   // },
+   onDelete() {
+      if (confirm("Are you sure you want to delete this post?")) {
+     
+        // Pass the post ID as a parameter in the request.
+        const postId = this.postId;// Make sure to add a postId prop to your component.
+        
+        // Send the delete request to your API
+        // Example using Axios:
+        axios
+          .delete(`posts/${postId}`, {headers: {Authorization: 'Bearer ' + this.$store.state.userData.token}})
+          .then(() => {
+            // Handle success, maybe show a success message
+            console.log('Post deleted successfully');
+            // You can also emit an event to notify a parent component to remove this post from the list.
+            this.$emit('post-deleted', postId);
+            
+          })
+          .catch((error) => {
+            // Handle error, show an error message
+            console.error('Error deleting post', error);
+          });
+      }
+    },
+  },
+};
+       
         
 </script>        
 

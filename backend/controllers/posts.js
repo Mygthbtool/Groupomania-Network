@@ -98,10 +98,11 @@ exports.modifyPost = (req, res, next) => {
   );
 };
 
+// Delete post
 exports.deletePost = (req, res, next) => {
   Post.findOne({_id: req.params.id}).then(
     (post) => {
-      const filename = post.imageUrl.split('/images/')[1];
+      const filename = post.mltMediaContent.split('/images/')[1];
       fs.unlink('images/' + filename, () => {
         Post.deleteOne({_id: req.params.id})
         .then(() => {

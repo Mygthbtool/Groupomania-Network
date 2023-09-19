@@ -37,8 +37,8 @@ export default {
         likes: 0,
         dislikes: 0,
         comments: [],
-        userId: ''
-    
+        userId: '',
+        
     };
   },
   methods: {
