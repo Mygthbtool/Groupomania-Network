@@ -26,6 +26,12 @@ import FormData from 'form-data'
 export default {
   name: 'AddpostView',
 
+  props: {
+    postId: {
+      type: String,
+     // required: false,
+    },
+  },
   data(){
   return {
         userFirstName: '',
@@ -41,12 +47,18 @@ export default {
         
     };
   },
+  
   methods: {
     handleFileChange(event) {
     this.mltMediaContent = event.target.files[0];
     },
 
     publishContent(){
+      // If a postId prop is passed, then we are editing an existing post.
+      // Otherwise, we are creating a new post.
+      // const endpoint = this.postId ? `posts/${this.postId}` : 'posts/';
+      // const method = this.postId ? 'put' : 'post';
+
       const postData = new FormData();
       postData.append('userFirstName', this.$store.state.userData.firstName);
       postData.append('userLastName', this.$store.state.userData.lastName);
@@ -63,36 +75,19 @@ export default {
         postData.append('image', this.mltMediaContent, this.mltMediaContent.name);
       }
   
-
-      // const post = {
-      //   userFirstName: this.$store.state.userData.firstName,
-      //   userLastName: this.$store.state.userData.lastName,
-      //   userAvatar: this.$store.state.userData.avatar,
-      //   postingDate: '',
-      //   textContent: this.textContent,
-      //   mltMediaContent: this.mltMediaContent,
-      //   likes: 0,
-      //   dislikes: 0,
-      //   comments: [],
-      //   userId: this.$store.state.userData.userId,
-          
-      //  }
-       
        console.log({postData})
-       
-    
-      //this.post = JSON.stringify(post);
         const headers = {          
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.userData.token
         
          };
           
-    axios.post("posts/", postData, {headers: headers})
+      axios.post('posts/', postData, {headers: headers})
     
       .then((response) => {
         
-        if (response.status === 201) {// Post created successfully
+        if (response.status === 201) {
+          // Post created/edited successfully
           this.$store.commit('setPosts', response.data.posts);
            //redirect client to home page
           this.$router.push("/");
@@ -106,8 +101,21 @@ export default {
         console.log(error);
       });
     }
-    
-  }
+   
+  },
+  // mounted() {
+  //   // If a postId prop is passed, then we are editing an existing post.
+  //   // In that case, we need to fetch the post data from the server.
+  //   if (this.postId) {
+  //     axios.get(`posts/${this.postId}`).then((response) => {
+  //       // The post data is now available in the `response.data` object
+  //       // You can use this data to populate the form fields
+  //       this.textContent = response.data.textContent;
+  //       this.mltMediaContent = response.data.mltMediaContent;
+  //     });
+  //   }
+  // },
+
 }
 </script>
 

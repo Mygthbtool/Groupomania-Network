@@ -22,6 +22,7 @@
 
 <script>
 import axios from "../libs/axios";
+//import Cookies from "js-cookie";
 // import SignupView from './SignupView'
   export default {
     name : 'LoginView',
@@ -47,14 +48,23 @@ import axios from "../libs/axios";
           
         .then((response) => {            
           if (response.status === 200) {
-             // Login successful, redirect to the home page
-             // After successful login, retrieve the user data from the response
-            // const userData = response.data;
+          // Login successful, redirect to the home page
 
-             // Save user data to Vue instance or Vuex store
-                this.$store.commit('setUserData', response.data.user);
+             // After successful login, retrieve the user data from the response
+             const userData = response.data.user;            
+             // Save user data to Vue instance or Vuex store           
+                this.$store.commit('setUserData', userData);
+                // Save user data to local storage
+                
+                localStorage.setItem('userData', userData);
+                 
+                //localStorage.setItem('userData', userData);
+
+                // Save the authentication token in a cookie
+              //Cookies.set('authToken', response.data.user.token, { expires: 1 }); // Adjust the expiration as needed
              // Redirect to home page   
                  this.$router.push('/');     
+                 
               
           }else {
           // Handle login error (e.g., invalid credentials)

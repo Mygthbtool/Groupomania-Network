@@ -17,24 +17,32 @@
     <main>
       <section id="post-list">
         <h2>Latest Posts</h2>
-        <postItem v-for="post in posts" 
-        :key="post.id"
-        :postId="post._id" 
-        :post="post"
-        :userFirstName='post.userFirstName'
-        :userLastName='post.userLastName'
-        :userAvatar="post.userAvatar"
-        :postingDate="post.postingDate"
-        :textContent="post.textContent"
-        :mltMediaContent="post.mltMediaContent"
-        :likes="post.likes"
-        :dislikes="post.dislikes"
-        :comments="post.comments"
-        :userId="post.userId"
-        :currentUser= "userData.userId"
-        @post-deleted="handlePostDeleted"
-        
-        />
+        <!-- Check if the user is authenticated before rendering the posts -->
+        <div v-if="isAuthenticated">
+          <postItem v-for="post in posts" 
+          :key="post.id"
+          :postId="post._id" 
+          :post="post"
+          :userFirstName='post.userFirstName'
+          :userLastName='post.userLastName'
+          :userAvatar="post.userAvatar"
+          :postingDate="post.postingDate"
+          :textContent="post.textContent"
+          :mltMediaContent="post.mltMediaContent"
+          :likes="post.likes"
+          :dislikes="post.dislikes"
+          :comments="post.comments"
+          :userId="post.userId"
+          :currentUser= "userData.userId"
+          @post-deleted="handlePostDeleted"
+          
+          />
+        </div>
+        <!-- If not authenticated, show a message or redirect to login -->
+        <div v-else>
+          <p>Please log in to view posts.</p>
+          <router-link to="/login">Login</router-link>
+        </div>  
         
       </section>
 
@@ -64,16 +72,20 @@
 </template>
 
 <script>
+
 import postItem from '@/components/postItem'
 import UserItem from '@/components/UserItem'
 import { mapState } from 'vuex';
+//import { mapGetters } from 'vuex';
 import axios from "../libs/axios";
+//import Cookies from 'js-cookie';
 
 export default {
   name: 'HomeView',
   components :{
     postItem, UserItem
   },
+  
   // data() {
   //   return {
   //     posts: [], // Your array of posts
@@ -88,10 +100,7 @@ export default {
   //   email: ''
   // },
 // };
-    
-
-
- methods: {
+  methods: {
     async fetchPosts() {
       try {
         const headers = {
@@ -108,17 +117,30 @@ export default {
     handlePostDeleted(deletedPostId) {
       // Remove the deleted post from the posts array
       this.posts = this.posts.filter((post) => post.id !== deletedPostId);
-      this.$router.push("/");
+     
+    },
+  },
+  
+  computed: {
+    ...mapState(['userData', 'posts']),
+     // Map the userData and posts from the Vuex store
+    isAuthenticated() {
+      return !!this.$store.state.userData.token;
     },
   },
   mounted() {
-    this.fetchPosts(); // Fetch posts when the component is mounted
+    // Check if the user is authenticated
+    if (this.isAuthenticated) {
+    // Fetch user-specific data (e.g., posts) from the server
+    this.fetchPosts();
+    }  
   },
-
-  computed: {
-    ...mapState(['userData', 'posts']), // Map the userData and posts from the Vuex store
-    
-  },
+  // data() {
+  //   return {
+  //     isAuthenticated: false, // Track user authentication status
+  //   };
+ 
+  
 }
 </script>
 

@@ -20,6 +20,16 @@
           
             <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
             <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
+             <!-- Display an edit form when in edit mode -->
+            <div v-if="isEditing">
+              <textarea v-model="editedContent"></textarea>
+              <div class="form-group">
+                  <label for="media">Media (optional)</label>
+                  <input type="file" id="media" ref="multimediaInput" name="media" @change="handleFileChange">
+              </div>
+              <button @click="onSave">Save</button>
+              <button @click="onCancel">Cancel</button>
+            </div>
 
           </div>  
         </div>
@@ -28,10 +38,19 @@
 
 <script>
 //import router from "@/router";
+//import { useRouter } from 'vue-router';
 import axios from "../libs/axios";
+import FormData from 'form-data'
 export default {
     name: 'postItem',
-  
+    
+   data() {
+    return {
+      isEditing: false,
+      editedContent: '', // Bind this to the edited content
+      editedMultimediaContent: null, // For uploading new multimedia content
+    };
+  },
    props :{
       userFirstName:{
         type: String
@@ -83,6 +102,76 @@ export default {
     
    },
    methods: {
+
+    onEdit() {
+     // Toggle the edit mode flag when the "Edit" button is clicked
+      this.isEditing = true;
+      // Initialize the edited content with the current post content
+      this.editedContent = this.textContent;
+      this.editedMultimediaContent = this.mltMediaContent  ? this.mltMediaContent.name:''
+    }, 
+      onSave() {
+      // Send an API request to update the post content in the database
+      // Use this.postId to identify the post to be updated
+      // Pass this.editedContent as the new content
+      // Handle success and error cases as needed
+      // After a successful save, toggle off the edit mode
+      if (confirm("Are you sure you want to edit this post?")) {
+     
+     // Pass the post ID as a parameter in the request.
+     const postId = this.postId;// Make sure to add a postId prop to your component
+      //  textContent: this.editedContent,
+      // Create FormData object
+      const formData = new FormData();
+
+      // Append the edited text content
+      formData.append('textContent', this.editedContent);
+
+      // Append the edited multimedia content (if changed)
+      if (this.editedMultimediaContent) {
+        formData.append('image', this.editedMultimediaContent);
+      }
+      
+          
+      const headers = {          
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + this.$store.state.userData.token
+      };
+     // Send the put request to your API
+     axios
+       .put(`posts/${postId}`, formData, {headers: headers})
+       .then(() => {
+        this.editedContent = this.textContent;
+        this.editedMultimediaContent = this.mltMediaContent
+         // Handle success, maybe show a success message
+         console.log('Post edited successfully');
+        
+           // Use Vue Router to refresh the current route (reload the home page)
+         this.$router.go();      
+         this.isEditing = false;
+       })
+       .catch((error) => {
+         // Handle error, show an error message
+         console.error('Error editing post', error);
+       });
+      }
+   },
+  
+      
+
+      onCancel() {
+      // Handle canceling the edit mode, reset the edited content if needed
+      this.isEditing = false;
+      this.editedTextContent = this.textContent;
+      this.editedMltimediaContent = this.mltMediaContent;
+      },
+      handleFileChange(event) {
+      // Handle the change event when the user uploads a new multimedia file
+      this.editedMultimediaContent = event.target.files[0];
+    },
+      
+  
+    
     onLike() {
       // Implement your like functionality here
     },
@@ -92,30 +181,13 @@ export default {
     onComment() {
       // Implement your comment functionality here
     },
-   // onDelete() {
-      // Implement your delete functionality here
-
-    //  deletePost(){
-        // this.post._id = postId
-        // //({_id: this.post._id})
-        //     axios.delete("posts/:id" + this.post._id, {headers: {Authorization: 'Bearer ' + this.$store.state.userData.token}})
-        //         .then(response => {
-        //             let resp = JSON.parse(response.data);
-        //             console.log(resp.message);
-        //            this.$router.push('/');
-        //         })
-        //         .catch(error => {
-        //             console.log(error);    
-        //         })
-   // },
+    // Implement your delete functionality here
    onDelete() {
       if (confirm("Are you sure you want to delete this post?")) {
      
         // Pass the post ID as a parameter in the request.
-        const postId = this.postId;// Make sure to add a postId prop to your component.
-        
+        const postId = this.postId;// Make sure to add a postId prop to your component.      
         // Send the delete request to your API
-        // Example using Axios:
         axios
           .delete(`posts/${postId}`, {headers: {Authorization: 'Bearer ' + this.$store.state.userData.token}})
           .then(() => {
@@ -123,6 +195,8 @@ export default {
             console.log('Post deleted successfully');
             // You can also emit an event to notify a parent component to remove this post from the list.
             this.$emit('post-deleted', postId);
+              // Use Vue Router to refresh the current route (reload the home page)
+            this.$router.go();
             
           })
           .catch((error) => {
@@ -131,8 +205,9 @@ export default {
           });
       }
     },
-  },
-};
+  
+  }
+}
        
         
 </script>        

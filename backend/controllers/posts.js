@@ -1,6 +1,7 @@
 const Post = require('../models/post');
 const fs = require('fs');
 
+// Create new poste
 exports.createPost = (req, res, next) => {
   const postObj = req.body;
   console.log({postObj});
@@ -18,7 +19,7 @@ exports.createPost = (req, res, next) => {
     userAvatar: postObj.userAvatar,
     postingDate: postObj.postingDate,
     textContent: postObj.textContent,
-    mltMediaContent: mltMediaContent, // Assign the URL or an empty string
+    mltMediaContent: mltMediaContent, 
     userId: postObj.userId,
     likes: 0,
     dislikes: 0,
@@ -41,6 +42,7 @@ exports.createPost = (req, res, next) => {
   );
 };
 
+//Get one poste
 exports.getOnePost = (req, res, next) => {
   Post.findOne({
     _id: req.params.id
@@ -57,30 +59,20 @@ exports.getOnePost = (req, res, next) => {
   );
 };
 
+//Modify post 
 exports.modifyPost = (req, res, next) => {
+  console.log(req.body);
   let post = new Post({ _id: req.params._id });
+
   if (req.file) {
     const url = req.protocol + '://' + req.get('host');
-    req.body.post = JSON.parse(req.body.post);
     post = {
-      _id: req.params.id,
-      userFirstName: req.body.userFirstName,
-      userLastName: req.body.userLastName,
-      userAvatar: req.body.userAvatar,
-      postingDate: req.body.postingDate,
-      textContent: req.body.post.textContent,
-      multiMediaContent: url + '/images/' + req.file.filename,
-      userId: req.body.post.userId
+      textContent: req.body.textContent,
+      mltMediaContent: url + '/images/' + req.file.filename,
     };
   } else {
     post = {
-      _id: req.params.id,
-      userFirstName: req.body.userFirstName,
-      userLastName: req.body.userLastName,
-      userAvatar: req.body.userAvatar,
-      postingDate: req.body.postingDate,
       textContent: req.body.textContent,
-      userId: req.body.userId
     };
   }
   Post.updateOne({_id: req.params.id}, post).then(
@@ -88,8 +80,7 @@ exports.modifyPost = (req, res, next) => {
       res.status(201).json({
         message: 'Post updated successfully!'
       });
-    }
-  ).catch(
+    }  ).catch(
     (error) => {
       res.status(400).json({
         error: error
@@ -122,6 +113,7 @@ exports.deletePost = (req, res, next) => {
   );
 };
 
+//Get all posts
 exports.getAllPosts = (req, res, next) => {
   Post.find().then(
     (posts) => {
@@ -136,6 +128,7 @@ exports.getAllPosts = (req, res, next) => {
   );
 };
 
+// Like and dislike
 exports.likeAndDislikePost = (req, res, next) => {
   
     let userIdentifier = req.body.userId;
