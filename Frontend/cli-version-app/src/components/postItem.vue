@@ -111,10 +111,10 @@ export default {
       this.editedMultimediaContent = this.mltMediaContent  ? this.mltMediaContent.name:''
     }, 
       onSave() {
-      // Send an API request to update the post content in the database
+    
       // Use this.postId to identify the post to be updated
       // Pass this.editedContent as the new content
-      // Handle success and error cases as needed
+    
       // After a successful save, toggle off the edit mode
       if (confirm("Are you sure you want to edit this post?")) {
      
@@ -180,6 +180,7 @@ export default {
     },
     onComment() {
       // Implement your comment functionality here
+      this.$router.push('/:postId')
     },
     // Implement your delete functionality here
    onDelete() {

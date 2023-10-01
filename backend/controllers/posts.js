@@ -14,9 +14,6 @@ exports.createPost = (req, res, next) => {
     mltMediaContent = url + '/images/' + req.file.filename;
   }
   const post = new Post({
-    userFirstName: postObj.userFirstName,
-    userLastName: postObj.userLastName,
-    userAvatar: postObj.userAvatar,
     postingDate: postObj.postingDate,
     textContent: postObj.textContent,
     mltMediaContent: mltMediaContent, 

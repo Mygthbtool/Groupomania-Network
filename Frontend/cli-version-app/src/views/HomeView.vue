@@ -57,8 +57,8 @@
         />
 
         <div class="user-actions">
-          <button class="edit-profile-button">Edit Profile</button>
-          <button class="delete-account-button">Delete Account</button>
+          <router-link to="/editprofile">Edit Profile</router-link>
+          <button class="delete-account-button" @click="onDeleteAccount">Delete Account</button>
           <!-- <button class="add-post-button">Add post</button> -->
           <router-link to="/addpost">Add Post</router-link>
         </div>
@@ -107,7 +107,7 @@ export default {
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.userData.token,
         } 
-        const response = await axios.get('posts/', { headers: headers }); // Replace with your API endpoint
+        const response = await axios.get('posts/', { headers: headers });
         this.$store.commit('setPosts', response.data); // Store posts in Vuex
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -116,11 +116,29 @@ export default {
 
     handlePostDeleted(deletedPostId) {
       // Remove the deleted post from the posts array
-      this.posts = this.posts.filter((post) => post.id !== deletedPostId);
-     
+      this.posts = this.posts.filter((post) => post.id !== deletedPostId);    
     },
-  },
-  
+    onDeleteAccount() {
+      if (confirm("Are you sure you want to delete your account? This action is irreversible.")) {
+        // Send a DELETE request to your API to delete the user account
+        const headers = {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + this.$store.state.userData.token,
+        }
+        axios.delete(`auth/${this.userData.userId}`, {headers: headers})     
+          .then(() => {
+            // Handle success, maybe show a success message
+            console.log('Account deleted successfully');
+            // Redirect the user to the login page or perform any other desired action
+            this.$router.push('/login');
+          })
+          .catch((error) => {
+            // Handle error, show an error message
+            console.error('Error deleting account', error);
+          });
+      }
+    },
+}, 
   computed: {
     ...mapState(['userData', 'posts']),
      // Map the userData and posts from the Vuex store
