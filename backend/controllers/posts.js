@@ -112,8 +112,9 @@ exports.deletePost = (req, res, next) => {
 
 //Get all posts
 exports.getAllPosts = (req, res, next) => {
-  Post.find().then(
-    (posts) => {
+  
+  Post.find().populate('userId')
+  .then((posts) => {
       res.status(200).json(posts);
     }
   ).catch(

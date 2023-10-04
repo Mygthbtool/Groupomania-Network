@@ -14,19 +14,8 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/AddpostView.vue'),
-    //  props: (route) => ({
-    //   postId: route.query.postId,
-     //})
-    //   // Retrieve more query parameters as needed
+  
   }, 
-  // {
-  //   path: '/addpost/:postId',
-  //   name: 'addpost',
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/AddpostView.vue'),
-  //   props: (route) => ({
-  //     postId: route.params.postId,
-  //   }),
-  // },
   {
     path: '/login',
     name: 'login',
@@ -49,7 +38,7 @@ const routes = [
     component: () => import('../views/EditProfileView.vue'), // Import your EditProfileView component
   },
   {
-    path: '/:postId',
+    path: '/:id',
     name: 'CommentPostView',
     component: () => import('../views/CommentPostView.vue'),
     props: true, // Pass the postId as a prop

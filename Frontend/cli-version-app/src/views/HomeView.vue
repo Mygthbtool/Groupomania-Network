@@ -23,9 +23,9 @@
           :key="post.id"
           :postId="post._id" 
           :post="post"
-          :userFirstName='post.userFirstName'
-          :userLastName='post.userLastName'
-          :userAvatar="post.userAvatar"
+          :firstName='post.userId.firstName'
+          :lastName='post.userId.lastName'
+          :avatar="post.userId.avatar"
           :postingDate="post.postingDate"
           :textContent="post.textContent"
           :mltMediaContent="post.mltMediaContent"
@@ -72,7 +72,6 @@
 </template>
 
 <script>
-
 import postItem from '@/components/postItem'
 import UserItem from '@/components/UserItem'
 import { mapState } from 'vuex';
@@ -109,6 +108,7 @@ export default {
         } 
         const response = await axios.get('posts/', { headers: headers });
         this.$store.commit('setPosts', response.data); // Store posts in Vuex
+        
       } catch (error) {
         console.error('Error fetching posts:', error);
       }

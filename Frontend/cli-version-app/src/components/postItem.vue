@@ -1,9 +1,9 @@
 <template>
         <div id="post" class="post" v-bind="posts">
           <div class="post-header">
-            <img :src="userAvatar" />
+            <img :src="post.userId.avatar" />
             <div class="post-info">
-              <h3>{{ userFirstName }} {{ userLastName }}</h3>
+              <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
               <span class="post-date">{{ postingDate }}</span>
             </div>
           </div>
@@ -37,8 +37,6 @@
 </template>
 
 <script>
-//import router from "@/router";
-//import { useRouter } from 'vue-router';
 import axios from "../libs/axios";
 import FormData from 'form-data'
 export default {
@@ -52,16 +50,10 @@ export default {
     };
   },
    props :{
-      userFirstName:{
-        type: String
-      },
-      userLastName: {
-        type: String
-      },
-      userAvatar: {
-        type: String,
-        default: '/images/User-avatar.png', // Set a default value for the avatar prop if needed
-      
+     
+      post: {
+        type: Object, // Ensure post is an object
+        required: true,
       },
       postingDate: {
         type: String
@@ -97,7 +89,7 @@ export default {
 
     isCurrentUserOwner() {
       // Check if the current user's ID matches the post owner's ID
-      return this.currentUser === this.userId;
+      return this.currentUser === this.post.userId._id;
     },
     
    },

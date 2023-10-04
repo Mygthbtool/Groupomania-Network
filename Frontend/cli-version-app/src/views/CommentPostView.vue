@@ -1,21 +1,8 @@
 <!-- CommentPost.vue -->
 <template>
     <div>
-      <div class="post-header">
-        <img :src="userAvatar" />
-        <div class="post-info">
-          <h3>{{ userFirstName }} {{ userLastName }}</h3>
-          <span class="post-date">{{ postingDate }}</span>
-        </div>
-      </div>
-      <div class="post-content">
-        <p>{{ textContent }}</p>
-        <img v-if="mltMediaContent" :src="mltMediaContent" alt="multiMediaContent" />
-      </div>
-      <div class="post-actions">
-        <button class="like-button" @click="onLike">Like {{ likes }} </button>
-        <button class="dislike-button" @click="onDislike">Dislike {{ dislikes }}</button>
-        <button class="comment-button" @click="isCommenting">Comment {{ comments }}</button>
+      <postItem/>
+        <button class="comment-button" @click="isCommenting">Comment</button>
         <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
         <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
         <!-- Display comment section -->
@@ -28,22 +15,29 @@
           </form>
           <!-- Display existing comments -->
           <div v-for="comment in post.comments" :key="comment.id">
-            {{ comment.text }}
+            {{ post.comments }}
           </div>
         </div>
-      </div>
+      
     </div>
   </template>
   
  <script> 
-//  import postItem from '@/components/postItem'
+ import postItem from '@/components/postItem'
  import axios from "../libs/axios";
 
   export default {
     name: 'HomeView',
     components :{
-     // postItem
+     postItem
     },
+    data() {
+        // return {
+        // userFirstName: this.$store.state.userData.firstName,
+        // userlastName: this.$store.state.userData.lastName,
+        // userAvatar: this.$store.state.userData.avatar,
+        // }
+    }, 
     props :{
       userFirstName:{
         type: String
@@ -96,9 +90,9 @@
 methods:{ 
   // CommentPost.vue
 mounted() {
-  const postId = this.$route.params.postId;
+  const postId = this.$route.params.post.id;
   // Make an API request to fetch the post data based on postId
-  axios.get(`posts/${postId}`, postId, this.$store.state.userData.token)
+  axios.get(`posts/${this.postId}`, postId, this.$store.state.userData.token)
     .then((response) => {
       this.post = response.data;
     })

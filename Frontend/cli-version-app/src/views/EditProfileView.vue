@@ -26,7 +26,7 @@
           <button type="submit">Save</button>
         </div>
       </form>
-      <button @click="onCancel">Cancel</button>
+      <button class="cancel-button" @click="onCancel">Cancel</button>
       
     </div>
   </template>
@@ -47,8 +47,6 @@ export default {
     password: this.$store.state.userData.password,
     avatar: this.$store.state.userData.avatar,
     userId: this.$store.state.userData.userId,
-  
-   // newAvatar: this.avatar  ? this.avatar.name:'',
     
     };
     
@@ -95,7 +93,10 @@ export default {
             console.log(error);
           });
       }
-  }
+    },
+    onCancel(){
+      this.$router.push('/')
+    }
  }
  
 }
@@ -142,6 +143,16 @@ body {
 }
 
 .form-group button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.cancel-button {
   display: block;
   width: 100%;
   padding: 10px;
