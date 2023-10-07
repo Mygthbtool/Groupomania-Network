@@ -1,111 +1,160 @@
-<!-- CommentPost.vue -->
 <template>
     <div>
-      <postItem/>
-        <button class="comment-button" @click="isCommenting">Comment</button>
-        <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
-        <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
-        <!-- Display comment section -->
-        <div v-if="isCommenting">
-          <h2>Comments</h2>
-          <!-- Add a form for adding comments -->
-          <form @submit.prevent="addComment">
-            <input type="text" v-model="commentText" placeholder="Add your comment" />
-            <button type="submit">Comment</button>
-          </form>
-          <!-- Display existing comments -->
-          <div v-for="comment in post.comments" :key="comment.id">
-            {{ post.comments }}
-          </div>
+        <div v-if="post" id="post" class="post">
+            <div class="post-header">
+                <!-- <img :src="post.userId.avatar" /> -->               
+                <img v-if="post && post.userId" :src="post.userId.avatar" />
+                <div v-if="post && post.userId" class="post-info">
+                    <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
+                    <span class="post-date">{{ post.postingDate }}</span>
+                </div>
+            </div>
+            <div class="post-content">
+            <p>{{ post.textContent }}</p>
+            
+            <img v-if="post.mltMediaContent" :src="post.mltMediaContent" alt='multiMediaContent'/>
+
+            </div>
+            <div class="post-actions">
+                <button class="like-button" @click="onLike">Like {{ likes }} </button>
+                <button class="dislike-button" @click="onDislike">Dislike {{ dislikes }}</button>
+            </div>
         </div>
+    </div>    
+    <!-- <h2>Add a Comment</h2>
+    <input type="text" v-model="commentText" />
+    <button @click="addComment">Comment</button>
+     -->
+
+    <!-- <h2>Comments</h2>
+    <ul>
+        <li v-for="comment in comments" :key="comment.id">
+        {{ comment.text }}
+        </li>
+    </ul> -->
+    <div class="comments-container">
+      <h2>Comments</h2>
       
+      <!-- Individual comments -->
+      <div v-for="comment in comments" :key="comment.id" class="comment">
+        <div class="comment-user">{{ comment.user }}</div>
+        <div class="comment-text">{{ comment.text }}</div>
+      </div>
+      
+      <!-- Comment input box -->
+      <textarea v-model="commentText" class="comment-input" placeholder="Add a comment"></textarea>
+      
+      <!-- Comment submit button -->
+      <button @click="addComment" class="comment-button">Comment</button>
     </div>
+   
   </template>
-  
+    
  <script> 
- import postItem from '@/components/postItem'
  import axios from "../libs/axios";
 
   export default {
-    name: 'HomeView',
+    name: 'CommentPostView',
     components :{
-     postItem
+   
     },
     data() {
-        // return {
-        // userFirstName: this.$store.state.userData.firstName,
-        // userlastName: this.$store.state.userData.lastName,
-        // userAvatar: this.$store.state.userData.avatar,
-        // }
-    }, 
-    props :{
-      userFirstName:{
-        type: String
-      },
-      userLastName: {
-        type: String
-      },
-      userAvatar: {
-        type: String,
-        default: '/images/User-avatar.png', // Set a default value for the avatar prop if needed
-      
-      },
-      postingDate: {
-        type: String
-      },
-      textContent: {
-        type: String
-      },
-      mltMediaContent:{
-        type: String
-      },
-      likes: {
-        type: Number
-      },
-      dislikes: {
-        type: Number
-      },
-      comments: {
-        type: Array
-      },
-      userId:{
-        type: String
-      },
-      currentUser: {
-        type: String
-      },
-      postId:{
-        type: String,     
-      }
-      
-   }, 
-  
-   computed: {
-
-    isCurrentUserOwner() {
-      // Check if the current user's ID matches the post owner's ID
-      return this.currentUser === this.userId;
+        return {
+            commentText: '', // Add this if not already defined
+            post: {}, // Initialize 'post' to null
+            comments: [], // List of comments
+            
+        };
     },
+    
+
+computed: {
+
+ 
 },
 methods:{ 
-  // CommentPost.vue
-mounted() {
-  const postId = this.$route.params.post.id;
-  // Make an API request to fetch the post data based on postId
-  axios.get(`posts/${this.postId}`, postId, this.$store.state.userData.token)
-    .then((response) => {
-      this.post = response.data;
-    })
-    .catch((error) => {
-      console.error('Error fetching post:', error);
-    });
+    async fetchPost() {
+        const postId = this.$route.params.id; // Use 'id' to get the post ID from route params
+      try {
+        const headers = {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + this.$store.state.userData.token,
+        } 
+        const response = await axios.get(`posts/${postId}`, { headers: headers });
+        this.post = response.data;
+        // Now that you have the post data, you can fetch the associated user data
+        // Use the 'userId' from the post data to fetch the user
+        // if (this.post.userId) {
+        //   const userResponse = await axios.get(`users/${this.post.userId}`,
+        //     { headers: headers }
+        //   );
+        //   this.post.userId = userResponse.data; // Update the user data in the post object
+        // }
+      } catch (error) {
+        console.error("Error fetching post:", error);
+      }
+        
+     
+    },
 },
-}  
-
+mounted() {
+    this.fetchPost()
+}
 }
 </script>
 
 
 <style>
+/* Style for the comments section container */
+.comments-container {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+/* Style for individual comments */
+.comment {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.comment-user {
+  font-weight: bold;
+}
+
+.comment-text {
+  margin-top: 5px;
+}
+
+/* Style for the comment input box */
+.comment-input {
+  width: 100%;
+  padding: 5px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Style for the comment submit button */
+.comment-button {
+  display: block;
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.comment-button:hover {
+  background-color: #0056b3;
+}
+
 
 </style>

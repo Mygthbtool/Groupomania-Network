@@ -38,7 +38,7 @@ const routes = [
     component: () => import('../views/EditProfileView.vue'), // Import your EditProfileView component
   },
   {
-    path: '/:id',
+    path: '/posts/:id',
     name: 'CommentPostView',
     component: () => import('../views/CommentPostView.vue'),
     props: true, // Pass the postId as a prop

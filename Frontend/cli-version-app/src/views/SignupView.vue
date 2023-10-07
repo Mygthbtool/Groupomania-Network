@@ -64,13 +64,7 @@ export default {
         if (this.avatar) {
           data.append('image', this.avatar, this.avatar.name);
         }
-        // const data = {
-        //   firstName: this.firstName,
-        //   lastName: this.lastName,
-        //   email: this.email,
-        //   password: this.password,
-        //   avatar: this.avatar
-        // };
+        
         console.log({data}); 
         axios
           .post("auth/signup", data, {headers: { 'Content-Type': 'multipart/form-data' },})

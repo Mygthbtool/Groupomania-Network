@@ -41,19 +41,20 @@ exports.createPost = (req, res, next) => {
 
 //Get one poste
 exports.getOnePost = (req, res, next) => {
-  Post.findOne({
-    _id: req.params.id
-  }).then(
-    (post) => {
+  //console.log(req)
+
+  Post.findOne({_id: req.params.id})
+  .populate("userId")
+
+  .then((post) => {
       res.status(200).json(post);
-    }
-  ).catch(
+  })
+  .catch(
     (error) => {
       res.status(404).json({
         error: error
       });
-    }
-  );
+  });
 };
 
 //Modify post 

@@ -1,38 +1,39 @@
 <template>
-        <div id="post" class="post" v-bind="posts">
-          <div class="post-header">
-            <img :src="post.userId.avatar" />
-            <div class="post-info">
-              <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
-              <span class="post-date">{{ postingDate }}</span>
-            </div>
-          </div>
-          <div class="post-content">
-            <p>{{ textContent }}</p>
-            
-            <img v-if="mltMediaContent" :src="mltMediaContent" alt='multiMediaContent'/>
+  <div v-if="post" id="post" class="post" v-bind="posts">
+    <div class="post-header">
+      <img :src="post.userId.avatar" />
+      <div class="post-info">
+        <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
+        <span class="post-date">{{ postingDate }}</span>
+      </div>
+    </div>
+    <div class="post-content">
+      <p>{{ textContent }}</p>
+      
+      <img v-if="mltMediaContent" :src="mltMediaContent" alt='multiMediaContent'/>
 
-          </div>
-          <div class="post-actions">
-            <button class="like-button" @click="onLike">Like {{ likes }} </button>
-            <button class="dislike-button" @click="onDislike">Dislike {{ dislikes }}</button>
-            <button class="comment-button" @click="onComment">Comment {{ comments }}</button>
-          
-            <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
-            <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
-             <!-- Display an edit form when in edit mode -->
-            <div v-if="isEditing">
-              <textarea v-model="editedContent"></textarea>
-              <div class="form-group">
-                  <label for="media">Media (optional)</label>
-                  <input type="file" id="media" ref="multimediaInput" name="media" @change="handleFileChange">
-              </div>
-              <button @click="onSave">Save</button>
-              <button @click="onCancel">Cancel</button>
-            </div>
-
-          </div>  
+    </div>
+    <div class="post-actions">
+      <button class="like-button" @click="onLike">Like {{ likes }} </button>
+      <button class="dislike-button" @click="onDislike">Dislike {{ dislikes }}</button>
+      <button class="comment-button" @click="onComment">Comment</button>
+    
+      <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
+      <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
+        <!-- Display an edit form when in edit mode -->
+      <div v-if="isEditing">
+        <textarea v-model="editedContent"></textarea>
+        <div class="form-group">
+            <label for="media">Media (optional)</label>
+            <input type="file" id="media" ref="multimediaInput" name="media" @change="handleFileChange">
         </div>
+        <button @click="onSave">Save</button>
+        <button @click="onCancel">Cancel</button>
+      </div>
+
+    </div>  
+  </div>
+  
 
 </template>
 
@@ -102,7 +103,7 @@ export default {
       this.editedContent = this.textContent;
       this.editedMultimediaContent = this.mltMediaContent  ? this.mltMediaContent.name:''
     }, 
-      onSave() {
+    onSave() {
     
       // Use this.postId to identify the post to be updated
       // Pass this.editedContent as the new content
@@ -172,7 +173,7 @@ export default {
     },
     onComment() {
       // Implement your comment functionality here
-      this.$router.push('/:postId')
+      this.$router.push(`/posts/${this.post._id}`)
     },
     // Implement your delete functionality here
    onDelete() {
@@ -199,7 +200,21 @@ export default {
       }
     },
   
-  }
+  },
+  // mounted() {
+  //   if (!this.post) {
+  //     // Fetch the post data when the component is mounted, but only if 'post' is not provided as a prop
+  //     axios.get(`posts/${this.postId}`, { headers: { 'Authorization': 'Bearer ' + this.$store.state.userData.token } })
+  //       .then((response) => {
+  //         this.fetchedPost = response.data; // Store the fetched data locally
+  //       })
+
+  //       .catch((error) => {
+  //         console.error('Error fetching post:', error);
+  //       });
+  //   }
+  // },
+  
 }
        
         
