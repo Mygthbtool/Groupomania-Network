@@ -45,7 +45,6 @@ exports.getOnePost = (req, res, next) => {
 
   Post.findOne({_id: req.params.id})
   .populate("userId")
-
   .then((post) => {
       res.status(200).json(post);
   })

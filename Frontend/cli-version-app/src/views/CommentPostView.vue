@@ -37,7 +37,10 @@
       
       <!-- Individual comments -->
       <div v-for="comment in comments" :key="comment.id" class="comment">
-        <div class="comment-user">{{ comment.user }}</div>
+        
+        <div v-if="comment.userId" class="comment-user">
+          {{ comment.userId.firstName }} {{ comment.userId.lastName }}
+        </div>
         <div class="comment-text">{{ comment.text }}</div>
       </div>
       
@@ -63,7 +66,9 @@
             commentText: '', // Add this if not already defined
             post: {}, // Initialize 'post' to null
             comments: [], // List of comments
-            
+            comment: {},
+            firstName: '',
+            lastName: ''           
         };
     },
     
@@ -92,14 +97,52 @@ methods:{
         // }
       } catch (error) {
         console.error("Error fetching post:", error);
-      }
-        
-     
+      }    
     },
+    
+  async addComment() {
+    if (!this.commentText) {
+      // Don't add an empty comment
+      return;
+    }
+
+    try {
+      // Create a new comment object
+      const newComment = {
+        userId: this.$store.state.userData.userId, // Assuming you store user ID in Vuex
+        text: this.commentText,
+       postId: this.$route.params.id
+
+      };
+      // Send a request to you API to add the comment to the post
+      const response = await axios.post(`comments/`, newComment, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.$store.state.userData.token,
+        },
+      });
+
+      // Add the new comment to the list of comments
+      this.comments.push(response.data);
+
+      // Clear the comment input field
+      this.commentText = '';
+
+    }catch (error) {
+      console.error('Error adding comment:', error);
+    }
+  },
 },
+
 mounted() {
     this.fetchPost()
+    
 }
+
+// CommentPost.vue
+
+
+
 }
 </script>
 
