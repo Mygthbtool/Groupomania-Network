@@ -114,6 +114,7 @@ exports.deletePost = (req, res, next) => {
 exports.getAllPosts = (req, res, next) => {
   
   Post.find().populate('userId')
+  .sort({ postingDate: -1 })
   .then((posts) => {
       res.status(200).json(posts);
     }

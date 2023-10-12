@@ -16,44 +16,34 @@
 
             </div>
             <div class="post-actions">
-                <button class="like-button" @click="onLike">Like {{ likes }} </button>
-                <button class="dislike-button" @click="onDislike">Dislike {{ dislikes }}</button>
+                <button class="like-button" @click="onLike">like</button> {{ post.likes }}
+                <button class="dislike-button" @click="onDislike">Dislike</button> {{ post.dislikes }}
             </div>
         </div>
     </div>    
-    <!-- <h2>Add a Comment</h2>
-    <input type="text" v-model="commentText" />
-    <button @click="addComment">Comment</button>
-     -->
-
-    <!-- <h2>Comments</h2>
-    <ul>
-        <li v-for="comment in comments" :key="comment.id">
-        {{ comment.text }}
-        </li>
-    </ul> -->
     <div class="comments-container">
       <h2>Comments</h2>
       
       <!-- Individual comments -->
-      <div v-for="comment in comments" :key="comment.id" class="comment">
-        
-        <div v-if="comment.userId" class="comment-user">
-          {{ comment.userId.firstName }} {{ comment.userId.lastName }}
+        <div v-for="comment in comments" :key="comment.id" class="comment">
+          
+          <div v-if="comment.userId" class="comment-user">
+            {{ comment.userId.firstName }} {{ comment.userId.lastName }}
+          </div>
+          <div class="comment-text">{{ comment.text }}</div>
         </div>
-        <div class="comment-text">{{ comment.text }}</div>
-      </div>
-      
+       
+    </div>
       <!-- Comment input box -->
       <textarea v-model="commentText" class="comment-input" placeholder="Add a comment"></textarea>
       
       <!-- Comment submit button -->
       <button @click="addComment" class="comment-button">Comment</button>
-    </div>
-   
-  </template>
     
- <script> 
+   
+</template>
+    
+<script> 
  import axios from "../libs/axios";
 
   export default {
@@ -62,14 +52,15 @@
    
     },
     data() {
-        return {
-            commentText: '', // Add this if not already defined
-            post: {}, // Initialize 'post' to null
-            comments: [], // List of comments
-            comment: {},
-            firstName: '',
-            lastName: ''           
-        };
+      return {
+        commentText: '', // Add this if not already defined
+        post: {}, // Initialize 'post' to null
+        comments: [], // List of comments
+        comment: {},
+        firstName: '',
+        lastName: '',
+        userId:''           
+      };
     },
     
 
@@ -87,18 +78,29 @@ methods:{
         } 
         const response = await axios.get(`posts/${postId}`, { headers: headers });
         this.post = response.data;
-        // Now that you have the post data, you can fetch the associated user data
-        // Use the 'userId' from the post data to fetch the user
-        // if (this.post.userId) {
-        //   const userResponse = await axios.get(`users/${this.post.userId}`,
-        //     { headers: headers }
-        //   );
-        //   this.post.userId = userResponse.data; // Update the user data in the post object
-        // }
       } catch (error) {
         console.error("Error fetching post:", error);
       }    
     },
+
+    async fetchComments() {
+      try {
+        const postId = this.$route.params.id
+        console.log(postId)
+        const headers = {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + this.$store.state.userData.token,
+        } 
+        const response = await axios.get(`comments/${postId}`, { headers: headers });
+        // this.$store.commit('setPosts', response.data); // Store posts in Vuex
+        this.comments = response.data;
+        console.log(response.data);
+        
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    },
+
     
   async addComment() {
     if (!this.commentText) {
@@ -135,12 +137,10 @@ methods:{
 },
 
 mounted() {
-    this.fetchPost()
+    this.fetchPost(),
+    this.fetchComments(this.$route.params.id); // Pass the post ID to the 'fetchComments()' method
     
 }
-
-// CommentPost.vue
-
 
 
 }

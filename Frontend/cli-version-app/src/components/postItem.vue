@@ -14,8 +14,8 @@
 
     </div>
     <div class="post-actions">
-      <button class="like-button" @click="onLike">Like {{ likes }} </button>
-      <button class="dislike-button" @click="onDislike">Dislike {{ dislikes }}</button>
+      <button class="like-button" @click="onLike">Like</button>{{ likes }}
+      <button class="dislike-button" @click="onDislike">Dislike</button>{{ dislikes }}
       <button class="comment-button" @click="onComment">Comment</button>
     
       <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
@@ -309,11 +309,12 @@ export default {
     }
     
     .post-actions button {
-      background-color: #333;
+    //  display: flexstart;
+      background-color: #d91414;
       color: #fff;
       border: none;
       padding: 5px 10px;
-      margin-right: 10px;
+      margin-right: 5px;
       cursor: pointer;
     }
     
