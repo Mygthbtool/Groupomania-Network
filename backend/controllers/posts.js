@@ -44,7 +44,13 @@ exports.getOnePost = (req, res, next) => {
   //console.log(req)
 
   Post.findOne({_id: req.params.id})
+  .populate({
+    path: 'comments',
+    populate: { path: 'userId' }
+  })
   .populate("userId")
+
+  
   .then((post) => {
       res.status(200).json(post);
   })
@@ -114,6 +120,7 @@ exports.deletePost = (req, res, next) => {
 exports.getAllPosts = (req, res, next) => {
   
   Post.find().populate('userId')
+  .populate('comments')
   .sort({ postingDate: -1 })
   .then((posts) => {
       res.status(200).json(posts);

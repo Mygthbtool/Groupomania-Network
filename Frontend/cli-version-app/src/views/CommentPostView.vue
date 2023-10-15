@@ -23,22 +23,20 @@
     </div>    
     <div class="comments-container">
       <h2>Comments</h2>
-      
-      <!-- Individual comments -->
-        <div v-for="comment in comments" :key="comment.id" class="comment">
-          
+      <div v-if="post.comments">   
+        <div v-for="comment in post.comments" :key="comment.id" class="comment">   
           <div v-if="comment.userId" class="comment-user">
             {{ comment.userId.firstName }} {{ comment.userId.lastName }}
-          </div>
+          </div>  
           <div class="comment-text">{{ comment.text }}</div>
         </div>
-       
+      </div>  
     </div>
       <!-- Comment input box -->
-      <textarea v-model="commentText" class="comment-input" placeholder="Add a comment"></textarea>
+    <textarea v-model="commentText" class="comment-input" placeholder="Add a comment"></textarea>
       
       <!-- Comment submit button -->
-      <button @click="addComment" class="comment-button">Comment</button>
+    <button @click="addComment" class="comment-button">Comment</button>
     
    
 </template>
@@ -56,10 +54,6 @@
         commentText: '', // Add this if not already defined
         post: {}, // Initialize 'post' to null
         comments: [], // List of comments
-        comment: {},
-        firstName: '',
-        lastName: '',
-        userId:''           
       };
     },
     
@@ -78,28 +72,30 @@ methods:{
         } 
         const response = await axios.get(`posts/${postId}`, { headers: headers });
         this.post = response.data;
+        this.comments = this.post.comments;
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching post:", error);
       }    
     },
 
-    async fetchComments() {
-      try {
-        const postId = this.$route.params.id
-        console.log(postId)
-        const headers = {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Bearer ' + this.$store.state.userData.token,
-        } 
-        const response = await axios.get(`comments/${postId}`, { headers: headers });
-        // this.$store.commit('setPosts', response.data); // Store posts in Vuex
-        this.comments = response.data;
-        console.log(response.data);
+    // async fetchComments() {
+    //   try {
+    //     const postId = this.$route.params.id
+    //     console.log(postId)
+    //     const headers = {
+    //       'Content-Type': 'multipart/form-data',
+    //       'Authorization': 'Bearer ' + this.$store.state.userData.token,
+    //     } 
+    //     const response = await axios.get(`posts/${postId}`, { headers: headers });
+    //     // this.$store.commit('setPosts', response.data); // Store posts in Vuex
+    //     this.comments = response.data;
+    //     console.log(response.data);
         
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      }
-    },
+    //   } catch (error) {
+    //     console.error('Error fetching comments:', error);
+    //   }
+    // },
 
     
   async addComment() {
@@ -113,8 +109,7 @@ methods:{
       const newComment = {
         userId: this.$store.state.userData.userId, // Assuming you store user ID in Vuex
         text: this.commentText,
-       postId: this.$route.params.id
-
+        postId: this.$route.params.id
       };
       // Send a request to you API to add the comment to the post
       const response = await axios.post(`comments/`, newComment, {
@@ -137,8 +132,8 @@ methods:{
 },
 
 mounted() {
-    this.fetchPost(),
-    this.fetchComments(this.$route.params.id); // Pass the post ID to the 'fetchComments()' method
+    this.fetchPost()
+    // this.fetchComments(this.$route.params.id); // Pass the post ID to the 'fetchComments()' method
     
 }
 

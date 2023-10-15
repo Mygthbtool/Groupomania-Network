@@ -6,7 +6,7 @@ const postSchema = mongoose.Schema ({
     mltMediaContent: { type: String },
     likes: { type: Number },
     dislikes: { type: Number },
-    comments:  [ { type: mongoose.Schema.Types.ObjectId, ref: 'Comment' } ],
+    comments:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to User model }
   });
 
