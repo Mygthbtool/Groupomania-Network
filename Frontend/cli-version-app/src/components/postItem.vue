@@ -1,37 +1,39 @@
 <template>
   <div v-if="post" id="post" class="post" v-bind="posts">
-    <div class="post-header">
-      <img :src="post.userId.avatar" />
-      <div class="post-info">
-        <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
-        <span class="post-date">{{ postingDate }}</span>
-      </div>
-    </div>
-    <div class="post-content">
-      <p>{{ textContent }}</p>
-      
-      <img v-if="mltMediaContent" :src="mltMediaContent" alt='multiMediaContent'/>
-
-    </div>
-    <div class="post-actions">
-      <button class="like-button" @click="onLike">Like</button>{{ likes }}
-      <button class="dislike-button" @click="onDislike">Dislike</button>{{ dislikes }}
-      <button class="comment-button" @click="onComment">Comment</button>
-    
-      <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
-      <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
-        <!-- Display an edit form when in edit mode -->
-      <div v-if="isEditing">
-        <textarea v-model="editedContent"></textarea>
-        <div class="form-group">
-            <label for="media">Media (optional)</label>
-            <input type="file" id="media" ref="multimediaInput" name="media" @change="handleFileChange">
+    <div :class="{ 'unread-post': !isPostRead }">
+      <div class="post-header">
+        <img :src="post.userId.avatar" />
+        <div class="post-info">
+          <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
+          <span class="post-date">{{ postingDate }}</span>
         </div>
-        <button @click="onSave">Save</button>
-        <button @click="onCancel">Cancel</button>
       </div>
+      <div class="post-content">
+        <p>{{ textContent }}</p>
+        
+        <img v-if="mltMediaContent" :src="mltMediaContent" alt='multiMediaContent'/>
 
-    </div>  
+      </div>
+      <div class="post-actions">
+        <button class="like-button" @click="onLike">Like</button>{{ post.likes }}
+        <button class="dislike-button" @click="onDislike">Dislike</button>{{ post.dislikes }}
+        <button class="comment-button" @click="onComment">Comment</button>
+      
+        <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
+        <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
+          <!-- Display an edit form when in edit mode -->
+        <div v-if="isEditing">
+          <textarea v-model="editedContent"></textarea>
+          <div class="form-group">
+              <label for="media">Media (optional)</label>
+              <input type="file" id="media" ref="multimediaInput" name="media" @change="handleFileChange">
+          </div>
+          <button @click="onSave">Save</button>
+          <button @click="onCancel">Cancel</button>
+        </div>
+
+      </div>  
+    </div>
   </div>
   
 
@@ -48,6 +50,7 @@ export default {
       isEditing: false,
       editedContent: '', // Bind this to the edited content
       editedMultimediaContent: null, // For uploading new multimedia content
+      postCopy: Object.assign({}, this.post), // Create a copy of the post prop
     };
   },
    props :{
@@ -82,6 +85,9 @@ export default {
       },
       postId:{
         type: String,     
+      },
+      readBy: {
+        type: Array,
       }
       
    }, 
@@ -91,6 +97,11 @@ export default {
     isCurrentUserOwner() {
       // Check if the current user's ID matches the post owner's ID
       return this.currentUser === this.post.userId._id;
+    },
+    isPostRead() {
+      // Check if the user's ID is in the 'readBy' array
+      return this.post.readBy.includes(this.$store.state.userData.userId);
+    
     },
     
    },
@@ -162,19 +173,47 @@ export default {
       // Handle the change event when the user uploads a new multimedia file
       this.editedMultimediaContent = event.target.files[0];
     },
-      
-  
-    
+
     onLike() {
       // Implement your like functionality here
+      this.toggleLikeDislike(1); // 1 represents "like"
     },
     onDislike() {
       // Implement your dislike functionality here
+      this.toggleLikeDislike(-1); // -1 represents "dislike"
     },
+
+    async toggleLikeDislike(likeStatus) {
+      // Send a request to the server to like/dislike the post
+      try {
+        const response = await axios.post(
+          `posts/${this.post._id}/like`, // Adjust the URL as needed
+          { like: likeStatus }, // Send like status
+          {headers: { "Content-Type": "application/json",
+              Authorization: "Bearer " + this.$store.state.userData.token }});
+        console.log(response);
+        this.$store.commit('refreshPost', response.data.post); // Store posts in Vuex
+
+        // Update the post's likes and dislikes locally
+        // if (likeStatus === 1) {
+        //   this.postCopy.likes += 1;
+        // } else if (likeStatus === -1) {
+        //   this.postCopy.dislikes += 1;
+        // }
+        // else if (likeStatus === 0) {
+        //   // Handle canceling like or dislike if needed
+        // }
+      } catch (error) {
+        console.error("Error liking/disliking post:", error);
+      }
+    },
+
     onComment() {
       // Implement your comment functionality here
-      this.$router.push(`/posts/${this.post._id}`)
+       this.$router.push(`/posts/${this.post._id}`)     
     },
+      
+    
     // Implement your delete functionality here
    onDelete() {
       if (confirm("Are you sure you want to delete this post?")) {
@@ -350,6 +389,9 @@ export default {
       color: #fff;
       padding: 20px;
       text-align: center;
+    }
+    .unread-post {
+      border: 3px solid red;
     }
     
   }

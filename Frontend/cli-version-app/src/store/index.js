@@ -28,6 +28,13 @@ export default createStore({
     // },
     setPosts(state, posts){
       state.posts = posts;
+    },
+    refreshPost(state, post){
+      const posts = state.posts;
+      const postToReplace = posts.find(fPost => fPost._id === post._id);
+      Object.assign(postToReplace, post);
+      state.posts = posts;
+      
     }
   },
   actions: {

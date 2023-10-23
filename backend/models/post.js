@@ -8,6 +8,7 @@ const postSchema = mongoose.Schema ({
     dislikes: { type: Number },
     comments:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to User model }
+    readBy: [{ type: mongoose.Schema.Types.ObjectId }] 
   });
 
   module.exports = mongoose.model('Post', postSchema);

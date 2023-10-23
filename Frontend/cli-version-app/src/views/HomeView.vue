@@ -19,24 +19,28 @@
         <h2>Latest Posts</h2>
         <!-- Check if the user is authenticated before rendering the posts -->
         <div v-if="isAuthenticated">
-          <postItem v-for="post in posts" 
-          :key="post.id"
-          :postId="post._id" 
-          :post="post"
-          :firstName='post.userId.firstName'
-          :lastName='post.userId.lastName'
-          :avatar="post.userId.avatar"
-          :postingDate="post.postingDate"
-          :textContent="post.textContent"
-          :mltMediaContent="post.mltMediaContent"
-          :likes="post.likes"
-          :dislikes="post.dislikes"
-          :comments="post.comments"
-          :userId="post.userId"
-          :currentUser= "userData.userId"
-          @post-deleted="handlePostDeleted"
           
+          <postItem v-for="post in posts"
+            
+            :key="post.id"
+            :postId="post._id" 
+            :post="post"
+            :firstName='post.userId.firstName'
+            :lastName='post.userId.lastName'
+            :avatar="post.userId.avatar"
+            :postingDate="post.postingDate"
+            :textContent="post.textContent"
+            :mltMediaContent="post.mltMediaContent"
+            :likes="post.likes"
+            :dislikes="post.dislikes"
+            :comments="post.comments"
+            :readBy="post.readBy"
+            :userId="post.userId"
+            :currentUser= "userData.userId"
+            @post-deleted="handlePostDeleted"
+        
           />
+          
         </div>
         <!-- If not authenticated, show a message or redirect to login -->
         <div v-else>
@@ -84,6 +88,7 @@ export default {
   components :{
     postItem, UserItem
   },
+
   
   // data() {
   //   return {
@@ -99,6 +104,12 @@ export default {
   //   email: ''
   // },
 // };
+// computed: {
+//   unreadPosts: function() {
+//     return this.posts.filter(post => !post.isRead);
+//   }
+// },
+
   methods: {
     async fetchPosts() {
       try {
@@ -138,6 +149,7 @@ export default {
           });
       }
     },
+   
 }, 
   computed: {
     ...mapState(['userData', 'posts']),
@@ -292,7 +304,20 @@ export default {
       text-align: center;
     }
     
+    
   }
 
 </style>
 
+<!-- postDetail => () {
+
+  cosnt post = Post.findOne(params.id).then((post) => {
+   if(!post.read_by.includes($auth.userId)){
+     post.read_by.push($auth.userId)
+     post.save().then((post) => {
+     return res.status(200).json(post)
+     })
+     return res.status(200).json(post)
+   }
+  })
+  } -->

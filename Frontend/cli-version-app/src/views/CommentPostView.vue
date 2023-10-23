@@ -53,7 +53,8 @@
       return {
         commentText: '', // Add this if not already defined
         post: {}, // Initialize 'post' to null
-        comments: [], // List of comments
+        comments: [],
+        // readBy: [] // List of comments
       };
     },
     
@@ -73,11 +74,50 @@ methods:{
         const response = await axios.get(`posts/${postId}`, { headers: headers });
         this.post = response.data;
         this.comments = this.post.comments;
-        console.log(response.data);
+
+        if (!this.post.readBy.includes(this.$store.state.userData.userId)) {
+           this.post.readBy.push(this.$store.state.userData.userId);
+
+          // Send a request to update the 'readBy' array in the database
+          try {
+            const headers = {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this.$store.state.userData.token,
+            };
+            const userId = this.$store.state.userData.userId;
+
+             await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
+            console.log('Post marked as read on the server.');
+
+          } catch (error) {
+            console.error('Error marking post as read on the server:', error);
+          }
+        }
+      
+         console.log(response.data);
       } catch (error) {
         console.error("Error fetching post:", error);
       }    
     },
+  //   async markPostAsRead(post) {
+  //     //  const userId = this.$store.state.userData.userId
+  //     const postId = this.$route.params.id;
+  //   // Check if the user's ID is not already in the 'readBy' array
+  //   if (!this.post.readBy.includes(this.$store.state.userData.userId)) {
+  //     this.post.readBy.push(this.$store.state.userData.userId);
+  //     // Send a request to update the 'readBy' array in the database
+  //     try {
+  //       const headers = {
+  //         'Content-Type': 'multipart/form-data',
+  //         'Authorization': 'Bearer ' + this.$store.state.userData.token,
+  //       };
+  //       await axios.put(`posts/${postId}/markAsRead`, post, { headers: headers });
+  //       console.log('Post marked as read on the server.');
+  //     } catch (error) {
+  //       console.error('Error marking post as read on the server:', error);
+  //     }
+  //   }
+  // },
 
     // async fetchComments() {
     //   try {
@@ -133,8 +173,7 @@ methods:{
 
 mounted() {
     this.fetchPost()
-    // this.fetchComments(this.$route.params.id); // Pass the post ID to the 'fetchComments()' method
-    
+     
 }
 
 
