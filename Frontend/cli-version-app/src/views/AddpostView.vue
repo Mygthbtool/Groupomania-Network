@@ -69,6 +69,8 @@ export default {
       postData.append('dislikes', 0);
       postData.append('comments', []);
       postData.append('readBy', []);
+      postData.append('usersLiked', []);
+      postData.append('usersDisliked', []);
       postData.append('userId', this.$store.state.userData.userId);
       // ... (append other form fields)
 

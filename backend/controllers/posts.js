@@ -76,7 +76,7 @@ exports.markPostRead = async (req, res, next) => {
   const userId = req.body.userId
   try {
     const post = await Post.findById(postId)
-    
+ 
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
@@ -169,13 +169,15 @@ exports.getAllPosts = (req, res, next) => {
 
 // Like and dislike
 exports.likeAndDislikePost = (req, res, next) => {
-    // let userIdentifier = req.body.userId;
+  console.log(req.body.like);
+    let userIdentifier = req.body.userId;
     let likeStatus = req.body.like;
 
     // If the user like the post, likestatus increased by 1      
         if(likeStatus === 1) {
             
-            Post.findByIdAndUpdate({_id: req.params.id}, {$inc:{likes: +1}})
+            Post.findByIdAndUpdate({_id: req.params.id}, {$inc:{likes: +1},
+              $push:{usersLiked: userIdentifier}})
             .populate('userId')
             .then((post) =>   
                 res.status(201).json({
@@ -193,7 +195,8 @@ exports.likeAndDislikePost = (req, res, next) => {
     // If the user dislike the post, likestatus decreased by 1  
         else if (likeStatus === -1) {
         
-            Post.findByIdAndUpdate({_id: req.params.id}, {$inc:{dislikes: +1}})
+            Post.findByIdAndUpdate({_id: req.params.id}, {$inc:{dislikes: +1},
+              $push:{usersDisliked: userIdentifier}})
             .populate('userId')
             .then((post) =>   
                 res.status(201).json({
@@ -208,27 +211,29 @@ exports.likeAndDislikePost = (req, res, next) => {
                
         }    
     // If the user cancel his like or dislike
-    // else if (likeStatus === 0) {       
-    //     // user cancel his like
-    //     Post.findOne({_id: req.params.id})
-    //     .then((post) => {
-    //             if(post.usersLiked.includes(userIdentifier)){
-    //                 Post.updateOne({_id: req.params.id}, {$inc:{likes:-1}})
+    else if (likeStatus === 0) {       
         
-    //                 .then(() => res.status(201).json({message: "Like has been canceled"}))
-    //                 .catch(error => res.status(400).json(error))
+        Post.findByIdAndUpdate({_id: req.params.id}).populate('userId')
+        .then((post) => {
+          // user cancel his like
+                if(post.usersLiked.includes(userIdentifier)){
+                  Post.updateOne({_id: req.params.id}, {$inc:{likes: -1},
+                    $pull:{usersLiked: userIdentifier}})//.populate('userId')
+        
+                    .then(() => res.status(201).json({message: "Like has been canceled"}))
+                    .catch(error => res.status(400).json(error))
                     
-    //             }               
-    //             //user cancel his dislike
-    //             if(post.usersDisliked.includes(userIdentifier)){
+                }               
+                //user cancel his dislike
+                else if(post.usersDisliked.includes(userIdentifier)){
+                  Post.updateOne({_id: req.params.id}, {$inc:{dislikes:-1}, 
+                     $pull:{usersDisliked: userIdentifier}})//.populate('userId')
 
-    //                 Post.updateOne({_id: req.params.id}, {$inc:{dislikes:-1}})
-
-    //                 .then(() => res.status(201).json({message: "Dislike has been canceled"}))
-    //                 .catch(error => res.status(400).json(error))
-    //             } 
-            
-    //     })
-    // } 
+                    .then(() => res.status(201).json({message: "Dislike has been canceled"}))
+                    .catch(error => res.status(400).json(error))
+                } 
+                
+        }).catch(error => res.status(400).json(error))
+    } 
 }
 

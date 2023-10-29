@@ -1,6 +1,6 @@
 <template>
-  <div v-if="post" id="post" class="post" v-bind="posts">
-    <div :class="{ 'unread-post': !isPostRead }">
+  <div v-if="post" id="post" class="post" :class="{ 'unread-post': !isCurrentUserOwner && !isPostRead }">
+    
       <div class="post-header">
         <img :src="post.userId.avatar" />
         <div class="post-info">
@@ -15,10 +15,10 @@
 
       </div>
       <div class="post-actions">
-        <button class="like-button" @click="onLike">Like</button>{{ post.likes }}
-        <button class="dislike-button" @click="onDislike">Dislike</button>{{ post.dislikes }}
+        <button class="like-button" @click="onLike">Like</button>{{ postCopy.likes }}
+        <button class="dislike-button" @click="onDislike">Dislike</button>{{ postCopy.dislikes }}
         <button class="comment-button" @click="onComment">Comment</button>
-      
+        <button class="mark-read-button" @click="markAsRead">Mark as read</button>
         <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
         <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
           <!-- Display an edit form when in edit mode -->
@@ -33,7 +33,8 @@
         </div>
 
       </div>  
-    </div>
+      <span class="new-badge" v-if="!isPostRead">New</span>
+    
   </div>
   
 
@@ -88,8 +89,13 @@ export default {
       },
       readBy: {
         type: Array,
-      }
-      
+      },
+      usersLiked: {
+        type: Array,
+      },
+      usersDisliked: {
+        type: Array,
+      },      
    }, 
   
    computed: {
@@ -97,6 +103,7 @@ export default {
     isCurrentUserOwner() {
       // Check if the current user's ID matches the post owner's ID
       return this.currentUser === this.post.userId._id;
+    
     },
     isPostRead() {
       // Check if the user's ID is in the 'readBy' array
@@ -112,7 +119,7 @@ export default {
       this.isEditing = true;
       // Initialize the edited content with the current post content
       this.editedContent = this.textContent;
-      this.editedMultimediaContent = this.mltMediaContent  ? this.mltMediaContent.name:''
+      this.editedMultimediaContent = this.mltMediaContent  ? this.mltMediaContent.name:'';
     }, 
     onSave() {
     
@@ -124,7 +131,6 @@ export default {
      
      // Pass the post ID as a parameter in the request.
      const postId = this.postId;// Make sure to add a postId prop to your component
-      //  textContent: this.editedContent,
       // Create FormData object
       const formData = new FormData();
 
@@ -135,8 +141,7 @@ export default {
       if (this.editedMultimediaContent) {
         formData.append('image', this.editedMultimediaContent);
       }
-      
-          
+            
       const headers = {          
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.userData.token
@@ -184,25 +189,60 @@ export default {
     },
 
     async toggleLikeDislike(likeStatus) {
-      // Send a request to the server to like/dislike the post
-      try {
-        const response = await axios.post(
-          `posts/${this.post._id}/like`, // Adjust the URL as needed
-          { like: likeStatus }, // Send like status
-          {headers: { "Content-Type": "application/json",
-              Authorization: "Bearer " + this.$store.state.userData.token }});
-        console.log(response);
-        this.$store.commit('refreshPost', response.data.post); // Store posts in Vuex
+      // Check if the user already liked or disliked the post
+      const userLiked = this.postCopy.usersLiked.includes(this.$store.state.userData.userId);
+      const userDisliked = this.postCopy.usersDisliked.includes(this.$store.state.userData.userId);
 
-        // Update the post's likes and dislikes locally
-        // if (likeStatus === 1) {
-        //   this.postCopy.likes += 1;
-        // } else if (likeStatus === -1) {
-        //   this.postCopy.dislikes += 1;
-        // }
-        // else if (likeStatus === 0) {
-        //   // Handle canceling like or dislike if needed
-        // }
+      if (likeStatus === 1) {
+        if (userLiked) {
+          // User already liked the post, so cancel the like
+          likeStatus = 0; // Change likeStatus to 0 to cancel the like
+        } else if (userDisliked) {
+          // User disliked the post, so cancel the dislike and add a like
+          likeStatus = 1;
+        }else{
+          likeStatus = 1;
+        }
+      } else if (likeStatus === -1) {
+        if (userDisliked) {
+          // User already disliked the post, so cancel the dislike
+          likeStatus = 0; // Change likeStatus to 0 to cancel the dislike
+        } else if (userLiked) {
+          // User liked the post, so cancel the like and add a dislike
+          likeStatus = -1;
+        } else{
+          likeStatus = -1;
+        }
+      }
+      // Send a request to the server to like/dislike or cancel the action
+      try {
+        // const userId = this.$store.state.userData.userId
+        const response = await axios.post(
+          `posts/${this.postCopy._id}/like`,
+          { userId: this.$store.state.userData.userId, like: likeStatus },
+          {headers: { "Content-Type": "application/json",
+                      "Authorization": "Bearer " + this.$store.state.userData.token }});
+       // console.log(response);
+        // this.$store.commit('refreshPost', response.data.post); // Store posts in Vuex
+
+         // Update the post's likes and dislikes in the copied object
+         if (likeStatus === 1) {
+          this.postCopy.likes += 1;
+          this.postCopy.usersLiked.push(this.$store.state.userData.userId);
+        } else if (likeStatus === -1) {
+          this.postCopy.dislikes += 1;
+          this.postCopy.usersDisliked.push(this.$store.state.userData.userId);
+        } else if (likeStatus === 0) {
+          // Handle canceling like or dislike in the copied object
+          if (userLiked) {
+            this.postCopy.likes -= 1;
+            this.postCopy.usersLiked = this.postCopy.usersLiked.filter((id) => id !== this.$store.state.userData.userId);
+          } else if (userDisliked) {
+            this.postCopy.dislikes -= 1;
+            this.postCopy.usersDisliked = this.postCopy.usersDisliked.filter((id) => id !== this.$store.state.userData.userId);
+          }
+        }
+        console.log(response);
       } catch (error) {
         console.error("Error liking/disliking post:", error);
       }
@@ -238,30 +278,46 @@ export default {
           });
       }
     },
-  
-  },
-  // mounted() {
-  //   if (!this.post) {
-  //     // Fetch the post data when the component is mounted, but only if 'post' is not provided as a prop
-  //     axios.get(`posts/${this.postId}`, { headers: { 'Authorization': 'Bearer ' + this.$store.state.userData.token } })
-  //       .then((response) => {
-  //         this.fetchedPost = response.data; // Store the fetched data locally
-  //       })
 
-  //       .catch((error) => {
-  //         console.error('Error fetching post:', error);
-  //       });
-  //   }
-  // },
+    async markAsRead() {
+       // const postId = this.$route.params.id; // Use 'id' to get the post ID from route params
+
+        if (!this.postCopy.readBy.includes(this.$store.state.userData.userId)) {
+           this.postCopy.readBy.push(this.$store.state.userData.userId);
+
+          // Send a request to update the 'readBy' array in the database
+          try {
+            const headers = {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this.$store.state.userData.token,
+            };
+            const userId = this.$store.state.userData.userId;
+
+             await axios.post(`posts/${this.postCopy._id}/markAsRead`, { userId }, { headers: headers });
+            console.log('Post marked as read on the server.');
+
+          } catch (error) {
+            console.error('Error marking post as read on the server:', error);
+          }
+        }
+    }
   
-}
-       
-        
+  } 
+}              
 </script>        
 
 <style lang="scss">
 #post {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+      position: relative;
     /* Reset some default styles */
+  &.unread-post {
+    border: 3px solid red;
+  }
   body, h1, h2, h3, p, ul, li {
       margin: 0;
       padding: 0;
@@ -311,13 +367,18 @@ export default {
       margin-bottom: 10px;
     }
     
-    .post {
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
+    
+    .new-badge {
+        position: absolute;
+        top: 10px; /* Adjust the top value as needed */
+        right: 10px; /* Adjust the right value as needed */
+        background-color: red; /* Adjust the color of the badge */
+        color: white; /* Adjust the text color */
+        padding: 5px; /* Adjust padding for the badge */
+        border-radius: 5px; /* Add some rounded corners to the badge */
+        font-size: 12px; /* Adjust the font size of the badge text */
+      }
+    
     
     .post-header {
       display: flex;
@@ -356,7 +417,11 @@ export default {
       margin-right: 5px;
       cursor: pointer;
     }
-    
+    .post-actions span {
+      padding-left: 0px;
+      margin-left: 2px;
+      margin-right: 5px;
+    }
     .user-info {
       display: flex;
       align-items: center;
@@ -380,7 +445,7 @@ export default {
       color: #fff;
       border: none;
       padding: 5px 10px;
-      margin-right: 10px;
+      margin-right: 5px;
       cursor: pointer;
     }
     
@@ -390,9 +455,7 @@ export default {
       padding: 20px;
       text-align: center;
     }
-    .unread-post {
-      border: 3px solid red;
-    }
+   
     
   }
 
