@@ -178,11 +178,21 @@ exports.likeAndDislikePost = (req, res, next) => {
             
             Post.findByIdAndUpdate({_id: req.params.id}, {$inc:{likes: +1},
               $push:{usersLiked: userIdentifier}})
-            .populate('userId')
-            .then((post) =>   
-                res.status(201).json({
+            .then(() =>   
+            Post.findOne({_id: req.params.id})
+            .populate({
+              path: 'comments',
+              populate: { path: 'userId' }
+            })
+            .populate("userId")
+            
+            .then((post) => {   
+              res.status(201).json({
                 message: 'like has been added successfully!', post        
                 })
+
+            })
+          
                 
             )
             .catch((error) => {

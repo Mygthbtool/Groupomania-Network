@@ -165,11 +165,7 @@ export default {
     this.fetchPosts();
     }  
   },
-  // data() {
-  //   return {
-  //     isAuthenticated: false, // Track user authentication status
-  //   };
- 
+  
   
 }
 </script>

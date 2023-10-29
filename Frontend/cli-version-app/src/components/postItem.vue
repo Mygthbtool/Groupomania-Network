@@ -1,19 +1,20 @@
 <template>
   <div v-if="post" id="post" class="post" :class="{ 'unread-post': !isCurrentUserOwner && !isPostRead }">
-    
-      <div class="post-header">
-        <img :src="post.userId.avatar" />
-        <div class="post-info">
-          <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
-          <span class="post-date">{{ postingDate }}</span>
+      <div @click="getPost">
+        <div class="post-header">
+          <img :src="post.userId.avatar" />
+          <div class="post-info">
+            <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
+            <span class="post-date">{{ postingDate }}</span>
+          </div>
         </div>
-      </div>
-      <div class="post-content">
-        <p>{{ textContent }}</p>
-        
-        <img v-if="mltMediaContent" :src="mltMediaContent" alt='multiMediaContent'/>
+        <div class="post-content">
+          <p>{{ textContent }}</p>
+          
+          <img v-if="mltMediaContent" :src="mltMediaContent" alt='multiMediaContent'/>
 
-      </div>
+        </div>
+      </div>  
       <div class="post-actions">
         <button class="like-button" @click="onLike">Like</button>{{ postCopy.likes }}
         <button class="dislike-button" @click="onDislike">Dislike</button>{{ postCopy.dislikes }}
@@ -33,7 +34,7 @@
         </div>
 
       </div>  
-      <span class="new-badge" v-if="!isPostRead">New</span>
+      <span class="new-badge" v-if="!isCurrentUserOwner && !isPostRead">New</span>
     
   </div>
   
@@ -43,6 +44,7 @@
 <script>
 import axios from "../libs/axios";
 import FormData from 'form-data'
+import { mapState } from 'vuex';
 export default {
     name: 'postItem',
     
@@ -110,6 +112,7 @@ export default {
       return this.post.readBy.includes(this.$store.state.userData.userId);
     
     },
+    ...mapState(['userData', 'posts']),
     
    },
    methods: {
@@ -208,22 +211,22 @@ export default {
           // User already disliked the post, so cancel the dislike
           likeStatus = 0; // Change likeStatus to 0 to cancel the dislike
         } else if (userLiked) {
-          // User liked the post, so cancel the like and add a dislike
+          // User liked the post, so add a dislike
           likeStatus = -1;
         } else{
           likeStatus = -1;
         }
       }
-      // Send a request to the server to like/dislike or cancel the action
+     
       try {
         // const userId = this.$store.state.userData.userId
         const response = await axios.post(
-          `posts/${this.postCopy._id}/like`,
+          `posts/${this.post._id}/like`,
           { userId: this.$store.state.userData.userId, like: likeStatus },
           {headers: { "Content-Type": "application/json",
                       "Authorization": "Bearer " + this.$store.state.userData.token }});
        // console.log(response);
-        // this.$store.commit('refreshPost', response.data.post); // Store posts in Vuex
+         //this.$store.commit('refreshPost', response.data.post); // Store posts in Vuex
 
          // Update the post's likes and dislikes in the copied object
          if (likeStatus === 1) {
@@ -242,12 +245,18 @@ export default {
             this.postCopy.usersDisliked = this.postCopy.usersDisliked.filter((id) => id !== this.$store.state.userData.userId);
           }
         }
-        console.log(response);
+        if (response.status === 201) {
+        this.$store.commit('refreshPost', response.data.post);
+        }
+        console.log(response.data);
       } catch (error) {
         console.error("Error liking/disliking post:", error);
       }
     },
 
+    getPost(){
+      this.$router.push(`/posts/${this.post._id}`)  
+    },
     onComment() {
       // Implement your comment functionality here
        this.$router.push(`/posts/${this.post._id}`)     
@@ -316,8 +325,10 @@ export default {
       position: relative;
     /* Reset some default styles */
   &.unread-post {
-    border: 3px solid red;
+    border: 1px solid red;
+    background-color: yellow;
   }
+
   body, h1, h2, h3, p, ul, li {
       margin: 0;
       padding: 0;
@@ -370,13 +381,13 @@ export default {
     
     .new-badge {
         position: absolute;
-        top: 10px; /* Adjust the top value as needed */
-        right: 10px; /* Adjust the right value as needed */
-        background-color: red; /* Adjust the color of the badge */
-        color: white; /* Adjust the text color */
-        padding: 5px; /* Adjust padding for the badge */
-        border-radius: 5px; /* Add some rounded corners to the badge */
-        font-size: 12px; /* Adjust the font size of the badge text */
+        top: 10px; 
+        right: 10px; 
+        background-color: red; 
+        color: white; 
+        padding: 7px;
+        border-radius: 5px; 
+        font-size: 12px;
       }
     
     
@@ -456,7 +467,6 @@ export default {
       text-align: center;
     }
    
-    
-  }
-
+  }    
+ 
 </style>
