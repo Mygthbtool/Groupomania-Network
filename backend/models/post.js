@@ -1,18 +1,48 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
 
-const postSchema = mongoose.Schema ({
-    postingDate: { type: String  },
-    textContent: { type: String },
-    mltMediaContent: { type: String },
-    likes: { type: Number },
-    dislikes: { type: Number },
-    comments:  [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Reference to User model }
-    readBy: [{ type: mongoose.Schema.Types.ObjectId }],
-    usersLiked: [{ type: mongoose.Schema.Types.ObjectId }],
-    usersDisliked: [{ type: mongoose.Schema.Types.ObjectId }]
+const sequelize = require('../sequelize'); 
+const User = require('./user');
+const Comment = require('./comment');
 
-  });
 
-  module.exports = mongoose.model('Post', postSchema);
-  
+const Post = sequelize.define('Post', {
+  post_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: 'user_id',
+    },
+  },
+  comment_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Comment,
+      key: 'comment_id',
+    },
+  },
+  postingDate: {
+    type: DataTypes.DATE,
+  },
+  textContent: {
+    type: DataTypes.TEXT,
+  },
+  mltMediaContent: {
+    type: DataTypes.STRING(255),
+  },
+  likes: {
+    type: DataTypes.INTEGER,
+  },
+  dislikes: {
+    type: DataTypes.INTEGER,
+  },
+});
+
+Post.belongsTo(User, { foreignKey: 'user_id' });
+Post.belongsTo(Comment, { foreignKey: 'comment_id' });
+
+module.exports = Post;

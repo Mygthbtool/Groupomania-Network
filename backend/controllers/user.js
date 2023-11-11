@@ -6,15 +6,19 @@ const fs = require('fs');
 exports.signup = (req, res, next) => {
   const userObj = req.body;
   console.log({userObj});
+  console.log(req.file);
+
   const url = req.protocol + '://' + req.get('host');
   let avatar = './images/User-avatar.png'; // Initialize avatar
-
-  // Check if a file has been uploaded
+  
+  //Check if a file has been uploaded
   if (req.file) {
     avatar = url + '/images/' + req.file.filename;
   }
+  // Encrypt the password using bcrypt
     bcrypt.hash(userObj.password, 10).then(
       (hash) => {
+        // Create a new user object with hashed password
         const user = new User({
           firstName: userObj.firstName,
           lastName: userObj.lastName,
@@ -22,7 +26,8 @@ exports.signup = (req, res, next) => {
           password: hash,
           avatar: avatar
         });
-        user.save().then(
+         // Save the user data to the MySQL database
+        User.create(user).then(
           () => {
             res.status(201).json({
               message: 'User added successfully!'
@@ -37,9 +42,9 @@ exports.signup = (req, res, next) => {
         );
       }
     );
-  };
+};
 
-  exports.login = (req, res, next) => {
+exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email }).then(
       (user) => {
         if (!user) {
@@ -87,7 +92,7 @@ exports.signup = (req, res, next) => {
     );
   }
 
-  exports.deleteAccount = (req, res, next) => {
+exports.deleteAccount = (req, res, next) => {
     // Get the user ID from the request parameters
     const userId = req.params.userId;
   
@@ -104,54 +109,6 @@ exports.signup = (req, res, next) => {
       });
   };
   
-//Edit User account 
-// exports.EditUserAccount = (req, res, next) => {
-//   console.log(req.params);
-//   User.findOne({
-//     _id: req.params.userId
-//   }).then(
-//     (user) => {
-//       console.log({user})
-//     }
-//   )
-
-//   if (req.file) {
-//     const url = req.protocol + '://' + req.get('host');
-//     bcrypt.hash(req.body.password, 10).then(
-//       (hash) => {
-//         user = {  
-//           firstName: req.body.firstName,
-//           lastName: req.body.lastName,
-//           email: req.body.email,
-//           password: hash,
-//           avatar: url + '/images/' + req.file.filename,        
-//         }
-//       })
-//   }  
-//   else {
-//     bcrypt.hash(req.body.password, 10).then(
-//       (hash) => {
-//         user = {
-//           firstName: req.body.firstName,
-//           lastName: req.body.lastName,
-//           email: req.body.email,
-//           password: hash,
-//           avatar: './images/User-avatar.png'
-//         };
-//       })
-//   }
-
-//   User.updateOne({_id: req.params.id}, user, { runValidators: true }).then(
-//     () => {
-//       res.status(201).json({
-//         message: 'User account updated successfully!'
-//       });
-//     }).catch((error) => {
-//       res.status(400).json({
-//         error: error
-//       });
-//     });
-// } 
 exports.EditUserAccount = (req, res, next) => {
   console.log(req.params);
   User.findOne({_id: req.params.userId})

@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const path = require('path');
 
 const postsRoutes = require('./routes/posts');
@@ -11,14 +10,29 @@ const app = express();
 
 require('dotenv').config();
 
-mongoose.connect(process.env.MONGODB_URL)
-    .then(() => {
-        console.log('Successfully connected to MongoDB Atlas');
-    })
-    .catch((error) => {
-        console.log('Unable to connect to MongoDB Atlas!');
-        console.error(error);
-    });
+const { Sequelize } = require('sequelize');
+
+const sequelize = new Sequelize('groupomania', 'root', 'AnaCoderChelfi', {
+  host: 'localhost',
+  dialect: 'mysql',
+});
+
+sequelize.authenticate()
+  .then(() => {
+    console.log('Connected to MySQL database');
+  })
+  .catch((error) => {
+    console.error('Error connecting to MySQL:', error);
+  });
+
+// mongoose.connect(process.env.MONGODB_URL)
+//     .then(() => {
+//         console.log('Successfully connected to MongoDB Atlas');
+//     })
+//     .catch((error) => {
+//         console.log('Unable to connect to MongoDB Atlas!');
+//         console.error(error);
+//     });
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
