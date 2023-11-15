@@ -1,5 +1,7 @@
 const Post = require('../models/post');
 const fs = require('fs');
+const User = require('../models/user');
+const Comment = require('../models/comment');
 
 // Create new poste
 exports.createPost = (req, res, next) => {
@@ -13,30 +15,46 @@ exports.createPost = (req, res, next) => {
   if (req.file) {
     mltMediaContent = url + '/images/' + req.file.filename;
   }
-  const post = new Post({
-    postingDate: postObj.postingDate,
-    textContent: postObj.textContent,
-    mltMediaContent: mltMediaContent, 
-    userId: postObj.userId,
-    likes: 0,
-    dislikes: 0,
-    comments:[],  
+  // const post = new Post({
+  //   postingDate: postObj.postingDate,
+  //   textContent: postObj.textContent,
+  //   mltMediaContent: mltMediaContent, 
+  //   user_id: postObj.userId,
+  //   likes: 0,
+  //   dislikes: 0,
+  //   comment_id:[],  
        
-  });
-  
-  post.save().then(
-    () => {
+  // });
+  Post.create({
+    user_id: postObj.userId,
+    posting_date: postObj.postingDate,
+    text_content: postObj.textContent,
+    likes: postObj.likes,
+    dislikes: postObj.dislikes,
+    mlt_media_content: mltMediaContent
+}).then(function (post) {
+    if (post) {
       res.status(201).json({
-        message: 'Post saved successfully!'
+             message: 'Post saved successfully!', post
       });
+    } else {
+        response.status(400).send('Error in insert new record');
     }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+});
+  
+  // post.create().then(
+  //   (post) => {
+  //     res.status(201).json({
+  //       message: 'Post saved successfully!', post
+  //     });
+  //   }
+  // ).catch(
+  //   (error) => {
+  //     res.status(400).json({
+  //       error: error
+  //     });
+  //   }
+  // );
 };
 
 //Get one poste
@@ -150,22 +168,42 @@ exports.deletePost = (req, res, next) => {
 
 
 //Get all posts
+
 exports.getAllPosts = (req, res, next) => {
-  
-  Post.find().populate('userId')
-  .populate('comments')
-  .sort({ postingDate: -1 })
+  // Include the associated User and Comment models
+  Post.findAll({
+    include: [
+      { model: User, as: 'user' },  // assuming you have an association named 'user'
+      { model: Comment, as: 'comment' }  // assuming you have an association named 'comments'
+    ],
+   // order: [['posting-date', 'DESC']]  // sort by postingDate in descending order
+  })
   .then((posts) => {
-      res.status(200).json(posts);
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+    res.status(200).json(posts);
+  })
+  .catch((error) => {
+    res.status(400).json({
+      error: error.message
+    });
+  });
 };
+
+// exports.getAllPosts = (req, res, next) => {
+  
+//   Post.find().populate('userId')
+//   .populate('comments')
+//   .sort({ postingDate: -1 })
+//   .then((posts) => {
+//       res.status(200).json(posts);
+//     }
+//   ).catch(
+//     (error) => {
+//       res.status(400).json({
+//         error: error
+//       });
+//     }
+//   );
+// };
 
 // Like and dislike
 exports.likeAndDislikePost = (req, res, next) => {

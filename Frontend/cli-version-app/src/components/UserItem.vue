@@ -31,7 +31,7 @@ export default {
         default: '/images/User-avatar.png', // Set a default value for the avatar prop if needed
       },
       userId:{
-        type: String
+        type: Number
       }       
   },  
 

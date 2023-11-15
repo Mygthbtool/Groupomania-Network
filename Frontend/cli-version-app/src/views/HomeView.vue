@@ -22,20 +22,18 @@
           
           <postItem v-for="post in posts"
             
-            :key="post.id"
-            :postId="post._id" 
+            :key="post.post_id"
+            :postId="post.post_id" 
             :post="post"
-            :firstName='post.userId.firstName'
-            :lastName='post.userId.lastName'
-            :avatar="post.userId.avatar"
-            :postingDate="post.postingDate"
-            :textContent="post.textContent"
-            :mltMediaContent="post.mltMediaContent"
+           
+            :postingDate="post.posting_date"
+            :textContent="post.text_content"
+            :mltMediaContent="post.mlt_media_content"
             :likes="post.likes"
             :dislikes="post.dislikes"
-            :comments="post.comments"
+            :comments="post.comment_id"
             :readBy="post.readBy"
-            :userId="post.userId"
+            :userId="post.user_id"
             :currentUser= "userData.userId"
             @post-deleted="handlePostDeleted"
         
@@ -89,37 +87,19 @@ export default {
     postItem, UserItem
   },
 
-  
-  // data() {
-  //   return {
-  //     posts: [], // Your array of posts
-  //   };
-  // },
-  
-  // user: null // Initialize user data to null
-  // user: {
-  //   firstName: '',
-  //   lastName: '',
-  //   avatar: '',
-  //   email: ''
-  // },
-// };
-// computed: {
-//   unreadPosts: function() {
-//     return this.posts.filter(post => !post.isRead);
-//   }
-// },
 
   methods: {
     async fetchPosts() {
       try {
+        
         const headers = {
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.userData.token,
         } 
         const response = await axios.get('posts/', { headers: headers });
         this.$store.commit('setPosts', response.data); // Store posts in Vuex
-        
+
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
       }
@@ -152,8 +132,9 @@ export default {
    
 }, 
   computed: {
+    // Map the userData and posts from the Vuex store
     ...mapState(['userData', 'posts']),
-     // Map the userData and posts from the Vuex store
+     
     isAuthenticated() {
       return !!this.$store.state.userData.token;
     },
@@ -170,7 +151,7 @@ export default {
   //     isAuthenticated: false, // Track user authentication status
   //   };
  
-  
+  // }
 }
 </script>
 

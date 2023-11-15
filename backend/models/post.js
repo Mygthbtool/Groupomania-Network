@@ -4,7 +4,6 @@ const sequelize = require('../sequelize');
 const User = require('./user');
 const Comment = require('./comment');
 
-
 const Post = sequelize.define('Post', {
   post_id: {
     type: DataTypes.INTEGER,
@@ -25,13 +24,13 @@ const Post = sequelize.define('Post', {
       key: 'comment_id',
     },
   },
-  postingDate: {
+  posting_date: {
     type: DataTypes.DATE,
   },
-  textContent: {
+  text_content: {
     type: DataTypes.TEXT,
   },
-  mltMediaContent: {
+  mlt_media_content: {
     type: DataTypes.STRING(255),
   },
   likes: {
@@ -42,7 +41,7 @@ const Post = sequelize.define('Post', {
   },
 });
 
-Post.belongsTo(User, { foreignKey: 'user_id' });
-Post.belongsTo(Comment, { foreignKey: 'comment_id' });
+Post.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+Post.belongsTo(Comment, { foreignKey: 'comment_id', as: 'comment' });
 
 module.exports = Post;

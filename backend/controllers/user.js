@@ -5,12 +5,9 @@ const fs = require('fs');
 
 exports.signup = (req, res, next) => {
   const userObj = req.body;
-  console.log({userObj});
-  console.log(req.file);
-
+  
   const url = req.protocol + '://' + req.get('host');
   let avatar = './images/User-avatar.png'; // Initialize avatar
-  
   //Check if a file has been uploaded
   if (req.file) {
     avatar = url + '/images/' + req.file.filename;
@@ -19,33 +16,47 @@ exports.signup = (req, res, next) => {
     bcrypt.hash(userObj.password, 10).then(
       (hash) => {
         // Create a new user object with hashed password
-        const user = new User({
-          firstName: userObj.firstName,
-          lastName: userObj.lastName,
+        // const user = new User({
+        //   firstName: userObj.firstName,
+        //   lastName: userObj.lastName,
+        //   email: userObj.email,
+        //   password: hash,
+        //   avatar: avatar
+        // });
+        User.create({
+          first_name: userObj.firstName,
+          last_name: userObj.lastName,
           email: userObj.email,
           password: hash,
           avatar: avatar
-        });
+      }).then(function (user) {
+          if (user) {
+              res.send(user);
+          } else {
+              response.status(400).send('Error in insert new record');
+          }
+      });
          // Save the user data to the MySQL database
-        User.create(user).then(
-          () => {
-            res.status(201).json({
-              message: 'User added successfully!'
-            });
-          }
-        ).catch(
-          (error) => {
-            res.status(500).json({
-              error: error
-            });
-          }
-        );
+        // User.create(user).then(
+        //   () => {
+        //     res.status(201).json({
+        //       message: 'User added successfully!'
+        //     });
+        //   }
+        // ).catch(
+        //   (error) => {
+        //     res.status(500).json({
+        //       error: error
+        //     });
+        //   }
+        // );
       }
     );
 };
 
 exports.login = (req, res, next) => {
-    User.findOne({ email: req.body.email }).then(
+  
+    User.findOne({ where: {email: req.body.email }}).then(
       (user) => {
         if (!user) {
           return res.status(401).json({
@@ -60,14 +71,14 @@ exports.login = (req, res, next) => {
               });
             }
             const token = jwt.sign(
-              { userId: user._id },
+              { userId: user.user_id },
               process.env.SECRET_TOKEN,
               { expiresIn: '24h' });
             res.status(200).json({
               user: {
-                userId: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                userId: user.user_id,
+                firstName: user.first_name,
+                lastName: user.last_name,
                 email: user.email,
                 avatar: user.avatar,
                 token: token

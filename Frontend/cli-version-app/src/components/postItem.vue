@@ -2,9 +2,9 @@
   <div v-if="post" id="post" class="post" :class="{ 'unread-post': !isCurrentUserOwner && !isPostRead }">
       <div @click="getPost">
         <div class="post-header">
-          <img :src="post.userId.avatar" />
+          <img :src="post.user.avatar" />
           <div class="post-info">
-            <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
+            <h3>{{ post.user.first_name }} {{ post.user.last_name }}</h3>
             <span class="post-date">{{ postingDate }}</span>
           </div>
         </div>
@@ -81,13 +81,13 @@ export default {
         type: Array
       },
       userId:{
-        type: String
+        type: Number
       },
       currentUser: {
-        type: String
+        type: Number
       },
-      postId:{
-        type: String,     
+      post_id:{
+        type: Number,     
       },
       readBy: {
         type: Array,
@@ -104,14 +104,14 @@ export default {
 
     isCurrentUserOwner() {
       // Check if the current user's ID matches the post owner's ID
-      return this.currentUser === this.post.userId._id;
+      return this.currentUser === this.post.user_id;
     
     },
-    isPostRead() {
-      // Check if the user's ID is in the 'readBy' array
-      return this.post.readBy.includes(this.$store.state.userData.userId);
+    // isPostRead() {
+    //   // Check if the user's ID is in the 'readBy' array
+    //   return this.post.readBy.includes(this.$store.state.userData.userId);
     
-    },
+    // },
     ...mapState(['userData', 'posts']),
     
    },
@@ -123,10 +123,10 @@ export default {
       // Initialize the edited content with the current post content
       this.editedContent = this.textContent;
       this.editedMultimediaContent = this.mltMediaContent  ? this.mltMediaContent.name:'';
+      console.log(this.post); // Add this line
+      console.log(this.$store.state.userData); // Add this line
     }, 
-    onSave() {
-    
-      // Use this.postId to identify the post to be updated
+    onSave() {    
       // Pass this.editedContent as the new content
     
       // After a successful save, toggle off the edit mode

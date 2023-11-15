@@ -51,16 +51,16 @@ import axios from "../libs/axios";
           // Login successful, redirect to the home page
 
              // After successful login, retrieve the user data from the response
-             const userData = response.data.user;            
-             // Save user data to Vue instance or Vuex store           
-                this.$store.commit('setUserData', userData);
-                // Save user data to local storage
-                
-                localStorage.setItem('userData', userData);
-                 
-                //localStorage.setItem('userData', userData);
+             const userData = response.data.user;   
+             console.log(userData);
 
-                // Save the authentication token in a cookie
+             // Save user data to Vue instance or Vuex store           
+              this.$store.commit('setUserData', userData);
+
+              // Save user data to local storage                          
+              //localStorage.setItem('userData', userData);
+
+              // Save the authentication token in a cookie
               //Cookies.set('authToken', response.data.user.token, { expires: 1 }); // Adjust the expiration as needed
              // Redirect to home page   
                  this.$router.push('/');     

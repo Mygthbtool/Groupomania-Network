@@ -10,12 +10,9 @@ const app = express();
 
 require('dotenv').config();
 
-const { Sequelize } = require('sequelize');
+// const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize('groupomania', 'root', 'AnaCoderChelfi', {
-  host: 'localhost',
-  dialect: 'mysql',
-});
+const sequelize = require('./sequelize');
 
 sequelize.authenticate()
   .then(() => {

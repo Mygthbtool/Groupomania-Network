@@ -7,7 +7,7 @@ import { createStore } from 'vuex'
 export default createStore({
   
   state: {
-    userData: localStorage.getItem('userData') || {}, // Initialize userData as null
+    userData:  {}, // Initialize userData as null //localStorage.getItem('userData') ||
     posts:[]   // Initialize posts as null
   },
   getters: {

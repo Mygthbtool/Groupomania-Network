@@ -8,22 +8,22 @@ const User = sequelize.define('User', {
     primaryKey: true,
     autoIncrement: true,
   },
-  firstName: {
+  first_name: {
     type: DataTypes.STRING,
-    allowNull: false, // Adding 'allowNull' as an example; adjust as needed
+   allowNull: false, // Adding 'allowNull' as an example; adjust as needed
   },
-  lastName: {
+  last_name: {
     type: DataTypes.STRING,
     allowNull: false, // Adding 'allowNull' as an example; adjust as needed
   },
   email: {
     type: DataTypes.STRING,
     unique: true,
-    allowNull: false, // Adding 'allowNull' as an example; adjust as needed
+   allowNull: false, // Adding 'allowNull' as an example; adjust as needed
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false, // Adding 'allowNull' as an example; adjust as needed
+   allowNull: false, // Adding 'allowNull' as an example; adjust as needed
   },
   avatar: {
     type: DataTypes.STRING,

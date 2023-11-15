@@ -56,22 +56,19 @@ export default {
     publishContent(){
       // If a postId prop is passed, then we are editing an existing post.
       // Otherwise, we are creating a new post.
-      // const endpoint = this.postId ? `posts/${this.postId}` : 'posts/';
-      // const method = this.postId ? 'put' : 'post';
-
       const postData = new FormData();
-      postData.append('userFirstName', this.$store.state.userData.firstName);
-      postData.append('userLastName', this.$store.state.userData.lastName);
+      postData.append('userFirstName', this.$store.state.userData.first_name);
+      postData.append('userLastName', this.$store.state.userData.last_name);
       postData.append('userAvatar', this.$store.state.userData.avatar);
       postData.append('postingDate', this.postingDate);
       postData.append('textContent', this.textContent);
       postData.append('likes', 0);
       postData.append('dislikes', 0);
       postData.append('comments', []);
-      postData.append('readBy', []);
-      postData.append('usersLiked', []);
-      postData.append('usersDisliked', []);
-      postData.append('userId', this.$store.state.userData.userId);
+      // postData.append('readBy', []);
+      // postData.append('usersLiked', []);
+      // postData.append('usersDisliked', []);
+      postData.append('userId', this.$store.state.userData.user_id);
       // ... (append other form fields)
 
       if (this.mltMediaContent) {
