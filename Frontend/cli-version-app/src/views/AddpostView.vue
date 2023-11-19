@@ -57,8 +57,8 @@ export default {
       // If a postId prop is passed, then we are editing an existing post.
       // Otherwise, we are creating a new post.
       const postData = new FormData();
-      postData.append('userFirstName', this.$store.state.userData.first_name);
-      postData.append('userLastName', this.$store.state.userData.last_name);
+      postData.append('userFirstName', this.$store.state.userData.firstName);
+      postData.append('userLastName', this.$store.state.userData.lastName);
       postData.append('userAvatar', this.$store.state.userData.avatar);
       postData.append('postingDate', this.postingDate);
       postData.append('textContent', this.textContent);
@@ -68,7 +68,7 @@ export default {
       // postData.append('readBy', []);
       // postData.append('usersLiked', []);
       // postData.append('usersDisliked', []);
-      postData.append('userId', this.$store.state.userData.user_id);
+      postData.append('userId', this.$store.state.userData.userId);
       // ... (append other form fields)
 
       if (this.mltMediaContent) {

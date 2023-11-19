@@ -86,7 +86,7 @@ export default {
       currentUser: {
         type: Number
       },
-      post_id:{
+      postId:{
         type: Number,     
       },
       readBy: {
@@ -253,11 +253,11 @@ export default {
     },
 
     getPost(){
-      this.$router.push(`/posts/${this.post._id}`)  
+      this.$router.push(`/posts/${this.post.post_id}`)  
     },
     onComment() {
       // Implement your comment functionality here
-       this.$router.push(`/posts/${this.post._id}`)     
+       this.$router.push(`/posts/${this.post.post_id}`)     
     },
       
     

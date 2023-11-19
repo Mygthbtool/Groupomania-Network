@@ -75,9 +75,8 @@ export default {
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.userData.token,
         } 
-        //const userId= this.userId
-        axios
-          .put(`auth/${this.userId}`, formData, {headers: headers})
+        
+        axios.put(`auth/${this.userId}`, formData, {headers: headers})
           .then((response) => {
             
             if (response.status === 201) {

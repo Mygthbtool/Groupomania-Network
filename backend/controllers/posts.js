@@ -22,8 +22,7 @@ exports.createPost = (req, res, next) => {
   //   user_id: postObj.userId,
   //   likes: 0,
   //   dislikes: 0,
-  //   comment_id:[],  
-       
+  //   comment_id:[],         
   // });
   Post.create({
     user_id: postObj.userId,
@@ -114,57 +113,107 @@ exports.markPostRead = async (req, res, next) => {
 
 //Modify post 
 exports.modifyPost = (req, res, next) => {
-  console.log(req.body);
-  let post = new Post({ _id: req.params._id });
+  const postId = req.params.id;
 
-  if (req.file) {
-    const url = req.protocol + '://' + req.get('host');
-    post = {
-      textContent: req.body.textContent,
-      mltMediaContent: url + '/images/' + req.file.filename,
-    };
-  } else {
-    post = {
-      textContent: req.body.textContent,
-    };
-  }
-  Post.updateOne({_id: req.params.id}, post).then(
-    () => {
-      res.status(201).json({
-        message: 'Post updated successfully!'
-      });
-    }  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
-};
+  // Find the post first
+  Post.findOne({ where: { post_id: postId } })
+    .then((post) => {
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+
+      // Optionally, delete the previous multimedia content
+      if (post.mlt_media_content) {
+        const filename = post.mlt_media_content.split('/images/')[1];
+        fs.unlink('images/' + filename, (err) => {
+          if (err) {
+            console.error(err);
+          }
+        });
+      }
+
+      // Update the post information
+      const url = req.protocol + '://' + req.get('host');
+      const updatedPost = {
+        text_content: req.body.textContent,
+        // Check if a file is uploaded
+        mlt_media_content: req.file ? url + '/images/' + req.file.filename : null,
+      };
+
+      // Use update to modify the post
+      Post.update(updatedPost, { where: { post_id: postId } })
+        .then(() => {
+          res.status(200).json({ message: 'Post updated successfully!' });
+        })
+        .catch((error) => {
+          res.status(400).json({ error: error });
+        });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error });
+    });
+}
+
+//   console.log(req.body);
+//   let post = new Post( { where: { post_id: req.params.id }});
+
+//   if (req.file) {
+//     const url = req.protocol + '://' + req.get('host');
+//     post = {
+//       text_content: req.body.textContent,
+//       mlt_media_content: url + '/images/' + req.file.filename,
+//     };
+//   } else {
+//     post = {
+//       text_content: req.body.textContent,
+//     };
+//   }
+//   Post.update( {where: {post_id: req.params.id}}, post)
+//     .then(() => {
+//       res.status(201).json({
+//         message: 'Post updated successfully!'
+//       });
+//     }).catch(
+//       (error) => {
+//       res.status(400).json({
+//         error: error
+//       });
+//     }
+//   );
+// };
 
 // Delete post
 exports.deletePost = (req, res, next) => {
-  Post.findOne({_id: req.params.id}).then(
-    (post) => {
-      const filename = post.mltMediaContent.split('/images/')[1];
-      fs.unlink('images/' + filename, () => {
-        Post.deleteOne({_id: req.params.id})
-        .then(() => {
+  console.log(req.params.id);
+
+  Post.findOne({ where: {post_id: req.params.id }})
+  .then((post) => {
+
+      if(post.mlt_media_content){
+       const filename = post.mlt_media_content.split('/images/')[1];
+       fs.unlink('images/' + filename, (err) => {
+          if(err){
+            console.log(err);
+          }
+       })
+      }  
+      Post.destroy({where: {post_id: req.params.id}})
+        .then((rowsDeleted) => {
+          if(rowsDeleted === 1) {
             res.status(200).json({
               message: 'Deleted!'
             });
+          }else {
+            res.status(404).json({ message: 'Post not found' });
           }
-        ).catch(
-          (error) => {
-            res.status(400).json({
-              error: error
-            });
+        }).catch((error) => {
+            res.status(400).json({ error: error });
           }
         );
-      });
-    }
-  );
-};
+  }).catch((error) => {
+      res.status(400).json({ error: error });
+    });
+}
 
 
 //Get all posts
@@ -281,4 +330,5 @@ exports.likeAndDislikePost = (req, res, next) => {
         }).catch(error => res.status(400).json(error))
     } 
 }
+
 

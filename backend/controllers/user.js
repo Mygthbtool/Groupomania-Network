@@ -103,63 +103,150 @@ exports.login = (req, res, next) => {
     );
   }
 
+
 exports.deleteAccount = (req, res, next) => {
     // Get the user ID from the request parameters
     const userId = req.params.userId;
   
-    // Your deletion logic here, for example:
-    User.findByIdAndDelete(userId)
-      .then(() => {
-        // Optionally, you can also delete the user's posts, comments, etc. if needed
-        // ...
+    User.destroy({ where: { user_id: userId }})
+    
+      .then((rowsDeleted) => {
+        if (rowsDeleted === 1) {
+          // Optionally, you can also delete the user's posts, comments, etc. if needed
+          // ...
   
-        res.status(200).json({ message: 'Account deleted successfully' });
+          res.status(200).json({ message: 'Account deleted successfully' });
+        } else {
+          res.status(404).json({ message: 'User not found' });
+        }
       })
       .catch((error) => {
         res.status(500).json({ error: error });
       });
   };
-  
-exports.EditUserAccount = (req, res, next) => {
-  console.log(req.params);
-  User.findOne({_id: req.params.userId})
-  .then((user) => {
 
-      console.log({user})
-      delete user._id
-      if (req.file) {
-        const url = req.protocol + '://' + req.get('host');
-        user.avatar = url + '/images/' + req.file.filename
-      }
-      user.firstName = req.body.firstName;
-      user.lastName = req.body.lastName;
-       
-      if (req.body.password) {
-        bcrypt.hash(req.body.password, 10).then((hash) => {
-            user.password = hash;
-            User.updateOne({_id: req.params.userId}, user)
-            .then(() => {
-              res.status(201).json({
-                message: 'User account updated successfully!'
-              });
-            }).catch((error) => {
-              res.status(400).json({
-                error: error
-              });
-            });
-        })
-      }
-      else {
-          User.updateOne({_id: req.params.userId}, user)
-          .then(() => {
-            res.status(201).json({
-              message: 'User account updated successfully!'
-            });
-          }).catch((error) => {
-            res.status(400).json({
-              error: error
-            });
+  exports.EditUserAccount = (req, res, next) => {
+    console.log(req.body);
+
+    
+    User.findOne({ where: { user_id: req.params.userId } })
+      .then((user) => {
+        console.log({ user });
+  
+        // Delete the user
+        User.destroy({ where: { user_id: req.params.userId } })
+          .then((rowsDeleted) => {
+            if (rowsDeleted === 1) {
+              // Now, update the user
+              let avatar = './images/User-avatar.png'; // Initialize avatar
+              if (req.file) {
+                const url = req.protocol + '://' + req.get('host');
+                avatar = url + '/images/' + req.file.filename;
+              }
+  
+              const updatedUser = {
+                first_name: req.body.firstName,
+                last_name: req.body.lastName,
+                email: req.body.email,
+                avatar: avatar
+              
+              };
+  
+              if (req.body.password) {
+                bcrypt.hash(req.body.password, 10).then((hash) => {
+                  updatedUser.password = hash;
+                  User.create(updatedUser)
+                    .then(() => {
+                      res.status(201).json({
+                        message: 'User account updated successfully!',
+                      });
+                    })
+                    .catch((error) => {
+                      res.status(400).json({
+                        error: error,
+                      });
+                    });
+                });
+              } else {
+                User.create(updatedUser)
+                  .then(() => {
+                    res.status(201).json({
+                      message: 'User account updated successfully!',
+                    });
+                  })
+                  .catch((error) => {
+                    res.status(400).json({
+                      error: error,
+                    });
+                  });
+              }
+            }
+          })
+          .catch((error) => {
+            res.status(400).json({ error: error });
           });
-      }
-  })
-} 
+      })
+      .catch((error) => {
+        res.status(400).json({ error: error });
+      });
+  };
+  
+  
+// exports.EditUserAccount = (req, res, next) => {
+//   console.log(req.body);
+
+//   User.findOne({ where: {user_id: req.params.userId }})
+
+//   .then((user) => {
+
+//       console.log({user})
+
+//       User.destroy({ where: { user_id: req.params.userId }})
+//       .then((rowsDeleted) => {
+//         if (rowsDeleted === 1) {
+//           res.status(200).json({
+//             message: 'Deleted!'
+//           })
+//         }
+//       }) 
+//       .catch((error) => {
+//         res.status(400).json({ error: error });
+//       }); 
+//   //   delete user.user_id
+//       if (req.file) {
+//         const url = req.protocol + '://' + req.get('host');
+//         user.avatar = url + '/images/' + req.file.filename
+//       }
+//       const updatedUser = {
+//         first_name: req.body.firstName,
+//         last_name: req.body.lastName,
+//       } 
+//       if (req.body.password) {
+//         bcrypt.hash(req.body.password, 10).then((hash) => {
+//             user.password = hash;
+//             User.update({where:{user_id: req.params.userId}}, updatedUser)
+//             .then(() => {
+//               res.status(201).json({
+//                 message: 'User account updated successfully!'
+//               });
+//             }).catch((error) => {
+//               res.status(400).json({
+//                 error: error
+//               });
+//             });
+//         })
+//       }
+//       else {
+//           User.update({where:{user_id: req.params.userId}}, updatedUser)
+//           .then(() => {
+//             res.status(201).json({
+//               message: 'User account updated successfully!'
+//             });
+//           }).catch((error) => {
+//             res.status(400).json({
+//               error: error
+//             });
+//           });
+//       }
+//   })
+// } 

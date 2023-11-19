@@ -87,11 +87,9 @@ export default {
     postItem, UserItem
   },
 
-
   methods: {
     async fetchPosts() {
-      try {
-        
+      try {       
         const headers = {
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.userData.token,
