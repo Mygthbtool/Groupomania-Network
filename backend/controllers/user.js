@@ -123,12 +123,11 @@ exports.deleteAccount = (req, res, next) => {
       .catch((error) => {
         res.status(500).json({ error: error });
       });
-  };
+};
 
-  exports.EditUserAccount = (req, res, next) => {
+exports.EditUserAccount = (req, res, next) => {
     console.log(req.body);
 
-    
     User.findOne({ where: { user_id: req.params.userId } })
       .then((user) => {
         console.log({ user });

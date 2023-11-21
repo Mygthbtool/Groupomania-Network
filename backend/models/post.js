@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 
 const sequelize = require('../sequelize'); 
 const User = require('./user');
-const Comment = require('./comment');
+
 
 const Post = sequelize.define('Post', {
   post_id: {
@@ -13,14 +13,14 @@ const Post = sequelize.define('Post', {
   user_id: {
     type: DataTypes.INTEGER,
     references: {
-      model: User,
+      model: 'users',
       key: 'user_id',
     },
   },
   comment_id: {
     type: DataTypes.INTEGER,
     references: {
-      model: Comment,
+      model: 'comments',
       key: 'comment_id',
     },
   },
@@ -42,6 +42,12 @@ const Post = sequelize.define('Post', {
 });
 
 Post.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-Post.belongsTo(Comment, { foreignKey: 'comment_id', as: 'comment' });
+
 
 module.exports = Post;
+
+const Comment = require('./comment');
+
+Post.hasMany(Comment, { foreignKey: 'post_id', as: 'comments'});
+
+

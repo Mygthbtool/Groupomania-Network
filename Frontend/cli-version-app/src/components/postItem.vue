@@ -196,6 +196,7 @@ export default {
       const userLiked = this.postCopy.usersLiked.includes(this.$store.state.userData.userId);
       const userDisliked = this.postCopy.usersDisliked.includes(this.$store.state.userData.userId);
 
+      // Initialize the logic for liking or disliking a post
       if (likeStatus === 1) {
         if (userLiked) {
           // User already liked the post, so cancel the like
@@ -253,11 +254,11 @@ export default {
     },
 
     getPost(){
-      this.$router.push(`/posts/${this.post.post_id}`)  
+      this.$router.push(`/posts/${this.postId}`)  
     },
     onComment() {
       // Implement your comment functionality here
-       this.$router.push(`/posts/${this.post.post_id}`)     
+       this.$router.push(`/posts/${this.postId}`)     
     },
       
     

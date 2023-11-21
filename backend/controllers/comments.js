@@ -1,6 +1,6 @@
 const Comment = require('../models/comment');
-const Post = require('../models/post')
-
+const Post = require('../models/post');
+const User = require('../models/user');
 //create new comment
 // exports.createComment = (req, res, next) => {
 //   console.log(req.body);
@@ -74,42 +74,46 @@ const Post = require('../models/post')
 exports.createComment = (req, res, next) => {
   console.log(req.body);
 
-  const newComment = new Comment({
-    userId: req.body.userId,
+  const newComment = Comment.build({
+    user_id: req.body.userId,
     text: req.body.text,
+    post_id: req.body.postId
   });
 
-  newComment.save()
-    .then((comment) => {
-      Post.findOne({ _id: req.body.postId })
-        .populate('userId')
-        
-        .then((post) => {
-       
-          // Check if post.comments is null, and initialize it as an empty array if necessary
-          if (post.comments === null) {
-            post.comments = [];
-          }
+  newComment.save().then((comment) => {
+    Post.findByPk(req.body.postId).then((post) => {
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
 
-          // Push the new comment to the post.comments array
-          post.comments.push(comment);
+      post.getComments().then((comment_id) => {
+        // Check if post.comments is null, and initialize it as an empty array if necessary
+        if (!comment_id) {
+          comment_id = [];
+        }
 
-          // Save the post
-          post.save().then(() => {
+        // Push the new comment to the post.comments array
+        comment_id.push(comment);
+
+        post.setComments(comment_id);
+
+        // Save the post
+        post
+          .save()
+          .then(() => {
             res.status(201).json(comment);
+          })
+          .catch((error) => {
+            console.error('Error saving post:', error);
+            res.status(500).json({ error: error });
           });
-        })
-        .catch((error) => {
-          console.error('Error saving post:', error);
-          res.status(500).json({ error: error });
-        });
-    })
-    .catch((error) => {
-      console.error('Error saving comment:', error);
-      res.status(500).json({ error: error });
+      });
     });
+  }).catch((error) => {
+    console.error('Error saving comment:', error);
+    res.status(500).json({ error: error });
+  });
 };
-
 //Get Comments For a post
 // exports.getCommentsForPost = (req, res, next) => {
 

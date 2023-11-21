@@ -15,15 +15,7 @@ exports.createPost = (req, res, next) => {
   if (req.file) {
     mltMediaContent = url + '/images/' + req.file.filename;
   }
-  // const post = new Post({
-  //   postingDate: postObj.postingDate,
-  //   textContent: postObj.textContent,
-  //   mltMediaContent: mltMediaContent, 
-  //   user_id: postObj.userId,
-  //   likes: 0,
-  //   dislikes: 0,
-  //   comment_id:[],         
-  // });
+  
   Post.create({
     user_id: postObj.userId,
     posting_date: postObj.postingDate,
@@ -41,29 +33,22 @@ exports.createPost = (req, res, next) => {
     }
 });
   
-  // post.create().then(
-  //   (post) => {
-  //     res.status(201).json({
-  //       message: 'Post saved successfully!', post
-  //     });
-  //   }
-  // ).catch(
-  //   (error) => {
-  //     res.status(400).json({
-  //       error: error
-  //     });
-  //   }
-  // );
 };
 
 //Get one poste
 exports.getOnePost = (req, res, next) => {
-  Post.findOne({_id: req.params.id})
-  .populate({
-    path: 'comments',
-    populate: { path: 'userId' }
-  })
-  .populate("userId")
+  Post.findOne( { where: {post_id: req.params.id },
+  include: [
+    { model: User, as: 'user' },  // association with 'user'
+    { model: Comment, as: 'comments', include: [{model: User, as: 'user'}]}  // assuming you have an association named 'comments'
+  ],
+  
+})
+  // .populate({
+  //   path: 'comments',
+  //   populate: { path: 'userId' }
+  // })
+  // .populate("userId")
   
   .then((post) => {   
      res.status(200).json(post);
@@ -222,8 +207,8 @@ exports.getAllPosts = (req, res, next) => {
   // Include the associated User and Comment models
   Post.findAll({
     include: [
-      { model: User, as: 'user' },  // assuming you have an association named 'user'
-      { model: Comment, as: 'comment' }  // assuming you have an association named 'comments'
+      { model: User, as: 'user' },  // association named 'user'
+      //{ model: Comment, as: 'comment' }  // assuming you have an association named 'comments'
     ],
    // order: [['posting-date', 'DESC']]  // sort by postingDate in descending order
   })

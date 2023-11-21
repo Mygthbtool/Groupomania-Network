@@ -3,16 +3,16 @@
         <div v-if="post" id="post" class="post">
             <div class="post-header">
                 <!-- <img :src="post.userId.avatar" /> -->               
-                <img v-if="post && post.userId" :src="post.userId.avatar" />
-                <div v-if="post && post.userId" class="post-info">
-                    <h3>{{ post.userId.firstName }} {{ post.userId.lastName }}</h3>
-                    <span class="post-date">{{ post.postingDate }}</span>
+                <img v-if="post && post.user" :src="post.user.avatar" />
+                <div v-if="post && post.user" class="post-info">
+                    <h3>{{ post.user.first_name }} {{ post.user.last_name }}</h3>
+                    <span class="post-date">{{ post.posting_date }}</span>
                 </div>
             </div>
             <div class="post-content">
-            <p>{{ post.textContent }}</p>
+            <p>{{ post.text_content }}</p>
             
-            <img v-if="post.mltMediaContent" :src="post.mltMediaContent" alt='multiMediaContent'/>
+            <img v-if="post.mlt_media_content" :src="post.mlt_media_content" alt='multiMediaContent'/>
 
             </div>
             <div class="post-actions">
@@ -24,9 +24,9 @@
     <div class="comments-container">
       <h2>Comments</h2>
       <div v-if="post.comments">   
-        <div v-for="comment in post.comments" :key="comment.id" class="comment">   
-          <div v-if="comment.userId" class="comment-user">
-            {{ comment.userId.firstName }} {{ comment.userId.lastName }}
+        <div v-for="comment in post.comments" :key="comment.comment_id" class="comment">   
+          <div v-if="comment.user" class="comment-user">
+            {{ comment.user.first_name }} {{ comment.user.last_name }}
           </div>  
           <div class="comment-text">{{ comment.text }}</div>
         </div>
@@ -61,7 +61,6 @@
 
 computed: {
 
- 
 },
 methods:{ 
     async fetchPost() {
@@ -75,68 +74,30 @@ methods:{
         this.post = response.data;
         this.comments = this.post.comments;
 
-        if (!this.post.readBy.includes(this.$store.state.userData.userId)) {
-           this.post.readBy.push(this.$store.state.userData.userId);
+        // if (!this.post.readBy.includes(this.$store.state.userData.userId)) {
+        //    this.post.readBy.push(this.$store.state.userData.userId);
 
-          // Send a request to update the 'readBy' array in the database
-          try {
-            const headers = {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + this.$store.state.userData.token,
-            };
-            const userId = this.$store.state.userData.userId;
+        //   // Send a request to update the 'readBy' array in the database
+        //   try {
+        //     const headers = {
+        //       'Content-Type': 'application/json',
+        //       'Authorization': 'Bearer ' + this.$store.state.userData.token,
+        //     };
+        //     const userId = this.$store.state.userData.userId;
 
-             await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
-            console.log('Post marked as read on the server.');
+        //      await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
+        //     console.log('Post marked as read on the server.');
 
-          } catch (error) {
-            console.error('Error marking post as read on the server:', error);
-          }
-        }
+        //   } catch (error) {
+        //     console.error('Error marking post as read on the server:', error);
+        //   }
+        // }
       
-         console.log(response.data);
+         //console.log(response.data);
       } catch (error) {
         console.error("Error fetching post:", error);
       }    
     },
-  //   async markPostAsRead(post) {
-  //     //  const userId = this.$store.state.userData.userId
-  //     const postId = this.$route.params.id;
-  //   // Check if the user's ID is not already in the 'readBy' array
-  //   if (!this.post.readBy.includes(this.$store.state.userData.userId)) {
-  //     this.post.readBy.push(this.$store.state.userData.userId);
-  //     // Send a request to update the 'readBy' array in the database
-  //     try {
-  //       const headers = {
-  //         'Content-Type': 'multipart/form-data',
-  //         'Authorization': 'Bearer ' + this.$store.state.userData.token,
-  //       };
-  //       await axios.put(`posts/${postId}/markAsRead`, post, { headers: headers });
-  //       console.log('Post marked as read on the server.');
-  //     } catch (error) {
-  //       console.error('Error marking post as read on the server:', error);
-  //     }
-  //   }
-  // },
-
-    // async fetchComments() {
-    //   try {
-    //     const postId = this.$route.params.id
-    //     console.log(postId)
-    //     const headers = {
-    //       'Content-Type': 'multipart/form-data',
-    //       'Authorization': 'Bearer ' + this.$store.state.userData.token,
-    //     } 
-    //     const response = await axios.get(`posts/${postId}`, { headers: headers });
-    //     // this.$store.commit('setPosts', response.data); // Store posts in Vuex
-    //     this.comments = response.data;
-    //     console.log(response.data);
-        
-    //   } catch (error) {
-    //     console.error('Error fetching comments:', error);
-    //   }
-    // },
-
     
   async addComment() {
     if (!this.commentText) {
@@ -158,7 +119,7 @@ methods:{
           'Authorization': 'Bearer ' + this.$store.state.userData.token,
         },
       });
-
+      console.log(response.data);
       // Add the new comment to the list of comments
       this.comments.push(response.data);
 
