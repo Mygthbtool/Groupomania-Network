@@ -16,8 +16,8 @@
         </div>
       </div>  
       <div class="post-actions">
-        <button class="like-button" @click="onLike">Like</button>{{ postCopy.likes }}
-        <button class="dislike-button" @click="onDislike">Dislike</button>{{ postCopy.dislikes }}
+        <button class="like-button" @click="onLike">Like</button>{{ post.likes }}
+        <button class="dislike-button" @click="onDislike">Dislike</button>{{ post.dislikes }}
         <button class="comment-button" @click="onComment">Comment</button>
         <button class="mark-read-button" @click="markAsRead">Mark as read</button>
         <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
@@ -53,7 +53,12 @@ export default {
       isEditing: false,
       editedContent: '', // Bind this to the edited content
       editedMultimediaContent: null, // For uploading new multimedia content
-      postCopy: Object.assign({}, this.post), // Create a copy of the post prop
+    //  postCopy: Object.assign({}, this.post), // Create a copy of the post prop
+      
+      // postreader:{
+      //   user_id: Number,
+      //   post_id: Number
+      // }
     };
   },
    props :{
@@ -92,12 +97,12 @@ export default {
       readBy: {
         type: Array,
       },
-      usersLiked: {
-        type: Array,
-      },
-      usersDisliked: {
-        type: Array,
-      },      
+      // usersLiked: {
+      //   type: Array,
+      // },
+      // usersDisliked: {
+      //   type: Array,
+      // },      
    }, 
   
    computed: {
@@ -109,7 +114,7 @@ export default {
     },
     // isPostRead() {
     //   // Check if the user's ID is in the 'readBy' array
-    //   return this.post.readBy.includes(this.$store.state.userData.userId);
+    //   return this.postId === this.postreader.post_id && this.$store.state.userData.userId === this.postreader.user_id;
     
     // },
     ...mapState(['userData', 'posts']),
@@ -192,62 +197,20 @@ export default {
     },
 
     async toggleLikeDislike(likeStatus) {
-      // Check if the user already liked or disliked the post
-      const userLiked = this.postCopy.usersLiked.includes(this.$store.state.userData.userId);
-      const userDisliked = this.postCopy.usersDisliked.includes(this.$store.state.userData.userId);
-
-      // Initialize the logic for liking or disliking a post
-      if (likeStatus === 1) {
-        if (userLiked) {
-          // User already liked the post, so cancel the like
-          likeStatus = 0; // Change likeStatus to 0 to cancel the like
-        } else if (userDisliked) {
-          // User disliked the post, so cancel the dislike and add a like
-          likeStatus = 1;
-        }else{
-          likeStatus = 1;
-        }
-      } else if (likeStatus === -1) {
-        if (userDisliked) {
-          // User already disliked the post, so cancel the dislike
-          likeStatus = 0; // Change likeStatus to 0 to cancel the dislike
-        } else if (userLiked) {
-          // User liked the post, so add a dislike
-          likeStatus = -1;
-        } else{
-          likeStatus = -1;
-        }
-      }
-     
+        // send request to the server according to likeStatus
       try {
         // const userId = this.$store.state.userData.userId
+        const postId = this.postId;
         const response = await axios.post(
-          `posts/${this.postCopy._id}/like`,
+          `posts/${postId}/like`,
           { userId: this.$store.state.userData.userId, like: likeStatus },
           {headers: { "Content-Type": "application/json",
                       "Authorization": "Bearer " + this.$store.state.userData.token }});
-       // console.log(response);
-         //this.$store.commit('refreshPost', response.data.post); // Store posts in Vuex
 
-         // Update the post's likes and dislikes in the copied object
-         if (likeStatus === 1) {
-          this.postCopy.likes += 1;
-          this.postCopy.usersLiked.push(this.$store.state.userData.userId);
-        } else if (likeStatus === -1) {
-          this.postCopy.dislikes += 1;
-          this.postCopy.usersDisliked.push(this.$store.state.userData.userId);
-        } else if (likeStatus === 0) {
-          // Handle canceling like or dislike in the copied object
-          if (userLiked) {
-            this.postCopy.likes -= 1;
-            this.postCopy.usersLiked = this.postCopy.usersLiked.filter((id) => id !== this.$store.state.userData.userId);
-          } else if (userDisliked) {
-            this.postCopy.dislikes -= 1;
-            this.postCopy.usersDisliked = this.postCopy.usersDisliked.filter((id) => id !== this.$store.state.userData.userId);
-          }
-        }
-       
-        console.log(response.data);
+            // console.log(response.data.postReaction);          
+      
+         this.$store.commit('refreshPost', response.data.updatedPost); // Store posts in Vuex
+       console.log(response.data);
       } catch (error) {
         console.error("Error liking/disliking post:", error);
       }
@@ -288,10 +251,10 @@ export default {
     },
 
     async markAsRead() {
-       // const postId = this.$route.params.id; // Use 'id' to get the post ID from route params
+        const postId = this.postId; // Use 'id' to get the post ID from route params
 
-        if (!this.postCopy.readBy.includes(this.$store.state.userData.userId)) {
-           this.postCopy.readBy.push(this.$store.state.userData.userId);
+        if (!this.postId === this.postreader.post_id && !this.$store.state.userData.userId === this.postreader.user_id) {
+        //    this.postCopy.readBy.push(this.$store.state.userData.userId);
 
           // Send a request to update the 'readBy' array in the database
           try {
@@ -301,9 +264,9 @@ export default {
             };
             const userId = this.$store.state.userData.userId;
 
-             await axios.post(`posts/${this.postCopy._id}/markAsRead`, { userId }, { headers: headers });
+           await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
             console.log('Post marked as read on the server.');
-
+            
           } catch (error) {
             console.error('Error marking post as read on the server:', error);
           }

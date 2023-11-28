@@ -136,7 +136,12 @@ export default {
     isAuthenticated() {
       return !!this.$store.state.userData.token;
     },
-  },
+    
+    posts() {
+    return this.$store.state.posts; // state has a 'posts' array
+  }
+},
+
   mounted() {
     // Check if the user is authenticated
     if (this.isAuthenticated) {

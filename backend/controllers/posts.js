@@ -2,6 +2,8 @@ const Post = require('../models/post');
 const fs = require('fs');
 const User = require('../models/user');
 const Comment = require('../models/comment');
+const PostReaction = require('../models/post-reaction');
+const PostReader = require('../models/post-reader');
 
 // Create new poste
 exports.createPost = (req, res, next) => {
@@ -75,21 +77,23 @@ exports.markPostRead = async (req, res, next) => {
   
   console.log(req.body)
   const postId = req.params.id;
-  const userId = req.body.userId
+  const userIdentifier = req.body.userId
   try {
-    const post = await Post.findById(postId)
+    const postreader = await PostReader.findOne({ where: { post_id: postId, user_id: userIdentifier }})
  
-    if (!post) {
-      return res.status(404).json({ error: 'Post not found' });
-    }
-
+    // if (!postreader) {
+    //   return res.status(404).json({ error: 'Postreader not found' });
+    // }
     // Check if the user ID is not already in the 'readBy' array to avoid duplicates.
-    if (!post.readBy.includes(userId)) {
-      post.readBy.push(userId);
-      await post.save();
+    if (!postreader) {
+      PostReader.create({
+        user_id: userIdentifier,
+        post_id: postId
+      });
+
     }
     // console.log(post.readBy);
-    res.status(200).json({ message: 'Post marked as read' });
+    res.status(200).json({ message: 'Post marked as read', postreader });
   } catch (error) {
     console.error('Error marking post as read:', error);
     res.status(500).json({ error: 'Failed to mark post as read' });
@@ -239,81 +243,213 @@ exports.getAllPosts = (req, res, next) => {
 //   );
 // };
 
-// Like and dislike
-exports.likeAndDislikePost = (req, res, next) => {
-  console.log(req.body.like);
-    let userIdentifier = req.body.userId;
-    let likeStatus = req.body.like;
+// Like and dislike Post
+// exports.likeAndDislikePost = (req, res, next) => {
+//   console.log(req.body.like)
+//   const userIdentifier = req.body.userId;
+//   const likeStatus = req.body.like;
+//   const postId = req.params.id;
 
+//   // Find the post reaction for the user and post
+//   PostReaction.findOne({ where: { post_id: postId, user_id: userIdentifier } })
+//     .then((postReaction) => {
+//       if (postReaction) {
+//         // Update the existing post reaction
+//         postReaction.update({ value: likeStatus })
+//           .then(() => {
+//             // Handle the case when likeStatus is 0 (canceling like or dislike)
+//             if (likeStatus === 0) {
+//               if (postReaction.value === 1) {
+//                 // User is canceling a like
+//                 Post.decrement('likes', { where: { post_id: postId } })
+//                   .then(() => {
+//                     res.status(201).json({ message: 'Like canceled successfully!', postReaction });
+//                   })
+//                   .catch((error) => {
+//                     res.status(500).json({ error: error });
+//                   });
+//               } else if (postReaction.value === -1) {
+//                 // User is canceling a dislike
+//                 Post.decrement('dislikes', { where: { post_id: postId } })
+//                   .then(() => {
+//                     res.status(201).json({ message: 'Dislike canceled successfully!', postReaction });
+//                   })
+//                   .catch((error) => {
+//                     res.status(500).json({ error: error });
+//                   });
+//               }
+//             } else {
+//               // Update the post likes and dislikes based on the like status
+//               if (likeStatus === 1) {
+//                 Post.increment('likes', { where: { post_id: postId } })
+//                   .then(() => {
+//                     res.status(201).json({ message: 'Post liked successfully!', postReaction });
+//                   })
+//                   .catch((error) => {
+//                     res.status(500).json({ error: error });
+//                   });
+//               } else if (likeStatus === -1) {
+//                 Post.increment('dislikes', { where: { post_id: postId } })
+//                   .then(() => {
+//                     res.status(201).json({ message: 'Post disliked successfully!', postReaction });
+//                   })
+//                   .catch((error) => {
+//                     res.status(500).json({ error: error });
+//                   });
+//               }
+//             }
+//           })
+//           .catch((error) => {
+//             res.status(500).json({ error: error });
+//           });
+//       } else {
+//         // Create a new post reaction if it doesn't exist
+//         PostReaction.create({
+//           value: likeStatus,
+//           user_id: userIdentifier,
+//           post_id: postId,
+//         })
+//           .then(() => {
+//             // Update the post likes and dislikes based on the like status
+//             if (likeStatus === 1) {
+//               Post.increment('likes', { where: { post_id: postId } })
+//                 .then(() => {
+//                   res.status(201).json({ message: 'Post liked successfully!' }, postReaction);
+//                 })
+//                 .catch((error) => {
+//                   res.status(500).json({ error: error });
+//                 });
+//             } else if (likeStatus === -1) {
+//               Post.increment('dislikes', { where: { post_id: postId } })
+//                 .then(() => {
+//                   res.status(201).json({ message: 'Post disliked successfully!', postReaction });
+//                 })
+//                 .catch((error) => {
+//                   res.status(500).json({ error: error });
+//                 });
+//             }
+//           })
+//           .catch((error) => {
+//             res.status(500).json({ error: error });
+//           });
+//       }
+//     })
+//     .catch((error) => {
+//       res.status(500).json({ error: error });
+//     });
+// };
+// ----------------------------------------------------------------------------------
     // If the user like the post, likestatus increased by 1      
-        if(likeStatus === 1) {
+//         if(likeStatus === 1) {
             
-          Post.findByIdAndUpdate({_id: req.params.id}, {$inc:{likes: +1},
-            $push:{usersLiked: userIdentifier}})
-          .then(() =>   
-            Post.findOne({_id: req.params.id})
-            .populate({
-              path: 'comments',
-              populate: { path: 'userId' }
-            })
-            .populate("userId")
+//           Post.findByIdAndUpdate({_id: req.params.id}, {$inc:{likes: +1},
+//             $push:{usersLiked: userIdentifier}})
+//           .then(() =>   
+//             Post.findOne({_id: req.params.id})
+//             .populate({
+//               path: 'comments',
+//               populate: { path: 'userId' }
+//             })
+//             .populate("userId")
             
-          .then((post) => {   
-              res.status(201).json({
-                message: 'like has been added successfully!', post        
-                })
+//           .then((post) => {   
+//               res.status(201).json({
+//                 message: 'like has been added successfully!', post        
+//                 })
 
-          })
-          ).catch((error) => {
-                res.status(400).json({
-                error: error});
-            }) 
+//           })
+//           ).catch((error) => {
+//                 res.status(400).json({
+//                 error: error});
+//             }) 
                                       
-        }
+//         }
             
-    // If the user dislike the post, likestatus decreased by 1  
-        else if (likeStatus === -1) {
+//     // If the user dislike the post, likestatus decreased by 1  
+//         else if (likeStatus === -1) {
         
-            Post.findByIdAndUpdate({_id: req.params.id}, {$inc:{dislikes: +1},
-              $push:{usersDisliked: userIdentifier}})
-            .populate('userId')
-            .then((post) =>   
-                res.status(201).json({
-                message: 'dislike has been added successfully!', post  
+//             Post.findByIdAndUpdate({_id: req.params.id}, {$inc:{dislikes: +1},
+//               $push:{usersDisliked: userIdentifier}})
+//             .populate('userId')
+//             .then((post) =>   
+//                 res.status(201).json({
+//                 message: 'dislike has been added successfully!', post  
                     
-                })
-            )
-            .catch((error) => {
-                res.status(400).json({
-                error: error});
-            })
+//                 })
+//             )
+//             .catch((error) => {
+//                 res.status(400).json({
+//                 error: error});
+//             })
                
-        }    
-    // If the user cancel his like or dislike
-    else if (likeStatus === 0) {       
+//         }    
+//     // If the user cancel his like or dislike
+//     else if (likeStatus === 0) {       
         
-        Post.findByIdAndUpdate({_id: req.params.id}).populate('userId')
-        .then((post) => {
-          // user cancel his like
-                if(post.usersLiked.includes(userIdentifier)){
-                  Post.updateOne({_id: req.params.id}, {$inc:{likes: -1},
-                    $pull:{usersLiked: userIdentifier}})//.populate('userId')
+//         Post.findByIdAndUpdate({_id: req.params.id}).populate('userId')
+//         .then((post) => {
+//           // user cancel his like
+//                 if(post.usersLiked.includes(userIdentifier)){
+//                   Post.updateOne({_id: req.params.id}, {$inc:{likes: -1},
+//                     $pull:{usersLiked: userIdentifier}})//.populate('userId')
         
-                    .then(() => res.status(201).json({message: "Like has been canceled"}))
-                    .catch(error => res.status(400).json(error))
+//                     .then(() => res.status(201).json({message: "Like has been canceled"}))
+//                     .catch(error => res.status(400).json(error))
                     
-                }               
-                //user cancel his dislike
-                else if(post.usersDisliked.includes(userIdentifier)){
-                  Post.updateOne({_id: req.params.id}, {$inc:{dislikes:-1}, 
-                     $pull:{usersDisliked: userIdentifier}})//.populate('userId')
+//                 }               
+//                 //user cancel his dislike
+//                 else if(post.usersDisliked.includes(userIdentifier)){
+//                   Post.updateOne({_id: req.params.id}, {$inc:{dislikes:-1}, 
+//                      $pull:{usersDisliked: userIdentifier}})//.populate('userId')
 
-                    .then(() => res.status(201).json({message: "Dislike has been canceled"}))
-                    .catch(error => res.status(400).json(error))
-                } 
+//                     .then(() => res.status(201).json({message: "Dislike has been canceled"}))
+//                     .catch(error => res.status(400).json(error))
+//                 } 
                 
-        }).catch(error => res.status(400).json(error))
-    } 
-}
+//         }).catch(error => res.status(400).json(error))
+//     } 
+// }
 
+updatePostStats = async(postId) => {
+  
+  const totalLike = await PostReaction.count({where: {post_id: postId, value: 1}});
+  const totalDislike = await PostReaction.count({where: {post_id: postId, value: -1}});
+  const post = await Post.update(
+    { likes: totalLike, dislikes: totalDislike },
+    { where: { post_id: postId } }
+  )
+  return post;
+}
+exports.likeAndDislikePost = async(req, res, next) => {
+  console.log(req.body.like)
+  const userIdentifier = req.body.userId;
+  const likeStatus = req.body.like;
+  const postId = req.params.id;
+  
+
+  let postReaction = await PostReaction.findOne({ where: { post_id: postId, user_id: userIdentifier } });
+  if(postReaction){
+    if(postReaction.value ===  likeStatus){
+      await postReaction.destroy();
+    }else {
+      await PostReaction.update(
+        { value: likeStatus },
+        { where: { reaction_id: postReaction.reaction_id } }
+      )
+    }
+  }else {
+    postReaction = await PostReaction.create({
+      value: likeStatus,
+      user_id: userIdentifier,
+      post_id: postId,
+    })
+  }
+  try {
+    const updatedPost = await updatePostStats(postId);
+    res.status(201).json({ message: 'Post updated successfully!', updatedPost });
+  } catch (error) {
+    console.error('Error updating post stats:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+}
 
