@@ -138,17 +138,11 @@ exports.deleteAccount = (req, res, next) => {
 exports.EditUserAccount = (req, res, next) => {
     console.log(req.body);
     const userId = req.params.userId;
+
     User.findOne({ where: { user_id: userId } })
       .then((user) => {
         console.log({ user });
   
-        // Delete the user
-       
-        User.destroy({ where: { user_id: userId } })
-          .then((rowsDeleted) => {
-            if (rowsDeleted === 1) {
-              
-              // Now, update the user
               let avatar = './images/User-avatar.png'; // Initialize avatar
               if (req.file) {
                 const url = req.protocol + '://' + req.get('host');
@@ -159,13 +153,14 @@ exports.EditUserAccount = (req, res, next) => {
                 first_name: req.body.firstName,
                 last_name: req.body.lastName,
                 email: req.body.email,
-                avatar: avatar
+                avatar: avatar,
               
               };
               if (req.body.password) {
-                bcrypt.hash(req.body.password, 10).then((hash) => {
+                bcrypt.hash(req.body.password, 10)
+                .then((hash) => {
                   updatedUser.password = hash;
-                  User.create(updatedUser)
+                  User.update(updatedUser, { where: { user_id: userId } } )
                  
                     .then(() => {
                       res.status(201).json({
@@ -179,7 +174,7 @@ exports.EditUserAccount = (req, res, next) => {
                     });
                 });
               } else {
-                User.create(updatedUser)
+                User.update(updatedUser, { where: { user_id: userId } })
                 
                   .then(() => {
                     res.status(201).json({
@@ -193,11 +188,7 @@ exports.EditUserAccount = (req, res, next) => {
                     });
                   });
               }
-            }
-          })
-          .catch((error) => {
-            res.status(400).json({ error: error });
-          });
+            
       })
       .catch((error) => {
         res.status(400).json({ error: error });

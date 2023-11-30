@@ -46,11 +46,6 @@ exports.getOnePost = (req, res, next) => {
   ],
   
 })
-  // .populate({
-  //   path: 'comments',
-  //   populate: { path: 'userId' }
-  // })
-  // .populate("userId")
   
   .then((post) => {   
      res.status(200).json(post);
@@ -63,13 +58,6 @@ exports.getOnePost = (req, res, next) => {
   });
 };
 
-// if(!post.read_by.includes($auth.userId)){
-//   post.read_by.push($auth.userId)
-//   post.save().then((post) => {
-//   return res.status(200).json(post)
-//   })
-//   return res.status(200).json(post)
-// }
 
 //Modify post 
 exports.modifyPost = (req, res, next) => {
