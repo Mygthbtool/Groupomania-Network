@@ -1,5 +1,5 @@
 <template>
-  <div v-if="post" id="post" class="post" :class="{ 'unread-post': !isCurrentUserOwner && !isPostRead }">
+  <div v-if="post" id="post" class="post">
       <div @click="getPost">
         <div class="post-header">
           <img :src="post.user.avatar" />
@@ -19,7 +19,7 @@
         <button class="like-button" @click="onLike">Like</button>{{ post.likes }}
         <button class="dislike-button" @click="onDislike">Dislike</button>{{ post.dislikes }}
         <button class="comment-button" @click="onComment">Comment</button>
-        <button class="mark-read-button" @click="markAsRead">Mark as read</button>
+        <button class="mark-read-button" @click="markAsRead" v-if="!isCurrentUserOwner && isNewPost">Mark as read</button>
         <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
         <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
           <!-- Display an edit form when in edit mode -->
@@ -34,11 +34,10 @@
         </div>
 
       </div>  
-      <span class="new-badge" v-if="!isCurrentUserOwner && !isPostRead">New</span>
+      <span class="new-badge" v-if="!isCurrentUserOwner && isNewPost">New</span>
     
   </div>
   
-
 </template>
 
 <script>
@@ -53,12 +52,8 @@ export default {
       isEditing: false,
       editedContent: '', // Bind this to the edited content
       editedMultimediaContent: null, // For uploading new multimedia content
-    //  postCopy: Object.assign({}, this.post), // Create a copy of the post prop
-      
-      // postreader:{
-      //   user_id: Number,
-      //   post_id: Number
-      // }
+      postReaders: [],      
+  
     };
   },
    props :{
@@ -94,32 +89,32 @@ export default {
       postId:{
         type: Number,     
       },
-      readBy: {
-        type: Array,
-      },
-      // usersLiked: {
-      //   type: Array,
-      // },
-      // usersDisliked: {
-      //   type: Array,
-      // },      
    }, 
   
    computed: {
 
     isCurrentUserOwner() {
       // Check if the current user's ID matches the post owner's ID
-      return this.currentUser === this.post.user_id;
-    
+      return this.currentUser === this.post.user_id;  
+        
     },
-    // isPostRead() {
-    //   // Check if the user's ID is in the 'readBy' array
-    //   return this.postId === this.postreader.post_id && this.$store.state.userData.userId === this.postreader.user_id;
-    
-    // },
+
+    isNewPost() {
+    const userId = this.$store.state.userData.userId;
+
+    // Check if the user has read the post
+    const hasRead = this.postReaders.some(postReader=> postReader.user_id === userId);
+
+    // If the post is not owned by the current user and the user hasn't read it, consider it new
+    return !this.isCurrentUserOwner && !hasRead;
+    },
     ...mapState(['userData', 'posts']),
     
-   },
+  },
+  mounted() {
+  // Fetch the list of users who have read the post
+  this.fetchPostReaders();
+  }, 
    methods: {
 
     onEdit() {
@@ -217,10 +212,11 @@ export default {
     },
 
     getPost(){
+      // get one post page
       this.$router.push(`/posts/${this.postId}`)  
     },
     onComment() {
-      // Implement your comment functionality here
+      // get one post page and its comments
        this.$router.push(`/posts/${this.postId}`)     
     },
       
@@ -252,10 +248,6 @@ export default {
 
     async markAsRead() {
         const postId = this.postId; // Use 'id' to get the post ID from route params
-
-        if (!this.postId === this.postreader.post_id && !this.$store.state.userData.userId === this.postreader.user_id) {
-        //    this.postCopy.readBy.push(this.$store.state.userData.userId);
-
           // Send a request to update the 'readBy' array in the database
           try {
             const headers = {
@@ -264,16 +256,34 @@ export default {
             };
             const userId = this.$store.state.userData.userId;
 
-           await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
-            console.log('Post marked as read on the server.');
-            
+           const response = await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
+            console.log(response.data.message);
+           await this.fetchPostReaders();
+         
           } catch (error) {
             console.error('Error marking post as read on the server:', error);
           }
-        }
+        
+    },
+    async fetchPostReaders() {
+    const postId = this.postId;
+
+    try {
+      const headers = {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this.$store.state.userData.token,
+            };
+      // const userId = this.$store.state.userData.userId;      
+      const response = await axios.get(`posts/${postId}/readers`, { headers: headers });
+            console.log(response.data)
+      this.postReaders = response.data || [];
+    } catch (error) {
+      console.error('Error fetching post readers:', error);
     }
+  },
   
-  } 
+  },
+
 }              
 </script>        
 
@@ -286,10 +296,6 @@ export default {
       margin-bottom: 10px;
       position: relative;
     /* Reset some default styles */
-  &.unread-post {
-    border: 1px solid red;
-    background-color: yellow;
-  }
 
   body, h1, h2, h3, p, ul, li {
       margin: 0;

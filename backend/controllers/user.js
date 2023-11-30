@@ -1,7 +1,13 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
 const fs = require('fs');
+
+const User = require('../models/user');
+const Post = require('../models/post');
+const Comment = require('../models/comment');
+const PostReaction = require('../models/post-reaction');
+const PostReader = require('../models/post-reader');
+
 
 exports.signup = (req, res, next) => {
   const userObj = req.body;
@@ -107,7 +113,11 @@ exports.login = (req, res, next) => {
 exports.deleteAccount = (req, res, next) => {
     // Get the user ID from the request parameters
     const userId = req.params.userId;
-  
+
+    PostReaction.destroy({ where: { user_id: userId } });
+    PostReader.destroy({ where: { user_id: userId } });
+    Comment.destroy({ where: { user_id: userId } });
+    Post.destroy({ where: { user_id: userId } });
     User.destroy({ where: { user_id: userId }})
     
       .then((rowsDeleted) => {
@@ -127,15 +137,17 @@ exports.deleteAccount = (req, res, next) => {
 
 exports.EditUserAccount = (req, res, next) => {
     console.log(req.body);
-
-    User.findOne({ where: { user_id: req.params.userId } })
+    const userId = req.params.userId;
+    User.findOne({ where: { user_id: userId } })
       .then((user) => {
         console.log({ user });
   
         // Delete the user
-        User.destroy({ where: { user_id: req.params.userId } })
+       
+        User.destroy({ where: { user_id: userId } })
           .then((rowsDeleted) => {
             if (rowsDeleted === 1) {
+              
               // Now, update the user
               let avatar = './images/User-avatar.png'; // Initialize avatar
               if (req.file) {
@@ -150,11 +162,11 @@ exports.EditUserAccount = (req, res, next) => {
                 avatar: avatar
               
               };
-  
               if (req.body.password) {
                 bcrypt.hash(req.body.password, 10).then((hash) => {
                   updatedUser.password = hash;
                   User.create(updatedUser)
+                 
                     .then(() => {
                       res.status(201).json({
                         message: 'User account updated successfully!',
@@ -168,10 +180,12 @@ exports.EditUserAccount = (req, res, next) => {
                 });
               } else {
                 User.create(updatedUser)
+                
                   .then(() => {
                     res.status(201).json({
                       message: 'User account updated successfully!',
                     });
+
                   })
                   .catch((error) => {
                     res.status(400).json({
@@ -190,7 +204,11 @@ exports.EditUserAccount = (req, res, next) => {
       });
   };
   
-  
+// PostReaction.update({ where: { user_id: userId } });
+//  PostReader.update({ where: { user_id: userId } });
+//  Comment.update({ where: { user_id: userId } });
+//  Post.update({ where: { user_id: userId } })
+//-------------------------------------------------------
 // exports.EditUserAccount = (req, res, next) => {
 //   console.log(req.body);
 

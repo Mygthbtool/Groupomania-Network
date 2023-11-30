@@ -54,7 +54,8 @@
         commentText: '', // Add this if not already defined
         post: {}, // Initialize 'post' to null
         comments: [],
-        // readBy: [] // List of comments
+     
+     
       };
     },
     
@@ -74,24 +75,22 @@ methods:{
         this.post = response.data;
         this.comments = this.post.comments;
 
-        // if (!this.post.readBy.includes(this.$store.state.userData.userId)) {
-        //    this.post.readBy.push(this.$store.state.userData.userId);
+          // Send a request to update the 'readBy' array in the database
+          try {
+            const headers = {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + this.$store.state.userData.token,
+            };
+            const userId = this.$store.state.userData.userId;
 
-        //   // Send a request to update the 'readBy' array in the database
-        //   try {
-        //     const headers = {
-        //       'Content-Type': 'application/json',
-        //       'Authorization': 'Bearer ' + this.$store.state.userData.token,
-        //     };
-        //     const userId = this.$store.state.userData.userId;
+             await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
 
-        //      await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
-        //     console.log('Post marked as read on the server.');
+            console.log(response.data.message);
 
-        //   } catch (error) {
-        //     console.error('Error marking post as read on the server:', error);
-        //   }
-        // }
+          } catch (error) {
+            console.error('Error marking post as read on the server:', error);
+          }
+        
       
          //console.log(response.data);
       } catch (error) {

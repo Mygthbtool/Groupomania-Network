@@ -32,7 +32,6 @@
             :likes="post.likes"
             :dislikes="post.dislikes"
             :comments="post.comment_id"
-            :readBy="post.readBy"
             :userId="post.user_id"
             :currentUser= "userData.userId"
             @post-deleted="handlePostDeleted"
