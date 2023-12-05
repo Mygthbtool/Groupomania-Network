@@ -1,8 +1,8 @@
 <template>
+    <button @click="goBack">Back</button>
     <div>
         <div v-if="post" id="post" class="post">
             <div class="post-header">
-                <!-- <img :src="post.userId.avatar" /> -->               
                 <img v-if="post && post.user" :src="post.user.avatar" />
                 <div v-if="post && post.user" class="post-info">
                     <h3>{{ post.user.first_name }} {{ post.user.last_name }}</h3>
@@ -43,6 +43,8 @@
     
 <script> 
  import axios from "../libs/axios";
+ import { mapState } from 'vuex';
+//  import { mapMutations } from 'vuex';
 
   export default {
     name: 'CommentPostView',
@@ -54,15 +56,14 @@
         commentText: '', // Add this if not already defined
         post: {}, // Initialize 'post' to null
         comments: [],
-     
-     
+    //   updatedPost: Object.assign({}, this.post),    
       };
     },
     
-
-computed: {
-
-},
+  computed: {
+    ...mapState(['userData', 'posts']),
+  // ...mapMutations(['refreshOnePost'])
+  },
 methods:{ 
     async fetchPost() {
         const postId = this.$route.params.id; // Use 'id' to get the post ID from route params
@@ -84,8 +85,6 @@ methods:{
             const userId = this.$store.state.userData.userId;
 
              await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
-
-            console.log(response.data.message);
 
           } catch (error) {
             console.error('Error marking post as read on the server:', error);
@@ -129,13 +128,44 @@ methods:{
       console.error('Error adding comment:', error);
     }
   },
+  onLike() {
+      // Implement your like functionality here
+      this.toggleLikeDislike(1); // 1 represents "like"
+    },
+    onDislike() {
+      // Implement your dislike functionality here
+      this.toggleLikeDislike(-1); // -1 represents "dislike"
+    },
+
+    async toggleLikeDislike(likeStatus) {
+        // send request to the server according to likeStatus
+      try {
+        // const userId = this.$store.state.userData.userId
+        const postId = this.$route.params.id;
+        const response = await axios.post(
+          `posts/${postId}/like`,
+          { userId: this.$store.state.userData.userId, like: likeStatus },
+          {headers: { "Content-Type": "application/json",
+                      "Authorization": "Bearer " + this.$store.state.userData.token }});
+
+            // console.log(response.data);          
+      
+         this.$store.commit('refreshPost', response.data.updatedPost); // Store posts in Vuex
+       console.log(response.data);
+      } catch (error) {
+        console.error("Error liking/disliking post:", error);
+      }
+    },
+
+  goBack() {
+      // Go back one step in the history
+      this.$router.go(-1);
+    },
 },
 
 mounted() {
-    this.fetchPost()
-     
+    this.fetchPost()     
 }
-
 
 }
 </script>

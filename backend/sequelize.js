@@ -8,5 +8,4 @@ const sequelize = new Sequelize('groupomania', 'root', 'AnaCoderChelfi', {
   }
 });
 
-
 module.exports = sequelize;

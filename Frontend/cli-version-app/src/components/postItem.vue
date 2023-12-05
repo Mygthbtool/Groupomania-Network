@@ -16,9 +16,9 @@
         </div>
       </div>  
       <div class="post-actions">
-        <button class="like-button" @click="onLike">Like</button>{{ post.likes }}
-        <button class="dislike-button" @click="onDislike">Dislike</button>{{ post.dislikes }}
-        <button class="comment-button" @click="onComment">Comment</button>
+        <button class="like-button" @click="onLike">Like</button>{{ likes }}
+        <button class="dislike-button" @click="onDislike">Dislike</button>{{ dislikes }}
+        <router-link to="/posts/:id"><button class="comment-button" @click="onComment">Comment</button></router-link>
         <button class="mark-read-button" @click="markAsRead" v-if="!isCurrentUserOwner && isNewPost">Mark as read</button>
         <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
         <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
@@ -44,10 +44,11 @@
 import axios from "../libs/axios";
 import FormData from 'form-data'
 import { mapState } from 'vuex';
+//  import { mapMutations } from "vuex";
 export default {
     name: 'postItem',
     
-   data() {
+  data() {
     return {
       isEditing: false,
       editedContent: '', // Bind this to the edited content
@@ -56,8 +57,8 @@ export default {
   
     };
   },
-   props :{
-     
+  props :{
+
       post: {
         type: Object, // Ensure post is an object
         required: true,
@@ -109,7 +110,6 @@ export default {
     return !this.isCurrentUserOwner && !hasRead;
     },
     ...mapState(['userData', 'posts']),
-    
   },
   mounted() {
   // Fetch the list of users who have read the post
@@ -124,10 +124,9 @@ export default {
       this.editedContent = this.textContent;
       this.editedMultimediaContent = this.mltMediaContent  ? this.mltMediaContent.name:'';
       console.log(this.post); // Add this line
-      console.log(this.$store.state.userData); // Add this line
+     // console.log(this.$store.state.userData); // Add this line
     }, 
     onSave() {    
-      // Pass this.editedContent as the new content
     
       // After a successful save, toggle off the edit mode
       if (confirm("Are you sure you want to edit this post?")) {
@@ -150,8 +149,7 @@ export default {
           'Authorization': 'Bearer ' + this.$store.state.userData.token
       };
      // Send the put request to your API
-     axios
-       .put(`posts/${postId}`, formData, {headers: headers})
+     axios.put(`posts/${postId}`, formData, {headers: headers})
        .then(() => {
         this.editedContent = this.textContent;
         this.editedMultimediaContent = this.mltMediaContent
@@ -169,9 +167,7 @@ export default {
       }
    },
   
-      
-
-      onCancel() {
+    onCancel() {
       // Handle canceling the edit mode, reset the edited content if needed
       this.isEditing = false;
       this.editedTextContent = this.textContent;
@@ -273,9 +269,8 @@ export default {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer ' + this.$store.state.userData.token,
             };
-      // const userId = this.$store.state.userData.userId;      
+
       const response = await axios.get(`posts/${postId}/readers`, { headers: headers });
-            console.log(response.data)
       this.postReaders = response.data || [];
     } catch (error) {
       console.error('Error fetching post readers:', error);

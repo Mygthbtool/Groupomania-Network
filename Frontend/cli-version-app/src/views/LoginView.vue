@@ -23,21 +23,34 @@
 <script>
 import axios from "../libs/axios";
 //import Cookies from "js-cookie";
-// import SignupView from './SignupView'
+import { mapMutations } from 'vuex';
+// import { mapActions } from 'vuex';
+
+// import { mapState } from "vuex";
+
   export default {
     name : 'LoginView',
     components :{
-      // SignupView
+      
     },
   data (){
     return {
       email: '',
-      password:''
+      password:'',
+     
     };
   },
+  computed:{
+    //...mapState(['userData', "posts"]),
+  },
   methods: {
-    handleLogin() {
-      
+
+    //...mapActions(['setToken']),
+    ...mapMutations(['setUserData', 'setToken']),
+
+    handleLogin(e) {
+      e.preventDefault();
+
      const user = {
         email: this.email,
         password: this.password
@@ -48,7 +61,6 @@ import axios from "../libs/axios";
           
         .then((response) => {            
           if (response.status === 200) {
-          // Login successful, redirect to the home page
 
              // After successful login, retrieve the user data from the response
              const userData = response.data.user;   
@@ -57,8 +69,11 @@ import axios from "../libs/axios";
              // Save user data to Vue instance or Vuex store           
               this.$store.commit('setUserData', userData);
 
+             // Store the token in the Vuex store
+               this.$store.commit('setToken', response.data.user.token);
+
               // Save user data to local storage                          
-              //localStorage.setItem('userData', userData);
+              //localStorage.setItem('authToken', response.data.user.token);
 
               // Save the authentication token in a cookie
               //Cookies.set('authToken', response.data.user.token, { expires: 1 }); // Adjust the expiration as needed

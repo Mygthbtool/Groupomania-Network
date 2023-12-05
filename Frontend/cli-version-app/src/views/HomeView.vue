@@ -15,55 +15,52 @@
     </header>
 
     <main>
-      <section id="post-list">
-        <h2>Latest Posts</h2>
+        
         <!-- Check if the user is authenticated before rendering the posts -->
         <div v-if="isAuthenticated">
+          <h2>Latest Posts</h2>
+          <section id="post-list">
+            <postItem v-for="post in posts"
+              
+              :key="post.post_id"
+              :postId="post.post_id" 
+              :post="post"            
+              :postingDate="post.posting_date"
+              :textContent="post.text_content"
+              :mltMediaContent="post.mlt_media_content"
+              :likes="post.likes"
+              :dislikes="post.dislikes"
+              :comments="post.comment_id"
+              :userId="post.user_id"
+              :currentUser= "userData.userId"
+              @post-deleted="handlePostDeleted"
           
-          <postItem v-for="post in posts"
-            
-            :key="post.post_id"
-            :postId="post.post_id" 
-            :post="post"
-           
-            :postingDate="post.posting_date"
-            :textContent="post.text_content"
-            :mltMediaContent="post.mlt_media_content"
-            :likes="post.likes"
-            :dislikes="post.dislikes"
-            :comments="post.comment_id"
-            :userId="post.user_id"
-            :currentUser= "userData.userId"
-            @post-deleted="handlePostDeleted"
-        
-          />
-          
+            />
+          </section>  
+          <section id="user-profile">
+            <h2>My Profile</h2>
+            <userItem 
+              :firstName="userData.firstName" 
+              :lastName="userData.lastName" 
+              :email="userData.email" 
+              :avatar="userData.avatar"
+              :userId="userData.userId"
+            />
+
+            <div class="user-actions">
+              <router-link to="/editprofile">Edit Profile</router-link>
+              <button class="delete-account-button" @click="onDeleteAccount">Delete Account</button>
+              <router-link to="/addpost">Add Post</router-link>
+              <button @click="goBack">Back</button>
+            </div>
+          </section>
         </div>
         <!-- If not authenticated, show a message or redirect to login -->
         <div v-else>
           <p>Please log in to view posts.</p>
-          <router-link to="/login">Login</router-link>
+          <router-link to="/login"><button>Login</button></router-link>
         </div>  
-        
-      </section>
-
-      <section id="user-profile">
-        <h2>My Profile</h2>
-        <userItem 
-        :firstName="userData.firstName" 
-        :lastName="userData.lastName" 
-        :email="userData.email" 
-        :avatar="userData.avatar"
-        :userId="userData.userId"
-        />
-
-        <div class="user-actions">
-          <router-link to="/editprofile">Edit Profile</router-link>
-          <button class="delete-account-button" @click="onDeleteAccount">Delete Account</button>
-          <!-- <button class="add-post-button">Add post</button> -->
-          <router-link to="/addpost">Add Post</router-link>
-        </div>
-      </section>
+             
     </main>
 
     <footer>
@@ -76,7 +73,10 @@
 import postItem from '@/components/postItem'
 import UserItem from '@/components/UserItem'
 import { mapState } from 'vuex';
-//import { mapGetters } from 'vuex';
+// import { mapGetters } from 'vuex';
+ import { mapMutations } from 'vuex';
+//  import { mapActions } from 'vuex';
+
 import axios from "../libs/axios";
 //import Cookies from 'js-cookie';
 
@@ -87,6 +87,9 @@ export default {
   },
 
   methods: {
+
+    ...mapMutations(['setUserData', 'setPosts', 'setToken']),
+
     async fetchPosts() {
       try {       
         const headers = {
@@ -126,12 +129,17 @@ export default {
           });
       }
     },
+    goBack() {
+      // Go back one step in the history
+      this.$router.go(-1);
+    },
    
 }, 
   computed: {
     // Map the userData and posts from the Vuex store
-    ...mapState(['userData', 'posts']),
-     
+    ...mapState(['posts', 'userData']),
+    //...mapActions(['']),
+    // ...mapGetters(['isAuthenticated']),
     isAuthenticated() {
       return !!this.$store.state.userData.token;
     },
@@ -143,17 +151,19 @@ export default {
 
   mounted() {
     // Check if the user is authenticated
-    if (this.isAuthenticated) {
+   if (this.isAuthenticated) {
     // Fetch user-specific data (e.g., posts) from the server
     this.fetchPosts();
-    }  
-  },
-  // data() {
-  //   return {
-  //     isAuthenticated: false, // Track user authentication status
-  //   };
+   }
+    
  
-  // }
+  },
+  //data() {
+    // return {
+    //  isAuthenticated: false, // Track user authentication status  
+    // };
+ 
+  //}
 }
 </script>
 

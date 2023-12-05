@@ -233,18 +233,17 @@ updatePostStats = async(postId) => {
   
   const totalLike = await PostReaction.count({where: {post_id: postId, value: 1}});
   const totalDislike = await PostReaction.count({where: {post_id: postId, value: -1}});
-  const post = await Post.update(
+    await Post.update(
     { likes: totalLike, dislikes: totalDislike },
     { where: { post_id: postId } }
   )
-  return post;
+      return Post.findOne( {where: {post_id: postId}})
 }
 exports.likeAndDislikePost = async(req, res, next) => {
   //console.log(req.body.like)
   const userIdentifier = req.body.userId;
   const likeStatus = req.body.like;
   const postId = req.params.id;
-  
 
   let postReaction = await PostReaction.findOne({ where: { post_id: postId, user_id: userIdentifier } });
   if(postReaction){
@@ -265,6 +264,7 @@ exports.likeAndDislikePost = async(req, res, next) => {
   }
   try {
     const updatedPost = await updatePostStats(postId);
+    console.log(updatedPost)
     res.status(201).json({ message: 'Post updated successfully!', updatedPost });
   } catch (error) {
     console.error('Error updating post stats:', error);

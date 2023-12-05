@@ -1,4 +1,5 @@
 <template>
+      <button @click="goBack">Back</button>
     <div class="container">
       <h2>Edit Profile</h2>
       <form @submit.prevent="editProfile" enctype="multipart/form-data">
@@ -95,7 +96,11 @@ export default {
     },
     onCancel(){
       this.$router.push('/')
-    }
+    },
+    goBack() {
+      // Go back one step in the history
+      this.$router.go(-1);
+    },
  }
  
 }

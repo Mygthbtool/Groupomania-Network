@@ -1,4 +1,5 @@
 <template>
+   <button @click="goBack">Back</button>
    <div class="container">
     <h2>Create Post</h2>
     <form @submit.prevent="publishContent" enctype="multipart/form-data">
@@ -100,21 +101,13 @@ export default {
         // Error creating post
         console.log(error);
       });
-    }
+    },
+    goBack() {
+      // Go back one step in the history
+      this.$router.go(-1);
+    },
    
   },
-  // mounted() {
-  //   // If a postId prop is passed, then we are editing an existing post.
-  //   // In that case, we need to fetch the post data from the server.
-  //   if (this.postId) {
-  //     axios.get(`posts/${this.postId}`).then((response) => {
-  //       // The post data is now available in the `response.data` object
-  //       // You can use this data to populate the form fields
-  //       this.textContent = response.data.textContent;
-  //       this.mltMediaContent = response.data.mltMediaContent;
-  //     });
-  //   }
-  // },
 
 }
 </script>

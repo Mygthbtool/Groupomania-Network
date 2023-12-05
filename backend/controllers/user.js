@@ -21,14 +21,6 @@ exports.signup = (req, res, next) => {
   // Encrypt the password using bcrypt
     bcrypt.hash(userObj.password, 10).then(
       (hash) => {
-        // Create a new user object with hashed password
-        // const user = new User({
-        //   firstName: userObj.firstName,
-        //   lastName: userObj.lastName,
-        //   email: userObj.email,
-        //   password: hash,
-        //   avatar: avatar
-        // });
         User.create({
           first_name: userObj.firstName,
           last_name: userObj.lastName,
@@ -42,20 +34,6 @@ exports.signup = (req, res, next) => {
               response.status(400).send('Error in insert new record');
           }
       });
-         // Save the user data to the MySQL database
-        // User.create(user).then(
-        //   () => {
-        //     res.status(201).json({
-        //       message: 'User added successfully!'
-        //     });
-        //   }
-        // ).catch(
-        //   (error) => {
-        //     res.status(500).json({
-        //       error: error
-        //     });
-        //   }
-        // );
       }
     );
 };
@@ -195,66 +173,3 @@ exports.EditUserAccount = (req, res, next) => {
       });
   };
   
-// PostReaction.update({ where: { user_id: userId } });
-//  PostReader.update({ where: { user_id: userId } });
-//  Comment.update({ where: { user_id: userId } });
-//  Post.update({ where: { user_id: userId } })
-//-------------------------------------------------------
-// exports.EditUserAccount = (req, res, next) => {
-//   console.log(req.body);
-
-//   User.findOne({ where: {user_id: req.params.userId }})
-
-//   .then((user) => {
-
-//       console.log({user})
-
-//       User.destroy({ where: { user_id: req.params.userId }})
-//       .then((rowsDeleted) => {
-//         if (rowsDeleted === 1) {
-//           res.status(200).json({
-//             message: 'Deleted!'
-//           })
-//         }
-//       }) 
-//       .catch((error) => {
-//         res.status(400).json({ error: error });
-//       }); 
-//   //   delete user.user_id
-//       if (req.file) {
-//         const url = req.protocol + '://' + req.get('host');
-//         user.avatar = url + '/images/' + req.file.filename
-//       }
-//       const updatedUser = {
-//         first_name: req.body.firstName,
-//         last_name: req.body.lastName,
-//       } 
-//       if (req.body.password) {
-//         bcrypt.hash(req.body.password, 10).then((hash) => {
-//             user.password = hash;
-//             User.update({where:{user_id: req.params.userId}}, updatedUser)
-//             .then(() => {
-//               res.status(201).json({
-//                 message: 'User account updated successfully!'
-//               });
-//             }).catch((error) => {
-//               res.status(400).json({
-//                 error: error
-//               });
-//             });
-//         })
-//       }
-//       else {
-//           User.update({where:{user_id: req.params.userId}}, updatedUser)
-//           .then(() => {
-//             res.status(201).json({
-//               message: 'User account updated successfully!'
-//             });
-//           }).catch((error) => {
-//             res.status(400).json({
-//               error: error
-//             });
-//           });
-//       }
-//   })
-// } 
