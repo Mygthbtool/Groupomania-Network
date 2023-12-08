@@ -141,7 +141,16 @@ export default {
     //...mapActions(['']),
     // ...mapGetters(['isAuthenticated']),
     isAuthenticated() {
-      return !!this.$store.state.userData.token;
+const token = this.$store.state.userData.token;
+if(token) return true;
+const savedToken = localStorage.getItem('userToken');
+if(savedToken)
+ {const userData = JSON.parse(localStorage.getItem('userData'));
+ this.$store.commit('setUserData', userData);
+
+ return true}
+      return false
+
     },
     
     posts() {

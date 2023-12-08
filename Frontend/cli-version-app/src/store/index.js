@@ -10,7 +10,7 @@ export default createStore({
   state: {
     userData: {}, // Initialize userData as null //localStorage.getItem('userData') ||
     posts:[] ,  // Initialize posts as null
-   token: '',
+   //token: '',
     //post: {}
   },
   // getters: {
@@ -21,13 +21,15 @@ export default createStore({
     // Define a mutation to set the user data when received from the server
     setUserData(state, userData) {
       state.userData = userData;
-    
+      localStorage.setItem('userData', JSON.stringify(userData) )
+
       //state.userData.token = token
        // Save the authentication token in a cookie
       // Cookies.set('authToken', userData.token, { expires: 1 }); // Token expires in 7 days (adjust as needed)
     },
     setToken(state, token) {
       state.token = token;
+      localStorage.setItem('userToken', token)
      },
     // clearUserData(state) {
     //   state.userData = null;

@@ -47,6 +47,7 @@ exports.login = (req, res, next) => {
             error: new Error('User not found!')
           });
         }
+        console.log(user);
         bcrypt.compare(req.body.password, user.password).then(
           (valid) => {
             if (!valid) {
@@ -72,6 +73,8 @@ exports.login = (req, res, next) => {
           }
         ).catch(
           (error) => {
+            console.log({error})
+            console.log('77')
             res.status(500).json({
               error: error
             });
@@ -80,6 +83,8 @@ exports.login = (req, res, next) => {
       }
     ).catch(
       (error) => {
+        console.log({error})
+        console.log('87')
         res.status(500).json({
           error: error
         });
