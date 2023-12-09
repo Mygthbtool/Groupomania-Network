@@ -1,16 +1,13 @@
 
 import { createStore } from 'vuex'
 //import Cookies from 'js-cookie';
-//import auth from './auth';
-
-// Get user data from local storage (or any other persistent storage solution)
 
 export default createStore({
   
   state: {
-    userData: {}, // Initialize userData as null //localStorage.getItem('userData') ||
+    userData: JSON.parse(localStorage.getItem('userData')) || {}, // Initialize userData as null //localStorage.getItem('userData') ||
     posts:[] ,  // Initialize posts as null
-   //token: '',
+   // token: '' ,
     //post: {}
   },
   // getters: {
@@ -21,21 +18,20 @@ export default createStore({
     // Define a mutation to set the user data when received from the server
     setUserData(state, userData) {
       state.userData = userData;
-      localStorage.setItem('userData', JSON.stringify(userData) )
+      localStorage.setItem('userData', JSON.stringify(userData))
 
-      //state.userData.token = token
-       // Save the authentication token in a cookie
-      // Cookies.set('authToken', userData.token, { expires: 1 }); // Token expires in 7 days (adjust as needed)
     },
     setToken(state, token) {
       state.token = token;
       localStorage.setItem('userToken', token)
      },
-    // clearUserData(state) {
-    //   state.userData = null;
-    //   // Remove the authentication token cookie
-    //   Cookies.remove('authToken');
-    // },
+    clearUserData(state) {
+      state.userData = null,
+      state.token= null,
+      // Remove the token from local storage
+      localStorage.removeItem('userToken')
+      localStorage.removeItem('userData')
+    },
     setPosts(state, posts){
       state.posts = posts;
     },
@@ -50,16 +46,12 @@ export default createStore({
   },  
   actions: {
     // Optional: You can define actions if you need to perform async tasks
-    // setToken({ commit }, token) {
-    //   commit('setToken', token);
-    // },
+   
    
   },
   modules: {
     // Optional: You can define modules for organizing your store further
   
-     // auth,
-      // other modules...
     
   }
 })

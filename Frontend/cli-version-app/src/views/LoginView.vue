@@ -22,11 +22,7 @@
 
 <script>
 import axios from "../libs/axios";
-//import Cookies from "js-cookie";
 import { mapMutations } from 'vuex';
-// import { mapActions } from 'vuex';
-
-// import { mapState } from "vuex";
 
   export default {
     name : 'LoginView',
@@ -41,11 +37,10 @@ import { mapMutations } from 'vuex';
     };
   },
   computed:{
-    //...mapState(['userData', "posts"]),
+
   },
   methods: {
 
-    //...mapActions(['setToken']),
     ...mapMutations(['setUserData', 'setToken']),
 
     handleLogin(e) {
@@ -66,21 +61,15 @@ import { mapMutations } from 'vuex';
              const userData = response.data.user;   
              console.log(userData);
 
-             // Save user data to Vue instance or Vuex store           
-              this.$store.commit('setUserData', userData);
+             // Save user data in Vuex store           
+             this.$store.commit('setUserData', userData);
 
              // Store the token in the Vuex store
-               this.$store.commit('setToken', response.data.user.token);
+              this.$store.commit('setToken', response.data.user.token);
 
-              // Save user data to local storage                          
-              //localStorage.setItem('authToken', response.data.user.token);
-
-              // Save the authentication token in a cookie
-              //Cookies.set('authToken', response.data.user.token, { expires: 1 }); // Adjust the expiration as needed
              // Redirect to home page   
-                 this.$router.push('/');     
-                 
-              
+              this.$router.push('/');     
+                              
           }else {
           // Handle login error (e.g., invalid credentials)
           console.log('Invalid credentials. Please try again.');          

@@ -52,6 +52,7 @@
               <button class="delete-account-button" @click="onDeleteAccount">Delete Account</button>
               <router-link to="/addpost">Add Post</router-link>
               <button @click="goBack">Back</button>
+              <button @click="onLogOut">Log out</button>
             </div>
           </section>
         </div>
@@ -88,7 +89,7 @@ export default {
 
   methods: {
 
-    ...mapMutations(['setUserData', 'setPosts', 'setToken']),
+    ...mapMutations(['clearUserData']),
 
     async fetchPosts() {
       try {       
@@ -133,46 +134,46 @@ export default {
       // Go back one step in the history
       this.$router.go(-1);
     },
-   
-}, 
+    onLogOut(){
+      this.clearUserData();
+      this.$router.push('/login');
+
+    }   
+  }, 
+  
   computed: {
     // Map the userData and posts from the Vuex store
     ...mapState(['posts', 'userData']),
-    //...mapActions(['']),
+    // ...mapMutations(['']),
     // ...mapGetters(['isAuthenticated']),
     isAuthenticated() {
-const token = this.$store.state.userData.token;
-if(token) return true;
-const savedToken = localStorage.getItem('userToken');
-if(savedToken)
- {const userData = JSON.parse(localStorage.getItem('userData'));
- this.$store.commit('setUserData', userData);
+      const token = this.$store.state.token;
+      if(token) {
+        return true;
+      }  
 
- return true}
+      const savedToken = localStorage.getItem('userToken');
+      if(savedToken) {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      this.$store.commit('setUserData', userData);
+        return true
+      }
       return false
-
     },
-    
+
     posts() {
     return this.$store.state.posts; // state has a 'posts' array
-  }
-},
+    }
+  },
 
   mounted() {
     // Check if the user is authenticated
    if (this.isAuthenticated) {
-    // Fetch user-specific data (e.g., posts) from the server
+    // Fetch posts from the server
     this.fetchPosts();
    }
-    
- 
+     
   },
-  //data() {
-    // return {
-    //  isAuthenticated: false, // Track user authentication status  
-    // };
- 
-  //}
 }
 </script>
 
@@ -304,22 +305,7 @@ if(savedToken)
       color: #fff;
       padding: 20px;
       text-align: center;
-    }
-    
-    
+    }        
   }
-
 </style>
 
-<!-- postDetail => () {
-
-  cosnt post = Post.findOne(params.id).then((post) => {
-   if(!post.read_by.includes($auth.userId)){
-     post.read_by.push($auth.userId)
-     post.save().then((post) => {
-     return res.status(200).json(post)
-     })
-     return res.status(200).json(post)
-   }
-  })
-  } -->

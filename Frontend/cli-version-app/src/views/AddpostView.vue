@@ -1,6 +1,6 @@
 <template>
    <button @click="goBack">Back</button>
-   <div class="container">
+   <div v-if="isAuthenticated" class="container">
     <h2>Create Post</h2>
     <form @submit.prevent="publishContent" enctype="multipart/form-data">
       <div class="form-group">
@@ -30,25 +30,40 @@ export default {
   props: {
     postId: {
       type: String,
-     // required: false,
     },
   },
   data(){
-  return {
-        userFirstName: '',
-        userLastName: '',
-        userAvatar: '',
-        postingDate: new Date(),
-        textContent: '',
-        mltMediaContent: '',
-        likes: 0,
-        dislikes: 0,
-        comments: [],
-        userId: '',
-        
+    return {
+      userFirstName: '',
+      userLastName: '',
+      userAvatar: '',
+      postingDate: new Date(),
+      textContent: '',
+      mltMediaContent: '',
+      likes: 0,
+      dislikes: 0,
+      comments: [],
+      userId: ''       
     };
   },
-  
+
+  computed: {
+    isAuthenticated() {
+      const token = this.$store.state.userData.token;
+      if(token) {
+        return true;
+      }  
+
+      const savedToken = localStorage.getItem('userToken');
+      if(savedToken) {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      this.$store.commit('setUserData', userData);
+        return true
+      }
+      return false
+    },
+  },
+
   methods: {
     handleFileChange(event) {
     this.mltMediaContent = event.target.files[0];
@@ -66,12 +81,7 @@ export default {
       postData.append('likes', 0);
       postData.append('dislikes', 0);
       postData.append('comments', []);
-      // postData.append('readBy', []);
-      // postData.append('usersLiked', []);
-      // postData.append('usersDisliked', []);
       postData.append('userId', this.$store.state.userData.userId);
-      // ... (append other form fields)
-
       if (this.mltMediaContent) {
         postData.append('image', this.mltMediaContent, this.mltMediaContent.name);
       }

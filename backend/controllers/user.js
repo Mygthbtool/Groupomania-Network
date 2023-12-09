@@ -66,8 +66,7 @@ exports.login = (req, res, next) => {
                 lastName: user.last_name,
                 email: user.email,
                 avatar: user.avatar,
-                token: token
-  
+                token: token  
               }
             });
           }
@@ -147,7 +146,7 @@ exports.EditUserAccount = (req, res, next) => {
                  
                     .then(() => {
                       res.status(201).json({
-                        message: 'User account updated successfully!',
+                        message: 'User account updated successfully!', updatedUser
                       });
                     })
                     .catch((error) => {
@@ -161,7 +160,7 @@ exports.EditUserAccount = (req, res, next) => {
                 
                   .then(() => {
                     res.status(201).json({
-                      message: 'User account updated successfully!',
+                      message: 'User account updated successfully!', updatedUser
                     });
 
                   })

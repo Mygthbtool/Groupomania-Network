@@ -1,6 +1,6 @@
 <template>
     <button @click="goBack">Back</button>
-    <div>
+    <div v-if="isAuthenticated">
         <div v-if="post" id="post" class="post">
             <div class="post-header">
                 <img v-if="post && post.user" :src="post.user.avatar" />
@@ -43,9 +43,10 @@
     
 <script> 
  import axios from "../libs/axios";
- import { mapState } from 'vuex';
+ import { mapState } from 'vuex';  
 //  import { mapMutations } from 'vuex';
-
+ import { mapActions } from 'vuex';
+ 
   export default {
     name: 'CommentPostView',
     components :{
@@ -62,9 +63,27 @@
     
   computed: {
     ...mapState(['userData', 'posts']),
-  // ...mapMutations(['refreshOnePost'])
+
+    isAuthenticated() {
+      const token = this.$store.state.userData.token;
+      if(token) {
+        return true;
+      }  
+
+      const savedToken = localStorage.getItem('userToken');
+      if(savedToken) {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      this.$store.commit('setUserData', userData);
+        return true
+      }
+      return false
+    },
   },
+
 methods:{ 
+  ...mapState(['userData', 'posts']),
+  ...mapActions(['refreshPost']),
+
     async fetchPost() {
         const postId = this.$route.params.id; // Use 'id' to get the post ID from route params
       try {
@@ -148,8 +167,7 @@ methods:{
           {headers: { "Content-Type": "application/json",
                       "Authorization": "Bearer " + this.$store.state.userData.token }});
 
-            // console.log(response.data);          
-      
+            // console.log(response.data);              
          this.$store.commit('refreshPost', response.data.updatedPost); // Store posts in Vuex
        console.log(response.data);
       } catch (error) {

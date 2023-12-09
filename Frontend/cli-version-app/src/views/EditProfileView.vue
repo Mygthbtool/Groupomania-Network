@@ -41,16 +41,32 @@ export default {
   name: 'EditProfileView',
 
   data() {
-  return {
-    firstName: this.$store.state.userData.firstName,
-    lastName: this.$store.state.userData.lastName,
-    email: this.$store.state.userData.email,
-    password: this.$store.state.userData.password,
-    avatar: this.$store.state.userData.avatar,
-    userId: this.$store.state.userData.userId,
+    return {
+      firstName: this.$store.state.userData.firstName,
+      lastName: this.$store.state.userData.lastName,
+      email: this.$store.state.userData.email,
+      password: this.$store.state.userData.password,
+      avatar: this.$store.state.userData.avatar,
+      userId: this.$store.state.userData.userId,
     
-    };
-    
+    };  
+  },
+
+  computed: {
+    // isAuthenticated() {
+    //   const token = this.$store.state.userData.token;
+    //   if(token) {
+    //     return true;
+    //   }  
+
+    //   const savedToken = localStorage.getItem('userToken');
+    //   if(savedToken) {
+    //   const userData = JSON.parse(localStorage.getItem('userData'));
+    //   this.$store.commit('setUserData', userData);
+    //     return true
+    //   }
+    //   return false
+    // },
   },
 
  methods: {
@@ -76,7 +92,7 @@ export default {
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + this.$store.state.userData.token,
         } 
-        
+       // const userId = this.this.$store.state.userData.userId
         axios.put(`auth/${this.userId}`, formData, {headers: headers})
           .then((response) => {
             

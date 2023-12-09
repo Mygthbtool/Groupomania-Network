@@ -102,34 +102,6 @@ exports.modifyPost = (req, res, next) => {
     });
 }
 
-//   console.log(req.body);
-//   let post = new Post( { where: { post_id: req.params.id }});
-
-//   if (req.file) {
-//     const url = req.protocol + '://' + req.get('host');
-//     post = {
-//       text_content: req.body.textContent,
-//       mlt_media_content: url + '/images/' + req.file.filename,
-//     };
-//   } else {
-//     post = {
-//       text_content: req.body.textContent,
-//     };
-//   }
-//   Post.update( {where: {post_id: req.params.id}}, post)
-//     .then(() => {
-//       res.status(201).json({
-//         message: 'Post updated successfully!'
-//       });
-//     }).catch(
-//       (error) => {
-//       res.status(400).json({
-//         error: error
-//       });
-//     }
-//   );
-// };
-
 // Delete post
 exports.deletePost = (req, res, next) => {
   console.log(req.params.id);
@@ -213,7 +185,6 @@ exports.markPostRead = async (req, res, next) => {
  }
 
 // fetch post readers
-
 exports.getPostReaders = async (req, res, next) => {
  // console.log(req.params.userId)
   // const userIdentifier = req.userId;
