@@ -16,9 +16,9 @@
         </div>
       </div>  
       <div class="post-actions">
-        <button class="like-button" @click="onLike">Like</button>{{ likes }}
-        <button class="dislike-button" @click="onDislike">Dislike</button>{{ dislikes }}
-        <router-link to="/posts/:id"><button class="comment-button" @click="onComment">Comment</button></router-link>
+        <i @click="onLike" class="fa fa-thumbs-up"></i><span class="likes-count">{{ likes }}</span>
+        <i @click="onDislike" class="fa fa-thumbs-down"></i><span class="dislikes-count">{{ dislikes }}</span>
+        <button class="comnt-btn" @click="onComment">add/see Comment(s)</button>
         <button class="mark-read-button" @click="markAsRead" v-if="!isCurrentUserOwner && isNewPost">Mark as read</button>
         <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
         <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
@@ -190,7 +190,6 @@ export default {
     async toggleLikeDislike(likeStatus) {
         // send request to the server according to likeStatus
       try {
-        // const userId = this.$store.state.userData.userId
         const postId = this.postId;
         const response = await axios.post(
           `posts/${postId}/like`,
@@ -215,9 +214,8 @@ export default {
       // get one post page and its comments
        this.$router.push(`/posts/${this.postId}`)     
     },
-      
-    
-    // Implement your delete functionality here
+         
+    // delete post function
    onDelete() {
       if (confirm("Are you sure you want to delete this post?")) {
      
@@ -284,80 +282,54 @@ export default {
 
 <style lang="scss">
 #post {
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 10px;
-      margin-bottom: 10px;
-      position: relative;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px;
+   margin-bottom: 10px;
+  position: relative;
+  & > div{
+    cursor: pointer;
+  }
     /* Reset some default styles */
 
-  body, h1, h2, h3, p, ul, li {
-      margin: 0;
-      padding: 0;
-    }
+  // body, h1, h2, h3, p, ul, li {
+  //     margin: 0;
+  //     padding: 0;
+  //   }
     
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      color: #333;
-    }
+    // body {
+    //   font-family: Arial, sans-serif;
+    //   background-color: #f2f2f2;
+    //   //color: #333;
+    // }
     
-    header {
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-    }
+    // main {
+    //   padding: 20px;
+    // }
     
-    header h1 {
-      font-size: 24px;
-    }
-    header img {
-      max-width: 100px;
-      
-    }
-    nav ul {
-      list-style: none;
-    }
-    
-    nav ul li {
-      display: inline-block;
-      margin-right: 10px;
-    }
-    
-    nav ul li a {
-      color: #fff;
-      text-decoration: none;
-    }
-    
-    main {
-      padding: 20px;
-    }
-    
-    h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-    
+    // h2 {
+    //   font-size: 20px;
+    //   margin-bottom: 10px;
+    // }
     
     .new-badge {
-        position: absolute;
-        top: 10px; 
-        right: 10px; 
-        background-color: red; 
-        color: white; 
-        padding: 7px;
-        border-radius: 5px; 
-        font-size: 12px;
-      }
+      position: absolute;
+      top: 10px; 
+      right: 10px; 
+      background-color: red; 
+      color: white; 
+      padding: 7px;
+      border-radius: 5px; 
+      font-size: 12px;
+    }
     
     
     .post-header {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 50px;
     }
     
     .post-header img {
@@ -378,58 +350,43 @@ export default {
     
     .post-content img {
       width: 60%;
-      height: 50%;
+      height: 40%;
       margin-top: 10px;
     }
     
-    .post-actions button {
-    //  display: flexstart;
-      background-color: #d91414;
+    .post-actions .comnt-btn, .mark-read-button,
+    .delete-post-button, .edit-post-button {
+     display: inline-block;
+      background-color: #333;
       color: #fff;
       border: none;
       padding: 5px 10px;
       margin-right: 5px;
+      margin-top: 20px;
+      border-radius: 25px;
       cursor: pointer;
+   
+    }
+
+    .post-actions i {   
+      cursor: pointer;
+      font-size: larger;
+      &.fa-thumbs-down {
+        margin-left: 15px;
+      }
+    }
+    
+    .likes-count {
+      color: rgb(15, 228, 15);
+    }
+    .dislikes-count {
+      color: red;
     }
     .post-actions span {
-      padding-left: 0px;
-      margin-left: 2px;
-      margin-right: 5px;
-    }
-    .user-info {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    
-    .user-info img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
+      padding-left: 0 4px;
+      margin-left: 5px;
       margin-right: 10px;
     }
-    
-    .user-details h3 {
-      font-size: 18px;
-      margin-bottom: 5px;
-    }
-    
-    .user-actions button {
-      background-color: #333;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      margin-right: 5px;
-      cursor: pointer;
-    }
-    
-    footer {
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }
-   
   }    
  
 </style>

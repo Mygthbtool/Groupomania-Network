@@ -87,14 +87,23 @@ import { mapMutations } from 'vuex';
 </script>
 
 <style>
-body {
+ body {
   font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
-}
+   background-color: #f2f2f2; 
+  align-items: center;
+  /* padding-top: 10%; */
+  height: 100%
+}  
+
+/* html{
+  height: 100%;
+  /* padding-top: 10%; */
+  
 
 .container {
   max-width: 400px;
-  margin: 0 auto;
+  margin-right: auto;
+  margin-left: auto;
   padding: 40px;
   background-color: #fff;
   border-radius: 4px;

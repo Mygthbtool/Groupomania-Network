@@ -1,6 +1,7 @@
 <template>
-   <button @click="goBack">Back</button>
-   <div v-if="isAuthenticated" class="container">
+  <HeaderItem /> 
+  <button class="back-button" @click="goBack">Back</button>
+  <div class="container">
     <h2>Create Post</h2>
     <form @submit.prevent="publishContent" enctype="multipart/form-data">
       <div class="form-group">
@@ -16,109 +17,98 @@
       </div>
     </form>
   </div>
+  <FooterItem />
+
 </template>
 
 <script>
+import HeaderItem from "@/components/HeaderItem.vue";
 import axios from "../libs/axios";
+// import { mapState } from 'vuex';
+import FooterItem from '@/components/FooterItem'
+
 // import VueJwtDecode from '../../node_modules/vue-jwt-decode'
 import FormData from 'form-data'
 
 
 export default {
-  name: 'AddpostView',
-
-  props: {
-    postId: {
-      type: String,
+    name: 'AddpostView',
+    props: {
+        postId: {
+            type: String,
+        },
     },
-  },
-  data(){
-    return {
-      userFirstName: '',
-      userLastName: '',
-      userAvatar: '',
-      postingDate: new Date(),
-      textContent: '',
-      mltMediaContent: '',
-      likes: 0,
-      dislikes: 0,
-      comments: [],
-      userId: ''       
-    };
-  },
-
-  computed: {
-    isAuthenticated() {
-      const token = this.$store.state.userData.token;
-      if(token) {
-        return true;
-      }  
-
-      const savedToken = localStorage.getItem('userToken');
-      if(savedToken) {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      this.$store.commit('setUserData', userData);
-        return true
-      }
-      return false
-    },
-  },
-
-  methods: {
-    handleFileChange(event) {
-    this.mltMediaContent = event.target.files[0];
+    data() {
+        return {
+            userFirstName: '',
+            userLastName: '',
+            userAvatar: '',
+            postingDate: new Date(),
+            textContent: '',
+            mltMediaContent: '',
+            likes: 0,
+            dislikes: 0,
+            comments: [],
+            userId: ''
+        };
     },
 
-    publishContent(){
-      // If a postId prop is passed, then we are editing an existing post.
-      // Otherwise, we are creating a new post.
-      const postData = new FormData();
-      postData.append('userFirstName', this.$store.state.userData.firstName);
-      postData.append('userLastName', this.$store.state.userData.lastName);
-      postData.append('userAvatar', this.$store.state.userData.avatar);
-      postData.append('postingDate', this.postingDate);
-      postData.append('textContent', this.textContent);
-      postData.append('likes', 0);
-      postData.append('dislikes', 0);
-      postData.append('comments', []);
-      postData.append('userId', this.$store.state.userData.userId);
-      if (this.mltMediaContent) {
-        postData.append('image', this.mltMediaContent, this.mltMediaContent.name);
-      }
-  
-       console.log({postData})
-        const headers = {          
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Bearer ' + this.$store.state.userData.token
-        
-         };
-          
-      axios.post('posts/', postData, {headers: headers})
-    
-      .then((response) => {
-        
-        if (response.status === 201) {
-          // Post created/edited successfully
-          this.$store.commit('setPosts', response.data.posts);
-           //redirect client to home page
-          this.$router.push("/");
-        } else {
-          // Error creating post
-          console.log(response);
-        }
-      })
-      .catch((error) => {
-        // Error creating post
-        console.log(error);
-      });
+    components: { HeaderItem, FooterItem },
+
+    computed: {
     },
-    goBack() {
-      // Go back one step in the history
-      this.$router.go(-1);
+    methods: {
+        handleFileChange(event) {
+            this.mltMediaContent = event.target.files[0];
+        },
+        publishContent() {
+          if(!this.textContent && !this.mltMediaContent){
+            return
+          }
+            // If a postId prop is passed, then we are editing an existing post.
+            // Otherwise, we are creating a new post.
+            const postData = new FormData();
+            postData.append('userFirstName', this.$store.state.userData.firstName);
+            postData.append('userLastName', this.$store.state.userData.lastName);
+            postData.append('userAvatar', this.$store.state.userData.avatar);
+            postData.append('postingDate', this.postingDate);
+            postData.append('textContent', this.textContent);
+            postData.append('likes', 0);
+            postData.append('dislikes', 0);
+            postData.append('comments', []);
+            postData.append('userId', this.$store.state.userData.userId);
+            if (this.mltMediaContent) {
+                postData.append('image', this.mltMediaContent, this.mltMediaContent.name);
+            }
+            console.log({ postData });
+            const headers = {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': 'Bearer ' + this.$store.state.userData.token
+            };
+            axios.post('posts/', postData, { headers: headers })
+                .then((response) => {
+                if (response.status === 201) {
+                    // Post created/edited successfully
+                    this.$store.commit('setPosts', response.data.posts);
+                    //redirect client to home page
+                    this.$router.push("/");
+                }
+                else {
+                    // Error creating post
+                    console.log(response);
+                }
+            })
+                .catch((error) => {
+                // Error creating post
+                console.log(error);
+            });
+        },
+        goBack() {
+            // Go back one step in the history
+            this.$router.go(-1);
+        },
     },
    
-  },
-
 }
 </script>
 
@@ -127,10 +117,26 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f2f2f2;
 }
+.back-button {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  margin-left: 15px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #0056b3;
+}
 
 .container {
   max-width: 600px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 40px;
   background-color: #fff;
   border-radius: 4px;

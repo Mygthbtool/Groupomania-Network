@@ -1,19 +1,8 @@
 
 <template>
   <div id="app" class="app">
-    <header>
-      <h1>Groupomania Social Network</h1>
-      <img src="/images/icon.png">
-      <nav>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Add post</a></li>
-          <li><a href="#">Log in</a></li>
-          <li><a href="#">Sign up</a></li>
-        </ul>
-      </nav>
-    </header>
-
+    <HeaderItem />
+     
     <main>
         
         <!-- Check if the user is authenticated before rendering the posts -->
@@ -59,32 +48,32 @@
         <!-- If not authenticated, show a message or redirect to login -->
         <div v-else>
           <p>Please log in to view posts.</p>
-          <router-link to="/login"><button>Login</button></router-link>
+          <router-link class="login-btn" to="/login">Login</router-link>
         </div>  
              
     </main>
-
-    <footer>
-      <p>&copy; 2023 Groupomania. All rights reserved.</p>
-    </footer>
+    <FooterItem />
+    
   </div>
 </template>
 
 <script>
+import HeaderItem from'@/components/HeaderItem'
 import postItem from '@/components/postItem'
 import UserItem from '@/components/UserItem'
+import FooterItem from '@/components/FooterItem'
+
 import { mapState } from 'vuex';
 // import { mapGetters } from 'vuex';
- import { mapMutations } from 'vuex';
+import { mapMutations } from 'vuex';
 //  import { mapActions } from 'vuex';
 
 import axios from "../libs/axios";
-//import Cookies from 'js-cookie';
 
 export default {
   name: 'HomeView',
   components :{
-    postItem, UserItem
+    postItem, UserItem, HeaderItem, FooterItem
   },
 
   methods: {
@@ -108,7 +97,7 @@ export default {
 
     handlePostDeleted(deletedPostId) {
       // Remove the deleted post from the posts array
-      this.posts = this.posts.filter((post) => post.id !== deletedPostId);    
+      this.posts = this.posts.filter((post) => post.postId !== deletedPostId);    
     },
     onDeleteAccount() {
       if (confirm("Are you sure you want to delete your account? This action is irreversible.")) {
@@ -136,7 +125,7 @@ export default {
     },
     onLogOut(){
       this.clearUserData();
-      this.$router.push('/login');
+      this.$router.push('/');
 
     }   
   }, 
@@ -178,134 +167,81 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
+
+ #app {
     /* Reset some default styles */
-  body, h1, h2, h3, p, ul, li {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+     // background-color: #f2f2f2;
+      background-image: linear-gradient(
+        to bottom,
+        rgb(226, 226, 217),
+        rgba(210, 54, 54, 0.791)), url('../../src/assets/icon.png');
+          color: #333;
+   
+  
+   h1, h3, p{
       margin: 0;
       padding: 0;
     }
-    
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      color: #333;
-    }
-    
-    header {
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-    }
-    
-    header h1 {
-      font-size: 24px;
-    }
-    header img {
-      max-width: 100px;
       
-    }
-    nav ul {
-      list-style: none;
-    }
-    
-    nav ul li {
-      display: inline-block;
-      margin-right: 10px;
-    }
-    
-    nav ul li a {
-      color: #fff;
+    .login-btn {
+      display: block;
+      width: 5%;
       text-decoration: none;
+      margin-top: 30px;
+      margin-bottom: 20px;
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      background-color: #0056b3;
     }
     
     main {
+      // display: flex;
+      // height: max-content;
       padding: 20px;
+      padding-bottom: auto;
+      // padding-bottom: 200px;
+      margin: 0;
     }
     
-    h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-    
-    .post {
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    
-    .post-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    
-    .post-header img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-    
-    .post-info h3 {
-      font-size: 16px;
-    }
-    
-    .post-date {
-      font-size: 12px;
-      color: #888;
-    }
-    
-    .post-content img {
-      max-width: 100%;
+    #user-profile h2{
       margin-top: 10px;
-    }
-    
-    .post-actions button {
-      background-color: #333;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      margin-right: 10px;
-      cursor: pointer;
-    }
-    
-    .user-info {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    
-    .user-info img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-    
-    .user-details h3 {
-      font-size: 18px;
       margin-bottom: 5px;
     }
-    
-    .user-actions button {
+    .user-actions button, .user-actions a {
       background-color: #333;
       color: #fff;
       border: none;
+      font-size: 13px;
+      text-decoration: none;
+      border-radius: 20px;
       padding: 5px 10px;
       margin-right: 10px;
       cursor: pointer;
     }
-    
-    footer {
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }        
+  } 
+@media screen and (max-width: 500px) {
+    .user-actions {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
   }
-</style>
 
+  .user-actions button,
+  .user-actions a {
+    margin-top: 10px;
+  }
+}
+  
+</style>
