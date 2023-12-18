@@ -7,7 +7,7 @@ export default createStore({
     userData: JSON.parse(localStorage.getItem('userData')) || {}, // Initialize userData as null //localStorage.getItem('userData') ||
     posts:[] ,  // Initialize posts as null
    // token: '' ,
-    //post: {}
+    post: {}
   },
   // getters: {
   //   // Optional: You can define getters to access the user data if needed
@@ -40,17 +40,21 @@ export default createStore({
       const postToReplace = posts.find(fPost => fPost.post_id === post.post_id);
       Object.assign(postToReplace, post);
       state.posts = posts;
+      
     },
+
+    setPost(state, post){
+      console.log(post);
+      Object.assign(state.post, post);      
+    }
 
   },  
   actions: {
-    // Optional: You can define actions if you need to perform async tasks
-   
+    // Optional: You can define actions if you need to perform async tasks 
    
   },
   modules: {
     // Optional: You can define modules for organizing your store further
-  
     
   }
 })

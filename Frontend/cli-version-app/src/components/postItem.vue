@@ -18,7 +18,7 @@
       <div class="post-actions">
         <i @click="onLike" class="fa fa-thumbs-up"></i><span class="likes-count">{{ likes }}</span>
         <i @click="onDislike" class="fa fa-thumbs-down"></i><span class="dislikes-count">{{ dislikes }}</span>
-        <button class="comnt-btn" @click="onComment">add/see Comment(s)</button>
+        <button class="comnt-btn" @click="onComment" v-if="isHomePage">add/see Comment(s)</button>
         <button class="mark-read-button" @click="markAsRead" v-if="!isCurrentUserOwner && isNewPost">Mark as read</button>
         <button class="delete-post-button" @click="onDelete" v-if="isCurrentUserOwner">Delete</button>
         <button class="edit-post-button" @click="onEdit" v-if="isCurrentUserOwner">Edit</button>
@@ -32,10 +32,8 @@
           <button @click="onSave">Save</button>
           <button @click="onCancel">Cancel</button>
         </div>
-
       </div>  
-      <span class="new-badge" v-if="!isCurrentUserOwner && isNewPost">New</span>
-    
+      <span class="new-badge" v-if="!isCurrentUserOwner && isNewPost">New</span>    
   </div>
   
 </template>
@@ -44,7 +42,7 @@
 import axios from "../libs/axios";
 import FormData from 'form-data'
 import { mapState } from 'vuex';
-//  import { mapMutations } from "vuex";
+
 export default {
     name: 'postItem',
     
@@ -90,32 +88,36 @@ export default {
       postId:{
         type: Number,     
       },
+      isHomePage:{
+        type: Boolean,
+        default: true
+      }
    }, 
   
-   computed: {
+  computed: {
 
     isCurrentUserOwner() {
       // Check if the current user's ID matches the post owner's ID
-      return this.currentUser === this.post.user_id;  
-        
+      return this.currentUser === this.post.user_id;          
     },
 
     isNewPost() {
     const userId = this.$store.state.userData.userId;
-
     // Check if the user has read the post
     const hasRead = this.postReaders.some(postReader=> postReader.user_id === userId);
-
     // If the post is not owned by the current user and the user hasn't read it, consider it new
     return !this.isCurrentUserOwner && !hasRead;
     },
+
     ...mapState(['userData', 'posts']),
+
   },
   mounted() {
   // Fetch the list of users who have read the post
   this.fetchPostReaders();
   }, 
-   methods: {
+
+  methods: {
 
     onEdit() {
      // Toggle the edit mode flag when the "Edit" button is clicked
@@ -200,7 +202,9 @@ export default {
             // console.log(response.data.postReaction);          
       
          this.$store.commit('refreshPost', response.data.updatedPost); // Store posts in Vuex
-       console.log(response.data);
+         this.$store.commit('setPost', response.data.updatedPost);
+
+      // console.log(response.data);
       } catch (error) {
         console.error("Error liking/disliking post:", error);
       }
@@ -212,7 +216,9 @@ export default {
     },
     onComment() {
       // get one post page and its comments
-       this.$router.push(`/posts/${this.postId}`)     
+      if(this.isHomePage) {
+       this.$router.push(`/posts/${this.postId}`)  
+      }   
     },
          
     // delete post function
@@ -242,7 +248,7 @@ export default {
 
     async markAsRead() {
         const postId = this.postId; // Use 'id' to get the post ID from route params
-          // Send a request to update the 'readBy' array in the database
+          // Send a request to update the postReaders array in the database
           try {
             const headers = {
               'Content-Type': 'application/json',
@@ -323,37 +329,33 @@ export default {
       padding: 7px;
       border-radius: 5px; 
       font-size: 12px;
-    }
-    
-    
+    }   
     .post-header {
       display: flex;
       align-items: center;
       margin-bottom: 50px;
-    }
-    
+    }   
     .post-header img {
       width: 40px;
       height: 40px;
       border-radius: 50%;
       margin-right: 10px;
-    }
-    
+    }   
     .post-info h3 {
       font-size: 16px;
-    }
-    
+    }   
     .post-date {
       font-size: 12px;
       color: #888;
-    }
-    
+    }   
     .post-content img {
-      width: 60%;
+      width: 80%;
       height: 40%;
-      margin-top: 10px;
+      margin: 10px 0 5px 0;
     }
-    
+    .post-content p {
+      margin-bottom: 6px;
+    }   
     .post-actions .comnt-btn, .mark-read-button,
     .delete-post-button, .edit-post-button {
      display: inline-block;
@@ -365,22 +367,22 @@ export default {
       margin-top: 20px;
       border-radius: 25px;
       cursor: pointer;
-   
     }
-
     .post-actions i {   
       cursor: pointer;
       font-size: larger;
+      &:active{
+        color: rgb(239, 223, 45)
+      }
       &.fa-thumbs-down {
         margin-left: 15px;
       }
-    }
-    
+    }    
     .likes-count {
-      color: rgb(15, 228, 15);
+      color: rgb(20, 202, 20);
     }
     .dislikes-count {
-      color: red;
+      color: rgb(233, 30, 30);
     }
     .post-actions span {
       padding-left: 0 4px;

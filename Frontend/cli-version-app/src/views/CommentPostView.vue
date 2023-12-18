@@ -1,7 +1,7 @@
 <template>
     <HeaderItem />
     <button class="back-button" @click="goBack">Back</button>
-    <div>
+    <div v-if="isAuthenticated">
 
       <postItem v-if="post && post.user" class="post"
           :key="post.post_id"
@@ -15,10 +15,16 @@
           :comments="post.comment_id"
           :userId="post.user_id"
           :currentUser= "userData.userId"
+          :isHomePage="false"
           @post-deleted="handlePostDeleted"
        />
       
-    </div>    
+    </div>   
+          <!-- Comment input box -->
+    <textarea v-model="commentText" class="comment-input" placeholder="Add a comment"></textarea>   
+      <!-- Comment submit button -->
+    <button @click="addComment" class="comment-button">Comment</button>
+ 
     <div v-if="post && post.comments" class="comments-container">
         <h2>Comments</h2>
         <div v-if="post.comments">   
@@ -30,11 +36,6 @@
           </div>
         </div>  
     </div>
-      <!-- Comment input box -->
-    <textarea v-model="commentText" class="comment-input" placeholder="Add a comment"></textarea>
-      
-      <!-- Comment submit button -->
-    <button @click="addComment" class="comment-button">Comment</button>
     
     <FooterItem />
 </template>
@@ -46,7 +47,7 @@ import FooterItem from '@/components/FooterItem'
 
 import axios from "../libs/axios";
 import { mapState } from 'vuex';  
-//import { mapMutations } from 'vuex';
+// import { mapMutations } from 'vuex';
  //import { mapActions } from 'vuex';
  
   export default {
@@ -58,28 +59,39 @@ import { mapState } from 'vuex';
 
     data() {
       return {
-        commentText: '', // Add this if not already defined
-        post: {}, // Initialize 'post' to null
+        commentText: '', 
         comments: [],
-        userData: this.$store.state.userData
-    //   updatedPost: Object.assign({}, this.post),    
       };
     },
     
   computed: {
-    ...mapState(['userData', 'posts']),
+    ...mapState(['userData', 'posts', 'post']),
     
     isCurrentUserOwner() {
       // Check if the current user's ID matches the post owner's ID
       return this.currentUser === this.post.user_id;  
         
     },
+    isAuthenticated() {
+      const token = this.$store.state.token;
+      if(token) {
+        return true;
+      }  
+
+      const savedToken = localStorage.getItem('userToken');
+      if(savedToken) {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      this.$store.commit('setUserData', userData);
+        return true
+      }
+      return false
+    },
 
   },
 
 methods:{ 
-  ...mapState(['userData', 'posts']),
-  //...mapMutations(['refreshPost']),
+   ...mapState(['userData', 'posts', 'post']),
+  //  ...mapMutations(['refreshPost']),
 
     async fetchPost() {
         const postId = this.$route.params.id; // Use 'id' to get the post ID from route params
@@ -89,8 +101,10 @@ methods:{
           'Authorization': 'Bearer ' + this.$store.state.userData.token,
         } 
         const response = await axios.get(`posts/${postId}`, { headers: headers });
-        this.post = response.data;
-        this.comments = this.post.comments;
+        console.log(response.data);
+        //this.post = response.data;
+        // this.comments = this.post.comments;
+        this.$store.commit('setPost', response.data);
 
           // Send a request to update the post as read in the database
           try {
@@ -106,40 +120,11 @@ methods:{
             console.error('Error marking post as read on the server:', error);
           }
               
-         console.log(response.data);
+         console.log(this.userData);
       } catch (error) {
         console.error("Error fetching post:", error);
       }    
     },
-
-    // handlePostDeleted(deletedPostId) {
-    //   // Remove the deleted post from the posts array
-    //   this.posts = this.posts.filter((post) => post.postId !== deletedPostId);   
-    // },
-
-    // onDelete() {
-    //   if (confirm("Are you sure you want to delete this post?")) {
-     
-    //     // Pass the post ID as a parameter in the request.
-    //     const postId = this.postId;// Make sure to add a postId prop to your component.      
-    //     // Send the delete request to your API
-    //     axios
-    //       .delete(`posts/${postId}`, {headers: {Authorization: 'Bearer ' + this.$store.state.userData.token}})
-    //       .then(() => {
-    //         // Handle success, maybe show a success message
-    //         console.log('Post deleted successfully');
-    //         // You can also emit an event to notify a parent component to remove this post from the list.
-    //         this.$emit('post-deleted', postId);
-    //           // Use Vue Router to refresh the current route (reload the home page)
-    //         this.$router.go();
-            
-    //       })
-    //       .catch((error) => {
-    //         // Handle error, show an error message
-    //         console.error('Error deleting post', error);
-    //       });
-    //   }
-    // },
 
   async addComment() {
     if (!this.commentText) {
@@ -164,6 +149,7 @@ methods:{
       console.log(response.data);
       // Add the new comment to the list of comments
       this.comments.push(response.data);
+      window.alert('Your comment has been sent successfully')
 
       // Clear the comment input field
       this.commentText = '';
@@ -172,33 +158,6 @@ methods:{
       console.error('Error adding comment:', error);
     }
   },
-  // onLike() {
-  //   // Implement your like functionality here
-  //   this.toggleLikeDislike(1); // 1 represents "like"
-  // },
-  // onDislike() {
-  //   // Implement your dislike functionality here
-  //   this.toggleLikeDislike(-1); // -1 represents "dislike"
-  // },
-
-  // async toggleLikeDislike(likeStatus) {
-  //     // send request to the server according to likeStatus
-  //   try {
-  //     const postId = this.$route.params.id;
-  //     const response = await axios.post(
-  //       `posts/${postId}/like`,
-  //       { userId: this.$store.state.userData.userId, like: likeStatus },
-  //       {headers: { "Content-Type": "application/json",
-  //                   "Authorization": "Bearer " + this.$store.state.userData.token }});
-
-  //         // console.log(response.data);              
-  //       this.$store.commit('refreshPost', response.data.updatedPost); // Store posts in Vuex
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.error("Error liking/disliking post:", error);
-  //   }
-  // },
-
   goBack() {
       // Go back one step in the history
       this.$router.go(-1);
@@ -213,7 +172,7 @@ mounted() {
 </script>
 
 
-<style>
+<style scoped>
 html, body{
   padding: 0;
   margin: 0;
@@ -255,7 +214,7 @@ html, body{
     } */
 /* Style for the comments section container */
 .comments-container {
-  margin-top: 20px;
+  margin-top: 0px;
   margin-right: 10px;
   padding: 10px;
   /* border: 1px solid #e0e0e0; */
@@ -285,7 +244,7 @@ html, body{
 .comment-input {
   width: 90%;
   padding: 5px;
-  margin: 10px;
+  margin:  30px 10px 10px 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
 }

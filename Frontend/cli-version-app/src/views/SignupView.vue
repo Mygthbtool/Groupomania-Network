@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h2>Sign up</h2>
-    <form @submit.prevent="signUp" enctype="multipart/form-data">
+    <form @submit.prevent="signUp">
       <div class="form-group">
         <label for="firstName">First Name</label>
         <input type="text" id="firstName" name="firstName" required v-model="firstName">
@@ -69,9 +69,10 @@ export default {
         axios
           .post("auth/signup", data, {headers: { 'Content-Type': 'multipart/form-data' },})
           .then((response) => {
-            if (response.status === 201) {
+            if (response.status === 200) {
               // User created successfully
-              this.$router.push("/login");
+              window.alert('Account created successfully')
+              this.$router.push('/login');
             } else {
               // Error creating user
               console.log(response);
@@ -91,12 +92,12 @@ export default {
 <style>
 body {
   font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
+  /* background-color: #f2f2f2; */
 }
 
 .container {
   max-width: 400px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 40px;
   background-color: #fff;
   border-radius: 4px;

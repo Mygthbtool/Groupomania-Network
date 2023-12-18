@@ -1,5 +1,5 @@
 <template>
-      <button @click="goBack">Back</button>
+      <button class="back-button" @click="goBack">Back</button>
     <div class="container">
       <h2>Edit Profile</h2>
       <form @submit.prevent="editProfile" enctype="multipart/form-data">
@@ -126,6 +126,22 @@ export default {
 body {
   font-family: Arial, sans-serif;
   background-color: #f2f2f2;
+}
+.back-button {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  margin-left: 15px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #0056b3;
 }
 
 .container {

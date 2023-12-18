@@ -1,8 +1,7 @@
 
 <template>
   <div id="app" class="app">
-    <HeaderItem />
-     
+    <HeaderItem />   
     <main>
         
         <!-- Check if the user is authenticated before rendering the posts -->
@@ -64,10 +63,7 @@ import UserItem from '@/components/UserItem'
 import FooterItem from '@/components/FooterItem'
 
 import { mapState } from 'vuex';
-// import { mapGetters } from 'vuex';
 import { mapMutations } from 'vuex';
-//  import { mapActions } from 'vuex';
-
 import axios from "../libs/axios";
 
 export default {
@@ -77,7 +73,6 @@ export default {
   },
 
   methods: {
-
     ...mapMutations(['clearUserData']),
 
     async fetchPosts() {
@@ -133,7 +128,6 @@ export default {
   computed: {
     // Map the userData and posts from the Vuex store
     ...mapState(['posts', 'userData']),
-    // ...mapMutations(['']),
     // ...mapGetters(['isAuthenticated']),
     isAuthenticated() {
       const token = this.$store.state.token;
@@ -168,19 +162,19 @@ export default {
 
 <style lang="scss">
 
- #app {
+#app {
     /* Reset some default styles */
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      font-family: Arial, sans-serif;
-     // background-color: #f2f2f2;
-      background-image: linear-gradient(
-        to bottom,
-        rgb(226, 226, 217),
-        rgba(210, 54, 54, 0.791)), url('../../src/assets/icon.png');
-          color: #333;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, sans-serif;
+// background-color: #f2f2f2;
+  background-image: linear-gradient(
+    to bottom,
+    rgb(226, 226, 217),
+    rgba(210, 54, 54, 0.791)), url('../../src/assets/icon.png');
+      color: #333;
    
   
    h1, h3, p{
