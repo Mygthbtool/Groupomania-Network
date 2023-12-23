@@ -91,31 +91,52 @@ exports.login = (req, res, next) => {
     );
   }
 
+// exports.deleteAccount = (req, res, next) => {
+//     // Get the user ID from the request parameters
+//     const userId = req.params.userId;
+    
+//       .then((rowsDeleted) => {
+//         if (rowsDeleted === 1) {
+//           // Optionally, you can also delete the user's posts, comments, etc. if needed
+//           // ...
+//           PostReaction.destroy({ where: { user_id: userId } });
+//           PostReader.destroy({ where: { user_id: userId } });
+//           Comment.destroy({ where: { user_id: userId } });
+//           Post.destroy({ where: { user_id: userId } })
+//     User.destroy({ where: { user_id: userId }})
 
-exports.deleteAccount = (req, res, next) => {
-    // Get the user ID from the request parameters
+//           res.status(200).json({ message: 'Account deleted successfully' });
+//         } else {
+//           res.status(404).json({ message: 'User not found' });
+//         }
+//       })
+//       .catch((error) => {
+//         res.status(500).json({ error: error });
+//       });
+// };
+exports.deleteAccount = async (req, res, next) => {
+  try {
     const userId = req.params.userId;
 
-    PostReaction.destroy({ where: { user_id: userId } });
-    PostReader.destroy({ where: { user_id: userId } });
-    Comment.destroy({ where: { user_id: userId } });
-    Post.destroy({ where: { user_id: userId } });
-    User.destroy({ where: { user_id: userId }})
-    
-      .then((rowsDeleted) => {
-        if (rowsDeleted === 1) {
-          // Optionally, you can also delete the user's posts, comments, etc. if needed
-          // ...
-  
-          res.status(200).json({ message: 'Account deleted successfully' });
-        } else {
-          res.status(404).json({ message: 'User not found' });
-        }
-      })
-      .catch((error) => {
-        res.status(500).json({ error: error });
-      });
+    // Delete related records first
+    await PostReaction.destroy({ where: { user_id: userId } });
+    await PostReader.destroy({ where: { user_id: userId } });
+    await Comment.destroy({ where: { user_id: userId } });
+    await Post.destroy({ where: { user_id: userId } });
+
+    // Now, delete the user
+    const rowsDeleted = await User.destroy({ where: { user_id: userId } });
+
+    if (rowsDeleted === 1) {
+      res.status(200).json({ message: 'Account deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
+
 
 exports.EditUserAccount = (req, res, next) => {
     console.log(req.body);

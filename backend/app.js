@@ -10,8 +10,6 @@ const app = express();
 
 require('dotenv').config();
 
-// const { Sequelize } = require('sequelize');
-
 const sequelize = require('./sequelize');
 
 sequelize.authenticate()

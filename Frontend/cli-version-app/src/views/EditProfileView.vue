@@ -122,11 +122,15 @@ export default {
 }
 </script>
 
-<style>
-body {
+<style lang="scss">
+html, body{
+  padding: 0;
+  margin: 0;
+
+/* body {
   font-family: Arial, sans-serif;
   background-color: #f2f2f2;
-}
+} */
 .back-button {
   display: block;
   margin-top: 10px;
@@ -138,10 +142,10 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
+  &:hover{
+    background-color: #0056b3;
+  }
 
-.back-button:hover {
-  background-color: #0056b3;
 }
 
 .container {
@@ -202,5 +206,6 @@ body {
 .form-group a {
   color: #007bff;
   text-decoration: none;
+}
 }
 </style>

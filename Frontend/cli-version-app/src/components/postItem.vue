@@ -293,7 +293,6 @@ export default {
   border-radius: 4px;
   padding: 10px;
   margin: 10px;
-   margin-bottom: 10px;
   position: relative;
   & > div{
     cursor: pointer;
@@ -349,7 +348,7 @@ export default {
       color: #888;
     }   
     .post-content img {
-      width: 80%;
+      width: 70%;
       height: 40%;
       margin: 10px 0 5px 0;
     }
@@ -367,6 +366,11 @@ export default {
       margin-top: 20px;
       border-radius: 25px;
       cursor: pointer;
+      &:hover{
+        background-color: #fff;
+        color: #333;
+        border: solid 1px #333;
+      }
     }
     .post-actions i {   
       cursor: pointer;

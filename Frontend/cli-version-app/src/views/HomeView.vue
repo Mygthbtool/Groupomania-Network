@@ -2,8 +2,7 @@
 <template>
   <div id="app" class="app">
     <HeaderItem />   
-    <main>
-        
+    <main>     
         <!-- Check if the user is authenticated before rendering the posts -->
         <div v-if="isAuthenticated">
           <h2>Latest Posts</h2>
@@ -25,23 +24,25 @@
           
             />
           </section>  
-          <section id="user-profile">
-            <h2>My Profile</h2>
-            <userItem 
-              :firstName="userData.firstName" 
-              :lastName="userData.lastName" 
-              :email="userData.email" 
-              :avatar="userData.avatar"
-              :userId="userData.userId"
-            />
-
+          <section class="user-section">
+            <div class="user-profile">
+              <h2>My Profile</h2>
+              <userItem 
+                :firstName="userData.firstName" 
+                :lastName="userData.lastName" 
+                :email="userData.email" 
+                :avatar="userData.avatar"
+                :userId="userData.userId"
+              />
+            </div>    
             <div class="user-actions">
-              <router-link to="/editprofile">Edit Profile</router-link>
-              <button class="delete-account-button" @click="onDeleteAccount">Delete Account</button>
-              <router-link to="/addpost">Add Post</router-link>
-              <button @click="goBack">Back</button>
-              <button @click="onLogOut">Log out</button>
-            </div>
+                <router-link to="/editprofile">Edit Profile</router-link>
+                <button class="delete-account-button" @click="onDeleteAccount">Delete Account</button>
+                <router-link to="/addpost">Add Post</router-link>
+                <button @click="goBack">Back</button>
+                <button @click="onLogOut">Log out</button>
+            </div>        
+            <!-- <UserActions /> -->
           </section>
         </div>
         <!-- If not authenticated, show a message or redirect to login -->
@@ -60,20 +61,19 @@
 import HeaderItem from'@/components/HeaderItem'
 import postItem from '@/components/postItem'
 import UserItem from '@/components/UserItem'
+// import UserActions from '@/components/UserActions'
 import FooterItem from '@/components/FooterItem'
 
 import { mapState } from 'vuex';
-import { mapMutations } from 'vuex';
 import axios from "../libs/axios";
 
 export default {
   name: 'HomeView',
   components :{
-    postItem, UserItem, HeaderItem, FooterItem
+    postItem, UserItem, HeaderItem, FooterItem, //UserActions
   },
 
   methods: {
-    ...mapMutations(['clearUserData']),
 
     async fetchPosts() {
       try {       
@@ -114,15 +114,8 @@ export default {
           });
       }
     },
-    goBack() {
-      // Go back one step in the history
-      this.$router.go(-1);
-    },
-    onLogOut(){
-      this.clearUserData();
-      this.$router.push('/');
-
-    }   
+    
+   
   }, 
   
   computed: {
@@ -161,18 +154,21 @@ export default {
 </script>
 
 <style lang="scss">
+// html, body{
+//   padding: 0;
+//   margin: 0;
 
 #app {
     /* Reset some default styles */
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
+  // width: 100%;
+  // height: 100%;
   font-family: Arial, sans-serif;
 // background-color: #f2f2f2;
   background-image: linear-gradient(
     to bottom,
-    rgb(226, 226, 217),
+    rgb(185, 185, 174),
     rgba(210, 54, 54, 0.791)), url('../../src/assets/icon.png');
       color: #333;
    
@@ -182,60 +178,60 @@ export default {
       padding: 0;
     }
       
-    .login-btn {
+    a.login-btn {
       display: block;
-      width: 5%;
+      width: 6%;
+      font-size: 2vw;
       text-decoration: none;
       margin-top: 30px;
       margin-bottom: 20px;
-      padding: 5px 10px;
+      padding: 10px;
       background-color: #007bff;
       color: #fff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      &:hover {
+      background-color: #0056b3;
+      }
+    
     }
 
-    .login-btn:hover {
-      background-color: #0056b3;
-    }
+    
     
     main {
       // display: flex;
       // height: max-content;
-      padding: 20px;
-      padding-bottom: auto;
+      padding: 30px;
+      // padding-bottom: auto;
       // padding-bottom: 200px;
       margin: 0;
+    
+    }
+    .user-section {
+      display: flex;
+      justify-content: space-between;
+     
     }
     
-    #user-profile h2{
+    .user-profile h2{
       margin-top: 10px;
       margin-bottom: 5px;
     }
-    .user-actions button, .user-actions a {
-      background-color: #333;
-      color: #fff;
-      border: none;
-      font-size: 13px;
-      text-decoration: none;
-      border-radius: 20px;
-      padding: 5px 10px;
-      margin-right: 10px;
-      cursor: pointer;
-    }
+
   } 
+// } 
 @media screen and (max-width: 500px) {
-    .user-actions {
+  #app .user-section {
     display: flex;
-    flex-flow: row wrap;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: smaller;
+  }
+  #app p{
+    font-size: smaller;
   }
 
-  .user-actions button,
-  .user-actions a {
-    margin-top: 10px;
-  }
 }
   
 </style>

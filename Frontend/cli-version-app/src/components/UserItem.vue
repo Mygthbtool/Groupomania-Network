@@ -1,7 +1,8 @@
 <template>
     <div id="user-info" class="user-info">
-      <img  :src="avatar" alt="User Avatar">
+      
       <div class="user-details">
+        <img  :src="avatar" alt="User Avatar">
         <h3>{{ firstName }} {{ lastName }}</h3>
         <p>{{ email }}</p>
       </div>
@@ -39,19 +40,17 @@ export default {
 </script>
 
 <style lang="scss">
-#user-info {
+.user-info {
     /* Reset some default styles */
-        
-    &.user-info {
-      display: flex;
-      flex-direction: column;
+          
+      // display: flex;
+      // flex-direction: column;
       align-items: left;
-      margin-bottom: 10px;
-    }
+      margin-bottom: 0px;
     
     &.user-info img {
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       margin-right: 10px;
     }
@@ -72,10 +71,12 @@ export default {
     &.user-info img {
       margin-bottom: 0;
       margin-right: 10px;
+      width: 30px;
+      height: 30px;
     }
 
     &.user-details h3 {
-      font-size: 16px;
+      font-size: 12px;
       margin-bottom: 0;
     }
   }
