@@ -98,7 +98,6 @@ exports.login = (req, res, next) => {
 //       .then((rowsDeleted) => {
 //         if (rowsDeleted === 1) {
 //           // Optionally, you can also delete the user's posts, comments, etc. if needed
-//           // ...
 //           PostReaction.destroy({ where: { user_id: userId } });
 //           PostReader.destroy({ where: { user_id: userId } });
 //           Comment.destroy({ where: { user_id: userId } });

@@ -35,14 +35,7 @@
                 :userId="userData.userId"
               />
             </div>    
-            <div class="user-actions">
-                <router-link to="/editprofile">Edit Profile</router-link>
-                <button class="delete-account-button" @click="onDeleteAccount">Delete Account</button>
-                <router-link to="/addpost">Add Post</router-link>
-                <button @click="goBack">Back</button>
-                <button @click="onLogOut">Log out</button>
-            </div>        
-            <!-- <UserActions /> -->
+            <UserActions />
           </section>
         </div>
         <!-- If not authenticated, show a message or redirect to login -->
@@ -61,7 +54,7 @@
 import HeaderItem from'@/components/HeaderItem'
 import postItem from '@/components/postItem'
 import UserItem from '@/components/UserItem'
-// import UserActions from '@/components/UserActions'
+import UserActions from '@/components/UserActions'
 import FooterItem from '@/components/FooterItem'
 
 import { mapState } from 'vuex';
@@ -70,7 +63,7 @@ import axios from "../libs/axios";
 export default {
   name: 'HomeView',
   components :{
-    postItem, UserItem, HeaderItem, FooterItem, //UserActions
+    postItem, UserItem, HeaderItem, FooterItem, UserActions
   },
 
   methods: {
@@ -94,27 +87,6 @@ export default {
       // Remove the deleted post from the posts array
       this.posts = this.posts.filter((post) => post.postId !== deletedPostId);    
     },
-    onDeleteAccount() {
-      if (confirm("Are you sure you want to delete your account? This action is irreversible.")) {
-        // Send a DELETE request to your API to delete the user account
-        const headers = {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Bearer ' + this.$store.state.userData.token,
-        }
-        axios.delete(`auth/${this.userData.userId}`, {headers: headers})     
-          .then(() => {
-            // Handle success, maybe show a success message
-            console.log('Account deleted successfully');
-            // Redirect the user to the login page or perform any other desired action
-            this.$router.push('/login');
-          })
-          .catch((error) => {
-            // Handle error, show an error message
-            console.error('Error deleting account', error);
-          });
-      }
-    },
-    
    
   }, 
   
