@@ -3,7 +3,7 @@
         <router-link to="/editprofile">Edit Profile</router-link>
         <button class="delete-account-button" @click="onDeleteAccount">Delete Account</button>
         <router-link to="/addpost">Add Post</router-link>
-        <button @click="goBack">Back</button>
+        <button @click="scrollToTop">Go to top</button>
         <button @click="onLogOut">Log out</button>
     </div>
 </template>
@@ -16,25 +16,9 @@ import axios from "../libs/axios";
 export default {
     name: 'UserActions',
 
-
-
  computed: {
     ...mapState(['posts', 'userData']),
 
-    isAuthenticated() {
-      const token = this.$store.state.token;
-      if(token) {
-        return true;
-      }  
-
-      const savedToken = localStorage.getItem('userToken');
-      if(savedToken) {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      this.$store.commit('setUserData', userData);
-        return true
-      }
-      return false
-    },
 
  },
    methods: {
@@ -60,11 +44,13 @@ export default {
           });
       }
     },  
+    scrollToTop() {
+    const element = document.getElementById('top');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  },
 
-    goBack() {
-      // Go back one step in the history
-      this.$router.go(-1);
-    },
     onLogOut(){
       this.clearUserData();
       this.$router.push('/');
@@ -101,17 +87,16 @@ export default {
 @media screen and (max-width: 500px) {
     
     #app  .user-actions {
-        align-items: flex-start;
-        flex-direction: column;
-        font-size: smaller;
+      align-items: flex-start;
+      flex-direction: column;
+      font-size: smaller;
+        button, a {
+          display: block;
+          flex-direction: column;
+          margin-top: 10px;
+        }
     }
-  .user-actions button,
-  .user-actions a {
-    display: block;
-    flex-direction: column;
-    margin-top: 10px;
-  }
-
+  
  }
 
 </style>

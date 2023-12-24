@@ -20,7 +20,7 @@ exports.createPost = (req, res, next) => {
   
   Post.create({
     user_id: postObj.userId,
-    posting_date: postObj.postingDate,
+    posting_date: new Date(),
     text_content: postObj.textContent,
     likes: postObj.likes,
     dislikes: postObj.dislikes,

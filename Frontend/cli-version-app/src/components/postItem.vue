@@ -341,7 +341,8 @@ export default {
       margin-right: 10px;
     }   
     .post-info h3 {
-      font-size: 16px;
+      font-size: 14px;
+      margin-bottom: 5px;
     }   
     .post-date {
       font-size: 12px;
@@ -389,10 +390,38 @@ export default {
       color: rgb(233, 30, 30);
     }
     .post-actions span {
-      padding-left: 0 4px;
       margin-left: 5px;
       margin-right: 10px;
     }
-  }    
- 
+  }   
+@media screen and (max-width: 600px) {
+  #post{
+    .post-actions .comnt-btn, .mark-read-button,
+    .delete-post-button, .edit-post-button {
+      display: inline;
+      font-size: 11px;
+      width: auto;
+      padding: 2px 5px;
+      margin-right: 3px;
+      margin-top: 20px;
+      border-radius: 20px;
+    }
+    .new-badge {
+      padding: 5px;
+      border-radius: 6px; 
+      font-size: 11px;
+    }
+    .post-actions span {
+      margin-left: 3px;
+      margin-right: 5px;
+    }
+    .post-actions i {   
+      cursor: pointer;
+      font-size: medium;
+      &.fa-thumbs-down {
+        margin-left: 5px;
+      }
+    } 
+  }
+}
 </style>

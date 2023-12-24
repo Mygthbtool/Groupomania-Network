@@ -82,6 +82,7 @@
   
   <style scoped>
   #header {
+    
     background-color: #333;
     color: #fff;
     padding-left: 30px;
@@ -91,8 +92,8 @@
   }
   
   #header img {
-    max-width: 200px;
-    max-height: 180px;
+    width: auto;
+    height: 180px;
   }
   
   .nav-container {
@@ -103,11 +104,11 @@
   #header .nav-container .user-details {
     display: flex;
     flex-flow: row wrap;
-      justify-content: flex-end;
-      font-size: smaller;
-      align-items: end;
-      margin-left: auto;
-      margin-right: 15px;
+    justify-content: flex-end;
+    font-size: smaller;
+    align-items: flex-end;
+    margin-left: auto;
+    margin-right: 15px;
 
 
   }
@@ -152,6 +153,10 @@
     #header{
         flex-flow: column-wrap;
     }
+    #header img {
+    width: auto;
+    height: 140px;
+  }
     #header .nav-container {
       display: flex;
       flex-direction: column;
@@ -185,6 +190,9 @@
     .nav-links.show {
       display: flex; /* Show links when .show class is added */
       flex-direction: column;
+      font-size: 13px;
+      padding: 3px;
+      z-index: +1;
     }
   
     .toggle-icon {

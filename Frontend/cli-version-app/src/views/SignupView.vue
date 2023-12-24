@@ -85,7 +85,6 @@ export default {
     }
   }
 
-
 }
 </script>
 
@@ -97,7 +96,7 @@ body {
 
 .container {
   max-width: 400px;
-  margin: 20px auto;
+  margin: 30px auto;
   padding: 40px;
   background-color: #fff;
   border-radius: 4px;
@@ -143,5 +142,10 @@ body {
 .form-group a {
   color: #007bff;
   text-decoration: none;
+}
+@media screen and (max-width: 500px) {
+  .container {
+    max-width: 260px;
+  }
 }
 </style>

@@ -38,9 +38,10 @@ export default createStore({
     refreshPost(state, post){
       const posts = state.posts;
       const postToReplace = posts.find(fPost => fPost.post_id === post.post_id);
-      Object.assign(postToReplace, post);
-      state.posts = posts;
-      
+      if(postToReplace){
+        Object.assign(postToReplace, post);     
+        state.posts = posts;
+      }
     },
 
     setPost(state, post){

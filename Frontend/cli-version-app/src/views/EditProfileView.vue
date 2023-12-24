@@ -150,7 +150,7 @@ html, body{
 
 .container {
   max-width: 400px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 40px;
   background-color: #fff;
   border-radius: 4px;

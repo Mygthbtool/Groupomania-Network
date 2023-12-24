@@ -40,7 +40,7 @@ export default {
 </script>
 
 <style lang="scss">
-.user-info {
+#user-info {
     /* Reset some default styles */
           
       // display: flex;
@@ -55,18 +55,22 @@ export default {
       margin-right: 10px;
     }
     
-    &.user-details h3 {
-      font-size: 18px;
-      margin-bottom: 5px;
+    & h3 {
+      font-size: 15px;
+      margin: 0;
     }     
+    & p{
+      margin-bottom: 0px;
+      margin-top: 5px;
+    }
     
   }
   @media screen and (max-width: 500px) {
-  #user-info {
-    &.user-info {
+  #user-info.user-info {
+    
       flex-direction: row;
       align-items: center;
-    }
+  
 
     &.user-info img {
       margin-bottom: 0;
@@ -78,6 +82,9 @@ export default {
     &.user-details h3 {
       font-size: 12px;
       margin-bottom: 0;
+    }
+    &.user-details p {
+      margin-top: 5px;
     }
   }
 }

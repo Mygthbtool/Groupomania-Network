@@ -89,10 +89,10 @@ import { mapMutations } from 'vuex';
 <style>
  body {
   font-family: Arial, sans-serif;
-   background-color: #f2f2f2; 
-  align-items: center;
+   /* background-color: #f2f2f2;  */
+  /* align-items: center; */
   /* padding-top: 10%; */
-  height: 100%
+  min-height: 100vh;
 }  
 
 /* html{
@@ -101,6 +101,8 @@ import { mapMutations } from 'vuex';
   
 
 .container {
+  margin-top: 60px;
+  /* margin-bottom: auto; */
   max-width: 400px;
   margin-right: auto;
   margin-left: auto;
@@ -151,5 +153,12 @@ import { mapMutations } from 'vuex';
 .signup-link a {
   color: #007bff;
   text-decoration: none;
+}
+ 
+@media screen and (max-width: 500px) {
+  .container {
+    max-width: 260px;
+  }
+
 }
 </style>
