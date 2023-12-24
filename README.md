@@ -14,6 +14,7 @@ To run this project:
 3. For Mysql database:
 
  . Create '.env' file containing or similar to this:   
+ 
     SECRET_TOKEN="put your token here"
     DB_NAME=groupomania
     DB_USER=root
