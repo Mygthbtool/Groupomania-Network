@@ -3,12 +3,13 @@ GROUPOMANIA-NETWORK
 To run this project:
 
 Clone the repo from the following link:
+
  https://github.com/Mygthbtool/Groupomania-Network.git
 
-To run the backend:
- . cd backend
- . npm install
- . nodemon server
+To run the backend: <br>
+  cd backend <br>
+  npm install <br>
+  nodemon server
 
 For Mysql database:
 . Create '.env' file containing or similar to this:
@@ -28,3 +29,4 @@ To run the frontend:
 . npm install
 . npm run serve
 . Then open on your browser : http://localhost:8080/
+
