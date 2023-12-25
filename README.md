@@ -1,5 +1,15 @@
 GROUPOMANIA-NETWORK
 
+I have created a corporate social network, for a fictive company called 'Groupomania'.<br>
+This application allows Groupomania's employees to interact with each other by posting<br>
+images, gifs, texts, and liking or disliking them and commenting them.
+
+For this project, I used below techs:
+
+For the server : Node.js, Javascripts and Express framework<br>
+For the database : MySQL language and Sequelize ORM<br>
+For the frontend : Javascripts and Vue.js framework
+
 To run this project:
 
 1. Clone the repo from the following link:
