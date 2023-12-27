@@ -126,7 +126,6 @@ export default {
       this.editedContent = this.textContent;
       this.editedMultimediaContent = this.mltMediaContent  ? this.mltMediaContent.name:'';
       console.log(this.post);
-     // console.log(this.$store.state.userData);
     }, 
     onSave() {    
     
@@ -241,7 +240,7 @@ export default {
     },
 
     async markAsRead() {
-      const postId = this.postId; // Use 'id' to get the post ID from route params
+      const postId = this.postId;
       // Send a request to update the postReaders array in the database
       try {
         const headers = {

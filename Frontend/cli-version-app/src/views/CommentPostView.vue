@@ -64,7 +64,6 @@ export default {
   },
 
   methods:{ 
-    ...mapState(['userData', 'posts', 'post']),
     // Get and fetch one post data
     async fetchPost() {
       const postId = this.$route.params.id; // Use 'id' to get the post ID from route params

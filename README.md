@@ -6,9 +6,9 @@ images, gifs, texts, and liking or disliking them and commenting them.
 
 For this project, I used below techs:
 
-For the server : Node.js, Javascripts and Express framework<br>
-For the database : MySQL language and Sequelize ORM<br>
-For the frontend : Javascripts and Vue.js framework
+For the server : Node.js, Javascript and Express framework<br>
+For the database : MySQL and Sequelize ORM<br>
+For the frontend : HTML, CSS, Javascript and Vue.js as framework
 
 To run this project:
 
