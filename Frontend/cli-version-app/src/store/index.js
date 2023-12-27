@@ -4,15 +4,18 @@ import { createStore } from 'vuex'
 export default createStore({
   
   state: {
-    userData: JSON.parse(localStorage.getItem('userData')) || {}, // Initialize userData as null //localStorage.getItem('userData') ||
-    posts:[] ,  // Initialize posts as null
-   // token: '' ,
-    post: {}
+    userData: JSON.parse(localStorage.getItem('userData')) || {},
+    posts:[] ,  
+    post: {},
+    token: ''
   },
-  // getters: {
-  //   // Optional: You can define getters to access the user data if needed
-  //   isAuthenticated: (state) => !!state.userData,
-  // },
+
+  getters: {
+    isAuthenticated: (state) => {
+      const token = state.token || localStorage.getItem('userToken');
+      return !!token;
+    },
+  },
   mutations: { 
     // Define a mutation to set the user data when received from the server
     setUserData(state, userData) {
@@ -23,7 +26,7 @@ export default createStore({
     setToken(state, token) {
       state.token = token;
       localStorage.setItem('userToken', token)
-     },
+    },
     clearUserData(state) {
       state.userData = null,
       state.token= null,
@@ -51,11 +54,9 @@ export default createStore({
 
   },  
   actions: {
-    // Optional: You can define actions if you need to perform async tasks 
-   
+    
   },
   modules: {
-    // Optional: You can define modules for organizing your store further
     
   }
 })

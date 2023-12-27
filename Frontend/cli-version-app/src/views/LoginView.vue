@@ -24,16 +24,13 @@
 import axios from "../libs/axios";
 import { mapMutations } from 'vuex';
 
-  export default {
-    name : 'LoginView',
-    components :{
-      
-    },
+export default {
+  name : 'LoginView',
+  
   data (){
     return {
       email: '',
-      password:'',
-     
+      password:'',   
     };
   },
   computed:{
@@ -46,14 +43,13 @@ import { mapMutations } from 'vuex';
     handleLogin(e) {
       e.preventDefault();
 
-     const user = {
-        email: this.email,
-        password: this.password
-      }
+    const user = {
+      email: this.email,
+      password: this.password
+    }
     
     // Send a POST request to the login endpoint   
-       axios.post("auth/login", user)
-          
+       axios.post("auth/login", user)         
         .then((response) => {            
           if (response.status === 200) {
 
@@ -65,7 +61,7 @@ import { mapMutations } from 'vuex';
              this.$store.commit('setUserData', userData);
 
              // Store the token in the Vuex store
-              this.$store.commit('setToken', response.data.user.token);
+             this.$store.commit('setToken', response.data.user.token);
 
              // Redirect to home page   
               this.$router.push('/');     
@@ -89,17 +85,8 @@ import { mapMutations } from 'vuex';
 <style>
  body {
   font-family: Arial, sans-serif;
-   /* background-color: #f2f2f2;  */
-  /* align-items: center; */
-  /* padding-top: 10%; */
   min-height: 100vh;
 }  
-
-/* html{
-  height: 100%;
-  /* padding-top: 10%; */
-  
-
 .container {
   margin-top: 60px;
   /* margin-bottom: auto; */

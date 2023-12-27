@@ -1,6 +1,5 @@
 <template>
-    <div id="user-info" class="user-info">
-      
+    <div id="user-info" class="user-info">  
       <div class="user-details">
         <img  :src="avatar" alt="User Avatar">
         <h3>{{ firstName }} {{ lastName }}</h3>
@@ -40,45 +39,35 @@ export default {
 </script>
 
 <style lang="scss">
-#user-info {
-    /* Reset some default styles */
-          
-      // display: flex;
-      // flex-direction: column;
-      align-items: left;
-      margin-bottom: 0px;
-    
-    &.user-info img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-    
-    & h3 {
-      font-size: 15px;
-      margin: 0;
-    }     
-    & p{
-      margin-bottom: 0px;
-      margin-top: 5px;
-    }
-    
+#user-info {  
+  align-items: left;
+  margin-bottom: 0px;  
+  &.user-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+  } 
+  & h3 {
+    font-size: 15px;
+    margin: 0;
+  }     
+  & p{
+    margin-bottom: 0px;
+    margin-top: 5px;
   }
-  @media screen and (max-width: 500px) {
-  #user-info.user-info {
-    
-      flex-direction: row;
-      align-items: center;
   
-
+}
+@media screen and (max-width: 500px) {
+  #user-info.user-info {
+    flex-direction: row;
+    align-items: center;
     &.user-info img {
       margin-bottom: 0;
       margin-right: 10px;
       width: 30px;
       height: 30px;
     }
-
     &.user-details h3 {
       font-size: 12px;
       margin-bottom: 0;

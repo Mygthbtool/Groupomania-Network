@@ -36,7 +36,6 @@
 import axios from "../libs/axios";
 import FormData from 'form-data'
 
-
 export default {
   name: 'SignupView',
 
@@ -52,36 +51,36 @@ export default {
 
  methods: {
 
-    handleFileChange(event) {
+  handleFileChange(event) {
     this.avatar = event.target.files[0];
-    },
-    signUp() {
-      const data = new FormData();
-        data.append('firstName', this.firstName);
-        data.append('lastName', this.lastName);
-        data.append('email', this.email);
-        data.append('password', this.password);
-        if (this.avatar) {
-          data.append('image', this.avatar, this.avatar.name);
-        }
-        
-        console.log({data}); 
-        axios
-          .post("auth/signup", data, {headers: { 'Content-Type': 'multipart/form-data' },})
-          .then((response) => {
-            if (response.status === 200) {
-              // User created successfully
-              window.alert('Account created successfully')
-              this.$router.push('/login');
-            } else {
-              // Error creating user
-              console.log(response);
-            }
-          })
-          .catch((error) => {
+  },
+  signUp() {
+    const data = new FormData();
+      data.append('firstName', this.firstName);
+      data.append('lastName', this.lastName);
+      data.append('email', this.email);
+      data.append('password', this.password);
+      if (this.avatar) {
+        data.append('image', this.avatar, this.avatar.name);
+      }
+      
+      console.log({data}); 
+      axios
+        .post("auth/signup", data, {headers: { 'Content-Type': 'multipart/form-data' }})
+        .then((response) => {
+          if (response.status === 200) {
+            // User created successfully
+            window.alert('Account created successfully')
+            this.$router.push('/login');
+          } else {
             // Error creating user
-            console.log(error);
-          });
+            console.log(response);
+          }
+        })
+        .catch((error) => {
+          // Error creating user
+          console.log(error);
+        });
     }
   }
 
@@ -91,7 +90,6 @@ export default {
 <style>
 body {
   font-family: Arial, sans-serif;
-  /* background-color: #f2f2f2; */
 }
 
 .container {

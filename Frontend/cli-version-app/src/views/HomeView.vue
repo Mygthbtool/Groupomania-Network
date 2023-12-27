@@ -63,7 +63,7 @@ import postItem from '@/components/postItem'
 import UserItem from '@/components/UserItem'
 import UserActions from '@/components/UserActions'
 import FooterItem from '@/components/FooterItem'
-
+import { mapGetters} from 'vuex';
 import { mapState } from 'vuex';
 import axios from "../libs/axios";
 
@@ -74,7 +74,7 @@ export default {
   },
 
   methods: {
-
+    // Render the posts
     async fetchPosts() {
       try {       
         const headers = {
@@ -106,21 +106,8 @@ export default {
   computed: {
     // Map the userData and posts from the Vuex store
     ...mapState(['posts', 'userData']),
-    // ...mapGetters(['isAuthenticated']),
-    isAuthenticated() {
-      const token = this.$store.state.token;
-      if(token) {
-        return true;
-      }  
 
-      const savedToken = localStorage.getItem('userToken');
-      if(savedToken) {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      this.$store.commit('setUserData', userData);
-        return true
-      }
-      return false
-    },
+    ...mapGetters(['isAuthenticated']),
 
     posts() {
     return this.$store.state.posts; // state has a 'posts' array
@@ -139,117 +126,97 @@ export default {
 </script>
 
 <style lang="scss">
-// html, body{
-//   padding: 0;
-//   margin: 0;
 
- body {
-    /* Reset some default styles */
+body {
   margin: 0;
   padding: 0;
-  //  width: 100%;
-  // height: 100%;
   font-family: Arial, sans-serif;
-// background-color: #f2f2f2;
+  color: #333;
   background-image: linear-gradient(
     to bottom,
     rgb(185, 185, 174),
     rgba(210, 54, 54, 0.791)), url('../../src/assets/icon.png');
-      color: #333;
-  
+        
 }     
 
+a.login-btn {
+  position: absolute;
+  top: 15%;
+  text-decoration: none;
+  margin-right: auto;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;  
+}
 
-    a.login-btn {
-      // display: block;
-      // width: 8%;
-      // font-size: 2vw;
-      position: absolute;
-      top: 15%;
-      text-decoration: none;
-      margin-right: auto;
-      padding: 10px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    
+#top-page {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  button.scrollToBottom {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 12px;
+    padding: 5px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    &:hover {
+        background-color: #0056b3;
     }
+
+  }  
+}   
+
+main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative,
   
+}
+.flex-container {
+    flex-grow: 1; /* Allow main to grow and take up available space */
+}
+.user-section {
+  display: flex;
+  justify-content: space-between;
+  
+}
 
-    #top-page {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      button.scrollToBottom {
-        background-color: #007bff;
-        color: #fff;
-        font-size: 12px;
-        padding: 5px;
-        border: none;
-        border-radius: 20px;
-        cursor: pointer;
-        &:hover {
-            background-color: #0056b3;
-        }
+.user-profile h2{
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
 
-    }  
-  }   
-
-    main {
-     display: flex;
-     flex-direction: column;
-    //  align-items: center;
-     min-height: 100vh;
-      padding: 20px;
-      // padding-bottom: auto;
-      // padding-bottom: 200px;
-     // margin: 0;
-     position: relative,
-     
-    
-    }
-    .flex-container {
-       flex-grow: 1; /* Allow main to grow and take up available space */
-    }
-    .user-section {
-      display: flex;
-      justify-content: space-between;
-     
-    }
-    
-    .user-profile h2{
-      margin-top: 10px;
-      margin-bottom: 5px;
-    }
-
-   
- 
 @media screen and (max-width: 500px) {
   #app {
-  .user-section {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: smaller;
-  }
-   p{
-    font-size: smaller;
-    margin-top: 5px;
-  }
-  h2 {
-    font-size: 1em;
-  }
-  #top-page {
-   & button.scrollToBottom {
-      font-size: 11px;
-      padding: 3px;
-    }  
-  }
-  a.login-btn {
-    font-size: smaller;
-  }
-}   
+    .user-section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      font-size: smaller;
+    }
+    p{
+      font-size: smaller;
+      margin-top: 5px;
+    }
+    h2 {
+      font-size: 1em;
+    }
+    #top-page {
+    & button.scrollToBottom {
+        font-size: 11px;
+        padding: 3px;
+      }  
+    }
+    a.login-btn {
+      font-size: smaller;
+    }
+  }   
 }
 </style>

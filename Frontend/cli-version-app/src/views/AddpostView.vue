@@ -24,91 +24,89 @@
 <script>
 import HeaderItem from "@/components/HeaderItem.vue";
 import axios from "../libs/axios";
-// import { mapState } from 'vuex';
 import FooterItem from '@/components/FooterItem'
-
-// import VueJwtDecode from '../../node_modules/vue-jwt-decode'
 import FormData from 'form-data'
 
-
 export default {
-    name: 'AddpostView',
-    props: {
-        postId: {
-            type: String,
-        },
-    },
-    data() {
-        return {
-            userFirstName: '',
-            userLastName: '',
-            userAvatar: '',
-            postingDate: new Date(),
-            textContent: '',
-            mltMediaContent: '',
-            likes: 0,
-            dislikes: 0,
-            comments: [],
-            userId: ''
-        };
-    },
+  name: 'AddpostView',
 
-    components: { HeaderItem, FooterItem },
+  props: {
+    postId: {
+      type: String,
+    },
+  },
 
-    computed: {
+  data() {
+    return {
+      userFirstName: '',
+      userLastName: '',
+      userAvatar: '',
+      postingDate: new Date(),
+      textContent: '',
+      mltMediaContent: '',
+      likes: 0,
+      dislikes: 0,
+      comments: [],
+      userId: ''
+    };
+  },
+
+  components: { HeaderItem, FooterItem },
+
+  computed: {
+  },
+
+  methods: {
+    handleFileChange(event) {
+      this.mltMediaContent = event.target.files[0];
     },
-    methods: {
-        handleFileChange(event) {
-            this.mltMediaContent = event.target.files[0];
-        },
-        publishContent() {
-          if(!this.textContent && !this.mltMediaContent){
-            return
-          }
-            // If a postId prop is passed, then we are editing an existing post.
-            // Otherwise, we are creating a new post.
-            const postData = new FormData();
-            postData.append('userFirstName', this.$store.state.userData.firstName);
-            postData.append('userLastName', this.$store.state.userData.lastName);
-            postData.append('userAvatar', this.$store.state.userData.avatar);
-            postData.append('postingDate', this.postingDate);
-            postData.append('textContent', this.textContent);
-            postData.append('likes', 0);
-            postData.append('dislikes', 0);
-            postData.append('comments', []);
-            postData.append('userId', this.$store.state.userData.userId);
-            if (this.mltMediaContent) {
-                postData.append('image', this.mltMediaContent, this.mltMediaContent.name);
-            }
-            console.log({ postData });
-            const headers = {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': 'Bearer ' + this.$store.state.userData.token
-            };
-            axios.post('posts/', postData, { headers: headers })
-                .then((response) => {
-                if (response.status === 201) {
-                    // Post created/edited successfully
-                    this.$store.commit('setPosts', response.data.posts);
-                    //redirect client to home page
-                    this.$router.push("/");
-                }
-                else {
-                    // Error creating post
-                    console.log(response);
-                }
-            })
-                .catch((error) => {
-                // Error creating post
-                console.log(error);
-            });
-        },
-        goBack() {
-            // Go back one step in the history
-            this.$router.go(-1);
-        },
+    publishContent() {
+      // don't publish empty post
+      if(!this.textContent && !this.mltMediaContent){
+        return
+      }
+      // Otherwise, we are creating a new post.
+      const postData = new FormData();
+      postData.append('userFirstName', this.$store.state.userData.firstName);
+      postData.append('userLastName', this.$store.state.userData.lastName);
+      postData.append('userAvatar', this.$store.state.userData.avatar);
+      postData.append('postingDate', this.postingDate);
+      postData.append('textContent', this.textContent);
+      postData.append('likes', 0);
+      postData.append('dislikes', 0);
+      postData.append('comments', []);
+      postData.append('userId', this.$store.state.userData.userId);
+      if (this.mltMediaContent) {
+          postData.append('image', this.mltMediaContent, this.mltMediaContent.name);
+      }
+      console.log({ postData });
+      const headers = {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + this.$store.state.userData.token
+      };
+      axios.post('posts/', postData, { headers: headers })
+      .then((response) => {
+        if (response.status === 201) {
+          // Post created/edited successfully
+          this.$store.commit('setPosts', response.data.posts);
+          //redirect client to home page
+          this.$router.push("/");
+        }
+        else {
+          // Error creating post
+          console.log(response);
+        }
+      })
+      .catch((error) => {
+      // Error creating post
+        console.log(error);
+      });
     },
-   
+    goBack() {
+      // Go back one step in the history
+      this.$router.go(-1);
+    },
+  },  
 }
 </script>
 

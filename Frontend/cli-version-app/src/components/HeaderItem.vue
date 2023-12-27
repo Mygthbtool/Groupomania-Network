@@ -30,14 +30,16 @@
         <div class="bar"></div>
       </div>
     </div>
-  </template>
+</template>
   
-  <script>
-  import { mapMutations } from 'vuex';
-  import UserItem from '@/components/UserItem'
+<script>
 
+  import UserItem from '@/components/UserItem'
+  import { mapGetters } from 'vuex';
+  import { mapMutations } from 'vuex';
   export default {
     name: 'HeaderItem',
+
     components: {
       UserItem
     },
@@ -49,20 +51,9 @@
     },
   
     computed: {
-        isAuthenticated() {
-      const token = this.$store.state.token;
-      if(token) {
-        return true;
-      }  
 
-      const savedToken = localStorage.getItem('userToken');
-      if(savedToken) {
-      const userData = JSON.parse(localStorage.getItem('userData'));
-      this.$store.commit('setUserData', userData);
-        return true
-      }
-      return false
-    },
+      ...mapGetters(['isAuthenticated']),
+   
     },
   
     methods: {
@@ -78,17 +69,17 @@
       },
     },
   };
-  </script>
+</script>
   
-  <style scoped>
-  #header {
-    
+<style scoped>
+
+  #header {   
     background-color: #333;
     color: #fff;
     padding-left: 30px;
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Center items vertically */
+    align-items: center;
   }
   
   #header img {
@@ -146,7 +137,7 @@
   height: 3px;
   background-color: #fff;
   margin: 5px 0;
-}
+  }
   
   /* Media query for smaller screens */
   @media only screen and (max-width: 500px) {
@@ -156,7 +147,7 @@
     #header img {
     width: auto;
     height: 140px;
-  }
+    }
     #header .nav-container {
       display: flex;
       flex-direction: column;
@@ -165,17 +156,13 @@
     }
     #header .nav-container .user-details {
       display: inline-block;
-      flex-direction: column; /* Stack links vertically */
+      flex-direction: column;
       position: absolute;
       font-size: 12px;
-      top: 10px; /* Adjust the top position as needed */
+      top: 10px; 
       right: 10px;
       background-color: #333;
-      /* align-items: end; */
-
     }
-   
-
     .nav-links {
       display: none; /* Hide the nav links */
       flex-direction: column; /* Stack links vertically */
@@ -183,10 +170,8 @@
       top: 60px; /* Adjust the top position as needed */
       right: 0;
       background-color: #333;
-      /* width: 100%; */
       padding: 10px 0 10px 10px;
-    }
-  
+    } 
     .nav-links.show {
       display: flex; /* Show links when .show class is added */
       flex-direction: column;
@@ -202,5 +187,5 @@
       margin-bottom: 15px;
     }
   }
-  </style>
+</style>
   

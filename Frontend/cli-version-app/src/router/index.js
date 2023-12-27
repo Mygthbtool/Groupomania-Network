@@ -13,8 +13,7 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AddpostView.vue'),
-  
+    component: () => import(/* webpackChunkName: "about" */ '../views/AddpostView.vue'), 
   }, 
   {
     path: '/login',
@@ -43,8 +42,6 @@ const routes = [
     component: () => import('../views/CommentPostView.vue'),
     props: true, // Pass the postId as a prop
   }
-  
-
 ]
 
 const router = createRouter({

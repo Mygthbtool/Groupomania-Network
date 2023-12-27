@@ -1,5 +1,5 @@
 <template>
-      <button class="back-button" @click="goBack">Back</button>
+    <button class="back-button" @click="goBack">Back</button>
     <div class="container">
       <h2>Edit Profile</h2>
       <form @submit.prevent="editProfile" enctype="multipart/form-data">
@@ -30,12 +30,11 @@
       <button class="cancel-button" @click="onCancel">Cancel</button>
       
     </div>
-  </template>
+</template>
 
 <script>
 import axios from "../libs/axios";
 import FormData from 'form-data'
-
 
 export default {
   name: 'EditProfileView',
@@ -53,31 +52,16 @@ export default {
   },
 
   computed: {
-    // isAuthenticated() {
-    //   const token = this.$store.state.userData.token;
-    //   if(token) {
-    //     return true;
-    //   }  
-
-    //   const savedToken = localStorage.getItem('userToken');
-    //   if(savedToken) {
-    //   const userData = JSON.parse(localStorage.getItem('userData'));
-    //   this.$store.commit('setUserData', userData);
-    //     return true
-    //   }
-    //   return false
-    // },
   },
 
  methods: {
 
     handleFileChange(event) {
-    this.avatar = event.target.files[0];
+      this.avatar = event.target.files[0];
     },
     
     editProfile() {
-      if (confirm("Are you sure you want to edit your profile?")) {
-        
+      if (confirm("Are you sure you want to edit your profile?")) {      
         const formData = new FormData();
         formData.append('firstName', this.firstName);
         formData.append('lastName', this.lastName);
@@ -94,20 +78,20 @@ export default {
         } 
        // const userId = this.this.$store.state.userData.userId
         axios.put(`auth/${this.userId}`, formData, {headers: headers})
-          .then((response) => {
-            
-            if (response.status === 201) {
-              // User updated successfully
-              this.$router.push("/");
-            } else {
-              // Error updating user
-              console.log(response);
-            }
-          })
-          .catch((error) => {
-            // Error creating user
-            console.log(error);
-          });
+        .then((response) => {   
+          if (response.status === 201) {
+            // User updated successfully
+            window.alert('Log in again to see your new profile')
+            this.$router.push("/");
+          } else {
+            // Error updating user
+            console.log(response);
+          }
+        })
+        .catch((error) => {
+          // Error creating user
+          console.log(error);
+        });
       }
     },
     onCancel(){
@@ -117,7 +101,7 @@ export default {
       // Go back one step in the history
       this.$router.go(-1);
     },
- }
+  }
  
 }
 </script>
@@ -126,86 +110,80 @@ export default {
 html, body{
   padding: 0;
   margin: 0;
-
-/* body {
-  font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
-} */
-.back-button {
-  display: block;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  margin-left: 15px;
-  padding: 5px 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  &:hover{
-    background-color: #0056b3;
+  .back-button {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    margin-left: 15px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover{
+      background-color: #0056b3;
+    }
   }
 
-}
+  .container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
 
-.container {
-  max-width: 400px;
-  margin: 20px auto;
-  padding: 40px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+  .container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
 
-.container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
+  .form-group {
+    margin-bottom: 20px;
+  }
 
-.form-group {
-  margin-bottom: 20px;
-}
+  .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
 
-.form-group label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="password"],
+  .form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
 
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="password"],
-.form-group input[type="file"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+  .form-group button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .cancel-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
 
-.form-group button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.cancel-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.form-group a {
-  color: #007bff;
-  text-decoration: none;
-}
+  .form-group a {
+    color: #007bff;
+    text-decoration: none;
+  }
 }
 </style>

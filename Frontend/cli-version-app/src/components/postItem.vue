@@ -44,7 +44,7 @@ import FormData from 'form-data'
 import { mapState } from 'vuex';
 
 export default {
-    name: 'postItem',
+  name: 'postItem',
     
   data() {
     return {
@@ -55,44 +55,45 @@ export default {
   
     };
   },
+
   props :{
 
-      post: {
-        type: Object, // Ensure post is an object
-        required: true,
-      },
-      postingDate: {
-        type: String
-      },
-      textContent: {
-        type: String
-      },
-      mltMediaContent:{
-        type: String
-      },
-      likes: {
-        type: Number
-      },
-      dislikes: {
-        type: Number
-      },
-      comments: {
-        type: Array
-      },
-      userId:{
-        type: Number
-      },
-      currentUser: {
-        type: Number
-      },
-      postId:{
-        type: Number,     
-      },
-      isHomePage:{
-        type: Boolean,
-        default: true
-      }
-   }, 
+    post: {
+      type: Object, // Ensure post is an object
+      required: true,
+    },
+    postingDate: {
+      type: String
+    },
+    textContent: {
+      type: String
+    },
+    mltMediaContent:{
+      type: String
+    },
+    likes: {
+      type: Number
+    },
+    dislikes: {
+      type: Number
+    },
+    comments: {
+      type: Array
+    },
+    userId:{
+      type: Number
+    },
+    currentUser: {
+      type: Number
+    },
+    postId:{
+      type: Number,     
+    },
+    isHomePage:{
+      type: Boolean,
+      default: true
+    }
+  }, 
   
   computed: {
 
@@ -110,7 +111,6 @@ export default {
     },
 
     ...mapState(['userData', 'posts']),
-
   },
   mounted() {
   // Fetch the list of users who have read the post
@@ -125,47 +125,47 @@ export default {
       // Initialize the edited content with the current post content
       this.editedContent = this.textContent;
       this.editedMultimediaContent = this.mltMediaContent  ? this.mltMediaContent.name:'';
-      console.log(this.post); // Add this line
-     // console.log(this.$store.state.userData); // Add this line
+      console.log(this.post);
+     // console.log(this.$store.state.userData);
     }, 
     onSave() {    
     
       // After a successful save, toggle off the edit mode
       if (confirm("Are you sure you want to edit this post?")) {
      
-     // Pass the post ID as a parameter in the request.
-     const postId = this.postId;// Make sure to add a postId prop to your component
-      // Create FormData object
-      const formData = new FormData();
+        // Pass the post ID as a parameter in the request.
+        const postId = this.postId;// Make sure to add a postId prop to your component
+        // Create FormData object
+        const formData = new FormData();
 
-      // Append the edited text content
-      formData.append('textContent', this.editedContent);
+        // Append the edited text content
+        formData.append('textContent', this.editedContent);
 
-      // Append the edited multimedia content (if changed)
-      if (this.editedMultimediaContent) {
-        formData.append('image', this.editedMultimediaContent);
-      }
+        // Append the edited multimedia content (if changed)
+        if (this.editedMultimediaContent) {
+          formData.append('image', this.editedMultimediaContent);
+        }
+              
+        const headers = {          
+            'Content-Type': 'multipart/form-data',
+            'Authorization': 'Bearer ' + this.$store.state.userData.token
+        };
+      // Send the put request to your API
+        axios.put(`posts/${postId}`, formData, {headers: headers})
+          .then(() => {
+            this.editedContent = this.textContent;
+            this.editedMultimediaContent = this.mltMediaContent
+            // Handle success, maybe show a success message
+            console.log('Post edited successfully');
             
-      const headers = {          
-          'Content-Type': 'multipart/form-data',
-          'Authorization': 'Bearer ' + this.$store.state.userData.token
-      };
-     // Send the put request to your API
-     axios.put(`posts/${postId}`, formData, {headers: headers})
-       .then(() => {
-        this.editedContent = this.textContent;
-        this.editedMultimediaContent = this.mltMediaContent
-         // Handle success, maybe show a success message
-         console.log('Post edited successfully');
-        
-           // Use Vue Router to refresh the current route (reload the home page)
-         this.$router.go();      
-         this.isEditing = false;
-       })
-       .catch((error) => {
-         // Handle error, show an error message
-         console.error('Error editing post', error);
-       });
+              // Use Vue Router to refresh the current route (reload the home page)
+            this.$router.go();      
+            this.isEditing = false;
+          })
+          .catch((error) => {
+            // Handle error, show an error message
+            console.error('Error editing post', error);
+          });
       }
    },
   
@@ -180,12 +180,11 @@ export default {
       this.editedMultimediaContent = event.target.files[0];
     },
 
-    onLike() {
-      // Implement your like functionality here
+    onLike() {   
       this.toggleLikeDislike(1); // 1 represents "like"
     },
-    onDislike() {
-      // Implement your dislike functionality here
+
+    onDislike() {    
       this.toggleLikeDislike(-1); // -1 represents "dislike"
     },
 
@@ -193,16 +192,13 @@ export default {
         // send request to the server according to likeStatus
       try {
         const postId = this.postId;
-        const response = await axios.post(
-          `posts/${postId}/like`,
+        const response = await axios.post(`posts/${postId}/like`,
           { userId: this.$store.state.userData.userId, like: likeStatus },
           {headers: { "Content-Type": "application/json",
                       "Authorization": "Bearer " + this.$store.state.userData.token }});
-
-            // console.log(response.data.postReaction);          
-      
-         this.$store.commit('refreshPost', response.data.updatedPost); // Store posts in Vuex
-         this.$store.commit('setPost', response.data.updatedPost);
+        const post = response.data.updatedPost;          
+        this.$store.commit('refreshPost', post); 
+        this.$store.commit('setPost', post);
 
       // console.log(response.data);
       } catch (error) {
@@ -219,21 +215,19 @@ export default {
       if(this.isHomePage) {
        this.$router.push(`/posts/${this.postId}`)  
       }   
-    },
-         
+    },        
     // delete post function
-   onDelete() {
-      if (confirm("Are you sure you want to delete this post?")) {
-     
+    onDelete() {
+      if (confirm("Are you sure you want to delete this post?")) {   
         // Pass the post ID as a parameter in the request.
-        const postId = this.postId;// Make sure to add a postId prop to your component.      
+        const postId = this.postId;// Make sure to add a postId prop to the component.      
         // Send the delete request to your API
         axios
           .delete(`posts/${postId}`, {headers: {Authorization: 'Bearer ' + this.$store.state.userData.token}})
           .then(() => {
-            // Handle success, maybe show a success message
+            // Handle success by showing a success message
             console.log('Post deleted successfully');
-            // You can also emit an event to notify a parent component to remove this post from the list.
+            // emit an event to notify a parent component to remove this post from the list.
             this.$emit('post-deleted', postId);
               // Use Vue Router to refresh the current route (reload the home page)
             this.$router.go();
@@ -247,42 +241,39 @@ export default {
     },
 
     async markAsRead() {
-        const postId = this.postId; // Use 'id' to get the post ID from route params
-          // Send a request to update the postReaders array in the database
-          try {
-            const headers = {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + this.$store.state.userData.token,
-            };
-            const userId = this.$store.state.userData.userId;
+      const postId = this.postId; // Use 'id' to get the post ID from route params
+      // Send a request to update the postReaders array in the database
+      try {
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.$store.state.userData.token,
+        };
+        const userId = this.$store.state.userData.userId;
 
-           const response = await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
-            console.log(response.data.message);
-           await this.fetchPostReaders();
-         
-          } catch (error) {
-            console.error('Error marking post as read on the server:', error);
-          }
-        
+        const response = await axios.post(`posts/${postId}/markAsRead`, { userId }, { headers: headers });
+        console.log(response.data.message);
+        await this.fetchPostReaders();
+      
+      } catch (error) {
+        console.error('Error marking post as read on the server:', error);
+      }        
     },
+
     async fetchPostReaders() {
-    const postId = this.postId;
+      const postId = this.postId;
+      try {
+        const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.$store.state.userData.token,
+              };
 
-    try {
-      const headers = {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + this.$store.state.userData.token,
-            };
-
-      const response = await axios.get(`posts/${postId}/readers`, { headers: headers });
-      this.postReaders = response.data || [];
-    } catch (error) {
-      console.error('Error fetching post readers:', error);
-    }
+        const response = await axios.get(`posts/${postId}/readers`, { headers: headers });
+        this.postReaders = response.data || [];
+      } catch (error) {
+        console.error('Error fetching post readers:', error);
+      }
+    },
   },
-  
-  },
-
 }              
 </script>        
 
@@ -292,110 +283,90 @@ export default {
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 10px;
-  margin: 10px;
+  margin: 20px;
   position: relative;
   & > div{
     cursor: pointer;
   }
-    /* Reset some default styles */
-
-  // body, h1, h2, h3, p, ul, li {
-  //     margin: 0;
-  //     padding: 0;
-  //   }
-    
-    // body {
-    //   font-family: Arial, sans-serif;
-    //   background-color: #f2f2f2;
-    //   //color: #333;
-    // }
-    
-    // main {
-    //   padding: 20px;
-    // }
-    
-    // h2 {
-    //   font-size: 20px;
-    //   margin-bottom: 10px;
-    // }
-    
-    .new-badge {
-      position: absolute;
-      top: 10px; 
-      right: 10px; 
-      background-color: red; 
-      color: white; 
-      padding: 7px;
-      border-radius: 5px; 
-      font-size: 12px;
-    }   
-    .post-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 50px;
-    }   
-    .post-header img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }   
-    .post-info h3 {
-      font-size: 14px;
-      margin-bottom: 5px;
-    }   
-    .post-date {
-      font-size: 12px;
-      color: #888;
-    }   
-    .post-content img {
-      width: 70%;
-      height: 40%;
-      margin: 10px 0 5px 0;
-    }
-    .post-content p {
-      margin-bottom: 6px;
-    }   
-    .post-actions .comnt-btn, .mark-read-button,
-    .delete-post-button, .edit-post-button {
-     display: inline-block;
-      background-color: #333;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      margin-right: 5px;
-      margin-top: 20px;
-      border-radius: 25px;
-      cursor: pointer;
-      &:hover{
-        background-color: #fff;
-        color: #333;
-        border: solid 1px #333;
-      }
-    }
-    .post-actions i {   
-      cursor: pointer;
-      font-size: larger;
-      &:active{
-        color: rgb(239, 223, 45)
-      }
-      &.fa-thumbs-down {
-        margin-left: 15px;
-      }
-    }    
-    .likes-count {
-      color: rgb(20, 202, 20);
-    }
-    .dislikes-count {
-      color: rgb(233, 30, 30);
-    }
-    .post-actions span {
-      margin-left: 5px;
-      margin-right: 10px;
-    }
+  .new-badge {
+    position: absolute;
+    top: 10px; 
+    right: 10px; 
+    background-color: red; 
+    color: white; 
+    padding: 7px;
+    border-radius: 5px; 
+    font-size: 12px;
   }   
+  .post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 50px;
+  }   
+  .post-header img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }   
+  .post-info h3 {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }   
+  .post-date {
+    font-size: 12px;
+    color: #888;
+  }   
+  .post-content img {
+    width: 70%;
+    height: 40%;
+    margin: 10px 0 5px 14%;    
+  }
+  .post-content p {
+    margin-bottom: 6px;
+  }   
+  .post-actions .comnt-btn, .mark-read-button,
+  .delete-post-button, .edit-post-button {
+    display: inline-block;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    margin-right: 5px;
+    margin-top: 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    &:hover{
+      background-color: #fff;
+      color: #333;
+      border: solid 1px #333;
+    }
+  }
+  .post-actions i {   
+    cursor: pointer;
+    font-size: larger;
+    &:active{
+      color: rgb(239, 223, 45)
+    }
+    &.fa-thumbs-down {
+      margin-left: 15px;
+    }
+  }    
+  .likes-count {
+    color: rgb(20, 202, 20);
+  }
+  .dislikes-count {
+    color: rgb(233, 30, 30);
+  }
+  .post-actions span {
+    margin-left: 5px;
+    margin-right: 10px;
+  }
+}   
 @media screen and (max-width: 600px) {
   #post{
+    margin-left: 5px;
+    margin-right: 5px;
     .post-actions .comnt-btn, .mark-read-button,
     .delete-post-button, .edit-post-button {
       display: inline;
